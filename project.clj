@@ -8,7 +8,11 @@
                  [ring/ring-core "1.6.3"]
                  [ring/ring-jetty-adapter "1.6.3"]
                  [mount "0.1.12"]
-                 [garden "1.3.3"]]
+                 [garden "1.3.3"]
+                 [clj-http "3.7.0"]
+                 [vincit/venia "0.2.5"]
+                 [cheshire "5.8.0"]
+                 [clj-time "0.14.2"]]
   :main ^:skip-aot lilactown.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})
