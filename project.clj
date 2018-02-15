@@ -17,4 +17,5 @@
                  [org.clojure/core.async "0.4.474"]]
   :main ^:skip-aot lilactown.core
   :target-path "target/%s"
+  :uberjar-name "lilactown.jar"
   :profiles {:uberjar {:aot :all}})
