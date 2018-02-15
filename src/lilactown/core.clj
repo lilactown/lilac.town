@@ -5,7 +5,8 @@
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.params :refer [wrap-params]]
             [hiccup.core :refer [html]]
-            [lilactown.pages.home :as home]))
+            [lilactown.pages.home :as home])
+  (:gen-class))
 
 (defn handler [request]
  (let [bgcolor (get-in request [:params "bg"])] 
@@ -21,3 +22,6 @@
 (defstate server
   :start (j/run-jetty #'app {:port 3000 :join? false})
   :stop (.stop server))
+
+(defn -main [&args]
+  (mount/start))
