@@ -12,7 +12,9 @@
                  [clj-http "3.7.0"]
                  [vincit/venia "0.2.5"]
                  [cheshire "5.8.0"]
-                 [clj-time "0.14.2"]]
+                 [clj-time "0.14.2"]
+                 [org.clojars.kennyjwilli/feedparser-clj "0.6.0"]
+                 [org.clojure/core.async "0.4.474"]]
   :main ^:skip-aot lilactown.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

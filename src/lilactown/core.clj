@@ -6,15 +6,15 @@
             [hiccup.core :refer [html]]
             [lilactown.pages.home :as home]))
 
-(defn dev-handler [request]
+(defn handler [request]
   {:status 200
    :headers {"Content-Type" "text/html"}
    :body (html (home/html))})
 
-(def app (-> dev-handler
+(def app (-> handler
              (wrap-resource "public")
              (wrap-content-type)))
 
-(defstate dev-server
+(defstate server
   :start (j/run-jetty #'app {:port 3000 :join? false})
-  :stop (.stop dev-server))
+  :stop (.stop server))
