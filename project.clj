@@ -15,6 +15,7 @@
                  [clj-time "0.14.2"]
                  [org.clojars.kennyjwilli/feedparser-clj "0.6.0"]
                  [org.clojure/core.async "0.4.474"]]
+  :min-lein-version "2.0.0"
   :main ^:skip-aot lilactown.core
   :target-path "target/%s"
   :uberjar-name "lilactown.jar"
