@@ -23,5 +23,5 @@
   :start (j/run-jetty #'app {:port 3000 :join? false})
   :stop (.stop server))
 
-(defn -main [&args]
+(defn -main [& args]
   (mount/start))
