@@ -9,9 +9,10 @@
             [feedparser-clj.core :as feed]
             [clojure.core.async :as async]))
 
-(def styles [[:* {:box-sizing "border-box"}]
+(defn styles [bg-color]
+  [[:* {:box-sizing "border-box"}]
              [:body {:font-family "Roboto Condensed, sans-serif"
-                     :background-color "#DCD0FF" ;; "#C8A2C8"
+                     :background-color bg-color
                      :color "#3b3b3b"}]
              [:h1 :h2 :h3 :h4 {:font-family "Roboto Slab, serif"}]
              [:a {:color "#371940"
@@ -149,7 +150,7 @@
        (async/reduce merge {})
        (async/<!!)))
 
-(defn html []
+(defn html [bgcolor]
   (let [{github :github
          articles :medium} (fetch' [:github send-git-query]
                                    [:medium medium-feed])
@@ -163,7 +164,8 @@
       [:link {:href "https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab"
               :rel "stylesheet"}]
       [:style
-       (garden/css styles)]]
+       (garden/css (styles (or bgcolor "#DCD0FF") ;; "#C8A2C8"
+                    ))]]
      [:body
       [:div#main
        [:h1.title "lilac.town"]
