@@ -206,5 +206,4 @@
        [:div
         [:h2 "Articles"]
         [:ul.articles
-         (map article articles)]]
-       ]]]))
+         (map article articles)]]]]]))
