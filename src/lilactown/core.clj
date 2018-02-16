@@ -19,9 +19,18 @@
              (wrap-resource "public")
              (wrap-content-type)))
 
+(defn parse-args [[port]]
+  {:port (Integer. port)})
+
+(defn start [{:keys [port]}]
+  (j/run-jetty #'app {:port (or port 3000) :join? false}))
+
 (defstate server
-  :start (j/run-jetty #'app {:port 3000 :join? false})
+  :start (->> (mount/args)
+              (start))
   :stop (.stop server))
 
 (defn -main [& args]
-  (mount/start))
+  (->> args
+       (parse-args)
+       (mount/start-with-args)))
