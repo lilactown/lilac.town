@@ -4,6 +4,11 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
+                 ;; feedparser deps
+                 [enlive "1.1.6"]
+                 [org.apache.httpcomponents/httpclient "4.5.5"]
+                 [com.rometools/rome "1.9.0"]
+                 ;; lilactown deps
                  [hiccup "1.0.5"]
                  [ring/ring-core "1.6.3"]
                  [ring/ring-jetty-adapter "1.6.3"]
@@ -13,7 +18,6 @@
                  [vincit/venia "0.2.5"]
                  [cheshire "5.8.0"]
                  [clj-time "0.14.2"]
-                 [zsau/feedparser-clj "0.6.0"]
                  [org.clojure/core.async "0.4.474"]]
   :min-lein-version "2.0.0"
   :main ^:skip-aot lilactown.core

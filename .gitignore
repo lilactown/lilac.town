@@ -11,3 +11,4 @@ pom.xml.asc
 .hg/
 github_key
 resources/secrets.edn
+image.tar
