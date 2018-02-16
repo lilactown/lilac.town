@@ -7,7 +7,8 @@
             [clj-time.format :as f]
             [clj-time.coerce]
             [feedparser-clj.core :as feed]
-            [clojure.core.async :as async]))
+            [clojure.core.async :as async]
+            [clojure.java.io :as io]))
 
 (defn styles [bg-color]
   [[:* {:box-sizing "border-box"}]
@@ -116,7 +117,7 @@
   ;; have categories associated with them :sadface
   (filter
    #(not (empty? (:categories %)))
-   (:entries (feed/parse-feed "https://medium.com/feed/@lilactown"))))
+   (:entries (feed/parse-feed (feed/uri-stream "https://medium.com/feed/@lilactown")))))
 
 (defn article-category [{:keys [name]}]
   [:span name])
