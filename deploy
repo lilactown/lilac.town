@@ -1,0 +1,4 @@
+#!/bin/sh
+
+docker build -t lilactown/lilac.town . && \
+docker push lilactown/lilac.town:latest
