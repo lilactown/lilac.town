@@ -1,19 +1,12 @@
 (ns lilactown.pages.home
-  (:require [lilactown.config :as config]
-            [garden.core :as garden]
-            [clj-http.client :as http]
-            [cheshire.core :as c]
-            [clojure.string :as s]
-            [clj-time.format :as f]
-            [clj-time.coerce]
-            [feedparser-clj.core :as feed]
-            [clojure.core.async :as async]
-            [clojure.java.io :as io]))
+  (:require [garden.core :as garden]
+            [lilactown.pages.home.data :as data]
+            [lilactown.pages.home.format :as format]))
 
-(defn styles [bg-color]
+(def styles
   [[:* {:box-sizing "border-box"}]
    [:body {:font-family "Roboto Condensed, sans-serif"
-           :background-color bg-color
+           :background-color "#DCD0FF"
            :color "#3b3b3b"}]
    [:h1 :h2 :h3 :h4 {:font-family "Roboto Slab, serif"}]
    [:a {:color "#371940"
@@ -73,50 +66,6 @@
                   :font-size ".8rem"}
       [:&:hover {:background-color "rgba(55, 25, 64, .7)"}]]]]])
 
-(def query "Pinned repos"
-  (s/replace
-   "query { 
-  viewer { 
-    pinnedRepositories(first: 6) {
-      nodes {
-        name
-        url
-        description
-        stargazers {
-          totalCount
-        }
-        createdAt
-        updatedAt
-        pushedAt
-        primaryLanguage {
-          name
-        }
-      }
-    }
-  }
-}" #"\n" ""))
-
-(defn format-repo-date [s]
-  (let [->f (f/formatter (f/formatters :date-time-no-ms))
-        <-f (f/formatter "MMM YYYY")]
-    (->> s
-        (f/parse ->f)
-        (f/unparse <-f))))
-
-(defn send-git-query []
-  (c/parse-string
-   (:body (http/post "https://api.github.com/graphql"
-                     {:headers {"Authorization" (str "bearer " (get-in config/env [:secrets :github]))}
-                      :body (str "{\"query\": \"" query "\"}")}))
-   true))
-
-;; (def query {:viewer {:pinnedRepositories {:first 6}
-;;                      {:nodes [:name
-;;                               :url
-;;                               :description
-;;                               {:stargazers [:totalCount]}
-;;                               :createdAt]}}})
-
 (def star
   [:svg.star-glyph
    {:aria-label "stars"
@@ -134,55 +83,23 @@
      [:div.title [:strong name]
       [:span.stars star (:totalCount stargazers)]]]
     [:div.desc description]
-    [:div.date [:div.display [:span.fas.fa-upload] "  " (format-repo-date pushedAt)]]])
-
-
-(defn medium-feed []
-  ;; articles and replies are currently in the same feed
-  ;; so we try and differentiate them by checking if they
-  ;; have categories associated with them :sadface
-  (filter
-   #(not (empty? (:categories %)))
-   (:entries (feed/parse-feed (feed/uri-stream "https://medium.com/feed/@lilactown")))))
+    [:div.date [:div.display [:span.fas.fa-upload] "  " (format/repo-date pushedAt)]]])
 
 (defn article-category [{:keys [name]}]
   [:li.category name])
 
-(defn format-article-date [d]
-  (f/unparse (f/formatter "MMM YYYY") (clj-time.coerce/from-date d)))
-
 (defn article [{:keys [title link published-date categories]}]
   [:li.article
-   [:div.date (format-article-date published-date)]
+   [:div.date (format/article-date published-date)]
    [:div.title
     [:div
      [:span [:a {:href link :target "_blank"} title]]]
     [:ul.categories (map article-category categories)]]])
 
-(defn fetch []
-  (let [data-ch (async/chan)]
-    (async/go (async/>! data-ch {:github (send-git-query)}))
-    (async/go (async/>! data-ch {:medium (medium-feed)}))
-    (loop [data []]
-      (let [data' (conj data (async/<!! data-ch))]
-        (if (= 2 (count data'))
-          (do (async/close! data-ch)
-              (apply merge data'))
-          (recur data'))))
-    ))
-
-(defn fetch' [& reqs]
-  (->> reqs
-       (map (fn [[tag do-req]]
-              (async/thread {tag (do-req)})))
-       (async/merge)
-       (async/reduce merge {})
-       (async/<!!)))
-
-(defn html [bgcolor]
+(defn html []
   (let [{github :github
-         articles :medium} (fetch' [:github send-git-query]
-                                   [:medium medium-feed])
+         articles :medium} (data/fetch' [:github send-git-query]
+                                        [:medium medium-feed])
         repos (get-in github [:data :viewer :pinnedRepositories :nodes])]
     [:html
      [:meta {:charset "UTF-8"}]
@@ -193,8 +110,7 @@
       [:link {:href "https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab"
               :rel "stylesheet"}]
       [:style
-       (garden/css (styles "#DCD0FF" ;; "#C8A2C8"
-                    ))]]
+       (garden/css styles)]]
      [:body
       [:div#main
        [:h1.title "lilac.town"]

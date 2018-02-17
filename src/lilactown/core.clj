@@ -9,10 +9,9 @@
   (:gen-class))
 
 (defn handler [request]
- (let [bgcolor (get-in request [:params "bg"])] 
-   {:status 200
-    :headers {"Content-Type" "text/html"}
-    :body (html (home/html bgcolor))}))
+ {:status 200
+  :headers {"Content-Type" "text/html"}
+  :body (html (home/html))})
 
 (def app (-> handler
              (wrap-params)
