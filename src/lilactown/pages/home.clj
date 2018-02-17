@@ -98,8 +98,8 @@
 
 (defn html []
   (let [{github :github
-         articles :medium} (data/fetch' [:github send-git-query]
-                                        [:medium medium-feed])
+         articles :medium} (data/fetch [:github data/git]
+                                        [:medium data/medium-feed])
         repos (get-in github [:data :viewer :pinnedRepositories :nodes])]
     [:html
      [:meta {:charset "UTF-8"}]

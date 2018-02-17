@@ -30,7 +30,7 @@
   }
 }" #"\n" ""))
 
-(defn send-git-query []
+(defn git []
   (c/parse-string
    (:body (http/post "https://api.github.com/graphql"
                      {:headers {"Authorization" (str "bearer " (get-in config/env [:secrets :github]))}
@@ -45,19 +45,19 @@
    #(not (empty? (:categories %)))
    (:entries (feed/parse-feed (feed/uri-stream "https://medium.com/feed/@lilactown")))))
 
-(defn fetch []
-  (let [data-ch (async/chan)]
-    (async/go (async/>! data-ch {:github (send-git-query)}))
-    (async/go (async/>! data-ch {:medium (medium-feed)}))
-    (loop [data []]
-      (let [data' (conj data (async/<!! data-ch))]
-        (if (= 2 (count data'))
-          (do (async/close! data-ch)
-              (apply merge data'))
-          (recur data'))))
-    ))
+;; (defn fetch []
+;;   (let [data-ch (async/chan)]
+;;     (async/go (async/>! data-ch {:github (send-git-query)}))
+;;     (async/go (async/>! data-ch {:medium (medium-feed)}))
+;;     (loop [data []]
+;;       (let [data' (conj data (async/<!! data-ch))]
+;;         (if (= 2 (count data'))
+;;           (do (async/close! data-ch)
+;;               (apply merge data'))
+;;           (recur data'))))
+;;     ))
 
-(defn fetch' [& reqs]
+(defn fetch [& reqs]
   (->> reqs
        (map (fn [[tag do-req]]
               (async/thread {tag (do-req)})))
