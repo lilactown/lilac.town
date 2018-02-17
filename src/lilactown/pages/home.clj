@@ -1,5 +1,7 @@
 (ns lilactown.pages.home
   (:require [garden.core :as garden]
+            [garden.stylesheet :refer [at-media]]
+            [garden.units :refer [px]]
             [lilactown.pages.home.data :as data]
             [lilactown.pages.home.format :as format]))
 
@@ -12,17 +14,17 @@
    [:a {:color "#371940"
         :text-decoration "none"}
     [:&:hover {:color "#9a549a"}]]
-   [:#main {:max-width "650px"
+   [:#main {:max-width "670px"
             :margin "40px auto"}]
-   ;; [:.title {:text-align "center"}]
-   ;; [:.tag-line {:text-align "center"}]
    [:.repos {:display "grid"
              :grid-template-columns "1fr 1fr 1fr"
              :grid-column-gap "15px"
              :grid-row-gap "15px"}
-    ]
-   [:.repo {;; :border "1px solid rgba(55, 25, 64, .1)"
-            :border-radius "4px"
+    (at-media {:screen true :max-width (px 991)}
+              [:& {:grid-template-columns "1fr 1fr"}])
+    (at-media {:screen true :max-width (px 425)}
+              [:& {:grid-template-columns "1fr"}])]
+   [:.repo {:border-radius "4px"
             :padding "10px 12px 10px"
             :background-color "rgba(55, 25, 64, .1)"
             :box-shadow "1px 1px 3px rgba(100, 100, 100, .5)"
@@ -32,8 +34,6 @@
     [:.date {:position "relative"}
      [:.display {:position "absolute"
                  :bottom 0}]]
-    ;; [:.title {:padding "0 0 5px 0"}]
-    ;; [:.desc {:padding "0 0 8px 0"}]
     [:.stars {:float "right"}]
     [:.star-glyph {:display "inline-block"
                    :vertical-align "text-bottom"
@@ -103,6 +103,7 @@
         repos (get-in github [:data :viewer :pinnedRepositories :nodes])]
     [:html
      [:meta {:charset "UTF-8"}]
+     [:meta {:name "viewport" :content "width=device-width,initial-scale=1"}]
      [:head
       [:title "Will Acton"]
       [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
@@ -113,7 +114,8 @@
        (garden/css styles)]]
      [:body
       [:div#main
-       [:h1.title "lilac.town"]
+       [:div {:style "margin: 0 10px"}
+        [:h1.title "lilac.town"]
        ;; [:div.tag-line
        ;;  [:p "I develop software of all kinds. Some of it even works!"]]
        [:div
@@ -123,4 +125,4 @@
        [:div
         [:h2 "Articles"]
         [:ul.articles
-         (map article articles)]]]]]))
+         (map article articles)]]]]]]))
