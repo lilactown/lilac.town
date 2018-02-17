@@ -28,11 +28,11 @@
              :grid-column-gap "15px"
              :grid-row-gap "15px"}
     ]
-   [:.repo {:border "1px solid #555"
+   [:.repo {;; :border "1px solid rgba(55, 25, 64, .1)"
             :border-radius "4px"
             :padding "10px 12px 10px"
-            :background-color "rgba(100, 100, 100, .1)"
-            :box-shadow "1px 1px 3px rgba(0, 0, 0, .5)"
+            :background-color "rgba(55, 25, 64, .1)"
+            :box-shadow "1px 1px 3px rgba(100, 100, 100, .5)"
             :display "grid"
             :grid-row-gap "8px"
             :grid-auto-rows "minmax(20px, auto)"}
@@ -67,10 +67,11 @@
                   :text-align "center"
                   :padding "3px 8px"
                   :margin "0 3px 0 0"
-                  :background-color "rgba(0, 0, 0, .5)"
+                  :background-color "rgba(55, 25, 64, .3)"
                   :border-radius "4px"
                   :color "#DCD0FF"
-                  :font-size ".8rem"}]]]])
+                  :font-size ".8rem"}
+      [:&:hover {:background-color "rgba(55, 25, 64, .7)"}]]]]])
 
 (def query "Pinned repos"
   (s/replace
