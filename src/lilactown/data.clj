@@ -1,4 +1,4 @@
-(ns lilactown.pages.home.data
+(ns lilactown.data
   (:require [lilactown.config :as config]
             [clj-http.client :as http]
             [cheshire.core :as c]
@@ -30,7 +30,7 @@
   }
 }" #"\n" ""))
 
-(defn git []
+(defn github []
   (c/parse-string
    (:body (http/post "https://api.github.com/graphql"
                      {:headers {"Authorization" (str "bearer " (get-in config/env [:secrets :github]))}
@@ -47,13 +47,8 @@
 
 
 
-(defn medium []
-  (->> (-> "https://medium.com/@lilactown/latest?format=json"
-           (http/get)
-           (:body)
-           (clojure.string/replace-first "])}while(1);</x>" "")
-           (c/parse-string)
-           (get-in ["payload" "references" "Post"]))
+(defn parse-medium [data]
+  (->> data
        (map second)
        (map #(let [created-at (get % "createdAt")
                    title (get % "title")
@@ -66,6 +61,14 @@
                 :claps claps
                 :link (str "https://medium.com/@lilactown/" slug)}))))
 
+(defn medium []
+  (->> (-> "https://medium.com/@lilactown/latest?format=json"
+           (http/get)
+           (:body)
+           (clojure.string/replace-first "])}while(1);</x>" "")
+           (c/parse-string)
+           (get-in ["payload" "references" "Post"]))
+       (parse-medium)))
 
 ;; (defn fetch []
 ;;   (let [data-ch (async/chan)]

@@ -5,13 +5,16 @@
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.params :refer [wrap-params]]
             [hiccup.core :refer [html]]
-            [lilactown.pages.home :as home])
+            [lilactown.pages.home :as home]
+            [lilactown.state :as state]
+            [lilactown.data :as data])
   (:gen-class))
 
 (defn handler [request]
- {:status 200
-  :headers {"Content-Type" "text/html"}
-  :body (html (home/html))})
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body (html (home/html {:github @state/github
+                           :medium @state/medium}))})
 
 (def app (-> handler
              (wrap-params)

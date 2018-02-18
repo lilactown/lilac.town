@@ -2,7 +2,7 @@
   (:require [garden.core :as garden]
             [garden.stylesheet :refer [at-media]]
             [garden.units :refer [px]]
-            [lilactown.pages.home.data :as data]
+            [lilactown.state :as state]
             [lilactown.pages.home.format :as format]))
 
 (def styles
@@ -110,11 +110,8 @@
              ]]]
     [:ul.categories (map article-category tags) [:li.category [:span.fas.fa-thumbs-up] " " claps]]]])
 
-(defn html []
-  (let [{github :github
-         articles :medium} (data/fetch [:github data/git]
-                                       [:medium data/medium])
-        repos (get-in github [:data :viewer :pinnedRepositories :nodes])]
+(defn html [{:keys [github medium]}]
+  (let [repos (get-in github [:data :viewer :pinnedRepositories :nodes])]
     [:html
      [:meta {:charset "UTF-8"}]
      [:meta {:name "viewport" :content "width=device-width,initial-scale=1"}]
@@ -139,4 +136,4 @@
        [:div
         [:h2 "Articles"]
         [:ul.articles
-         (map article articles)]]]]]]))
+         (map article medium)]]]]]]))
