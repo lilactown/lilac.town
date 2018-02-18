@@ -5,9 +5,9 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  ;; feedparser deps
-                 [enlive "1.1.6"]
-                 [org.apache.httpcomponents/httpclient "4.5.5"]
-                 [com.rometools/rome "1.9.0"]
+                 ;; [enlive "1.1.6"]
+                 ;; [org.apache.httpcomponents/httpclient "4.5.5"]
+                 ;; [com.rometools/rome "1.9.0"]
                  ;; lilactown deps
                  [hiccup "1.0.5"]
                  [ring/ring-core "1.6.3"]

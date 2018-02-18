@@ -86,21 +86,32 @@
     [:div.desc description]
     [:div.date [:div.display [:span.fas.fa-upload] "  " (format/repo-date pushedAt)]]])
 
-(defn article-category [{:keys [name]}]
+;; (defn article-category [{:keys [name]}]
+;;   [:li.category name])
+
+;; (defn article [{:keys [title link published-date categories]}]
+;;   [:li.article
+;;    [:div.date (format/article-date published-date)]
+;;    [:div.title
+;;     [:div.text
+;;      [:span [:a {:href link :target "_blank"} title]]]
+;;     [:ul.categories (map article-category categories)]]])
+
+(defn article-category [name]
   [:li.category name])
 
-(defn article [{:keys [title link published-date categories]}]
+(defn article [{:keys [title link created-at tags claps]}]
   [:li.article
-   [:div.date (format/article-date published-date)]
+   [:div.date (format/article-date created-at)]
    [:div.title
     [:div.text
      [:span [:a {:href link :target "_blank"} title]]]
-    [:ul.categories (map article-category categories)]]])
+    [:ul.categories (map article-category tags)]]])
 
 (defn html []
   (let [{github :github
          articles :medium} (data/fetch [:github data/git]
-                                        [:medium data/medium-feed])
+                                       [:medium data/medium])
         repos (get-in github [:data :viewer :pinnedRepositories :nodes])]
     [:html
      [:meta {:charset "UTF-8"}]
