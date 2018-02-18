@@ -32,6 +32,8 @@
               (start))
   :stop (.stop server))
 
+(comment (mount/start))
+
 (defn -main [& args]
   (println args)
   (->> args

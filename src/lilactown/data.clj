@@ -30,10 +30,10 @@
   }
 }" #"\n" ""))
 
-(defn github []
+(defn github [token]
   (c/parse-string
    (:body (http/post "https://api.github.com/graphql"
-                     {:headers {"Authorization" (str "bearer " (get-in config/env [:secrets :github]))}
+                     {:headers {"Authorization" (str "bearer " token)}
                       :body (str "{\"query\": \"" query "\"}")}))
    true))
 

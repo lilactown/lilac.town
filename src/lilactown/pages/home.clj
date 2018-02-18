@@ -2,7 +2,6 @@
   (:require [garden.core :as garden]
             [garden.stylesheet :refer [at-media]]
             [garden.units :refer [px]]
-            [lilactown.state :as state]
             [lilactown.pages.home.format :as format]))
 
 (def styles
