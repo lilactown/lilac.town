@@ -42,9 +42,10 @@
    [:.articles {:list-style "none"
                 :padding "0"
                 :margin "0"}]
-   [:.article {:padding "5px 0"}
+   [:.article {:padding "5px 0"
+               :display "flex"}
     [:.title {:font-size "1.5rem"
-              :display "inline-block"}]
+              :flex 1}]
     [:.date {:margin-right "12px"
              :font-size "1.2rem"
              :vertical-align "unset"
@@ -55,11 +56,11 @@
              }]
     [:.categories {:list-style "none"
                    :padding "0"
-                   :margin-top "3px"}
+                   :margin "0"}
      [:.category {:display "inline-block"
                   :text-align "center"
                   :padding "3px 8px"
-                  :margin "0 3px 0 0"
+                  :margin "3px 3px 0 0"
                   :background-color "rgba(55, 25, 64, .3)"
                   :border-radius "4px"
                   :color "#DCD0FF"
@@ -92,7 +93,7 @@
   [:li.article
    [:div.date (format/article-date published-date)]
    [:div.title
-    [:div
+    [:div.text
      [:span [:a {:href link :target "_blank"} title]]]
     [:ul.categories (map article-category categories)]]])
 
