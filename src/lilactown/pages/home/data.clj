@@ -67,7 +67,6 @@
                 :link (str "https://medium.com/@lilactown/" slug)}))))
 
 
-
 ;; (defn fetch []
 ;;   (let [data-ch (async/chan)]
 ;;     (async/go (async/>! data-ch {:github (send-git-query)}))

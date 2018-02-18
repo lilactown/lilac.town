@@ -105,8 +105,10 @@
    [:div.date (format/article-date created-at)]
    [:div.title
     [:div.text
-     [:span [:a {:href link :target "_blank"} title]]]
-    [:ul.categories (map article-category tags)]]])
+     [:span [:a {:href link :target "_blank"}
+             title
+             ]]]
+    [:ul.categories (map article-category tags) [:li.category [:span.fas.fa-thumbs-up] " " claps]]]])
 
 (defn html []
   (let [{github :github
