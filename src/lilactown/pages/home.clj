@@ -136,4 +136,5 @@
         [:h2 "Articles"]
         [:ul.articles
          (map article medium)]]]]
-      [:script {:src "/assets/js/title.js"}]]]))
+      [:script {:src "/assets/js/title.js"}]
+      [:script "lilactown.client.title.core.init()"]]]))
