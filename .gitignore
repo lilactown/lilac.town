@@ -12,3 +12,5 @@ pom.xml.asc
 github_key
 resources/secrets.edn
 image.tar
+node_modules/
+resources/public/assets/js/

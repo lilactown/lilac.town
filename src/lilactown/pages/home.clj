@@ -26,7 +26,7 @@
    [:.repo {:border-radius "4px"
             :padding "10px 12px 10px"
             :background-color "rgba(55, 25, 64, .1)"
-            :box-shadow "1px 1px 3px rgba(100, 100, 100, .5)"
+            :box-shadow "2px 2px 3px rgba(100, 100, 100, .5)"
             :display "grid"
             :grid-row-gap "8px"
             :grid-auto-rows "minmax(20px, auto)"}
@@ -135,4 +135,5 @@
        [:div
         [:h2 "Articles"]
         [:ul.articles
-         (map article medium)]]]]]]))
+         (map article medium)]]]]
+      [:script {:src "/assets/js/title.js"}]]]))

@@ -19,9 +19,21 @@
                  [cheshire "5.8.0"]
                  [clj-time "0.14.2"]
                  [org.clojure/core.async "0.4.474"]
-                 [tick "0.3.5"]]
+                 [tick "0.3.5"]
+                 [thheller/shadow-cljs "2.1.22"]]
+  ;; :repl-options {:nrepl-middleware
+  ;;                [shadow.cljs.devtools.server.nrepl/cljs-load-file
+  ;;                 shadow.cljs.devtools.server.nrepl/cljs-eval
+  ;;                 shadow.cljs.devtools.server.nrepl/cljs-select
+  ;;                 ;; required by some tools, not by shadow-cljs.
+  ;;                 cemerick.piggieback/wrap-cljs-repl]}
   :min-lein-version "2.0.0"
   :main ^:skip-aot lilactown.core
   :target-path "target/%s"
   :uberjar-name "lilactown.jar"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all}
+             :client {:dependencies [[binaryage/devtools "0.9.9"]
+                                     [com.cemerick/piggieback "0.2.2"] 
+                                     [org.clojure/tools.nrepl "0.2.13"]
+                                     [cider/cider-nrepl "0.16.0-SNAPSHOT"]
+                                     [refactor-nrepl "2.4.0-SNAPSHOT"]]}})
