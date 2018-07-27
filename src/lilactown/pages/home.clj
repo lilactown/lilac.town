@@ -85,17 +85,6 @@
     [:div.desc description]
     [:div.date [:div.display [:span.fas.fa-upload] "  " (format/repo-date pushedAt)]]])
 
-;; (defn article-category [{:keys [name]}]
-;;   [:li.category name])
-
-;; (defn article [{:keys [title link published-date categories]}]
-;;   [:li.article
-;;    [:div.date (format/article-date published-date)]
-;;    [:div.title
-;;     [:div.text
-;;      [:span [:a {:href link :target "_blank"} title]]]
-;;     [:ul.categories (map article-category categories)]]])
-
 (defn article-category [name]
   [:li.category name])
 
