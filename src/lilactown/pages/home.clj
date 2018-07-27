@@ -30,14 +30,22 @@
             :display "grid"
             :grid-row-gap "8px"
             :grid-auto-rows "minmax(20px, auto)"}
-    [:.date {:position "relative"}
+    [:.bottom {:position "relative"}
      [:.display {:position "absolute"
                  :bottom 0}]]
     [:.stars {:float "right"}]
     [:.star-glyph {:display "inline-block"
                    :vertical-align "text-bottom"
                    :fill "currentColor"
-                   :margin-right "5px"}]]
+                   :margin-right "5px"}]
+    [:.lang
+     [:.repo-lang-circle {:display "inline-block";
+                          :width "12px";
+                          :height "12px";
+                          :border-radius "50%"
+                          :position "relative"
+                          :top "1px"
+                          :background "black"}]]]
    [:.articles {:list-style "none"
                 :padding "0"
                 :margin "0"}]
@@ -77,13 +85,26 @@
     {:fill-rule "evenodd"
      :d "M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"}]])
 
-(defn repo [{:keys [name url description createdAt updatedAt pushedAt stargazers]}]
+(def lang-color
+  {"JavaScript" "#575cff"
+   "OCaml" "#d417a2"
+   "Clojure" "#9a549a"})
+
+(defn repo [{:keys [name url description createdAt updatedAt pushedAt stargazers
+                    primaryLanguage]}]
    [:div.repo
     [:a {:href url :target "_blank"}
      [:div.title [:strong name]
       [:span.stars star (:totalCount stargazers)]]]
     [:div.desc description]
-    [:div.date [:div.display [:span.fas.fa-upload] "  " (format/repo-date pushedAt)]]])
+    [:div.bottom
+     [:div.display
+      [:div.lang
+       [:span.repo-lang-circle {:style (str "background: "
+                                            (get lang-color
+                                                 (:name primaryLanguage)
+                                                 "black"))}]
+       "  " (:name primaryLanguage)]]]])
 
 (defn article-category [name]
   [:li.category name])
@@ -124,6 +145,4 @@
        [:div
         [:h2 "Articles"]
         [:ul.articles
-         (map article medium)]]]]
-      [:script {:src "/assets/js/title.js"}]
-      [:script "lilactown.client.title.core.init()"]]]))
+         (map article medium)]]]]]]))
