@@ -1,9 +1,9 @@
 ;; shadow-cljs configuration
-{:lein {:profile "+client"}
- :nrepl {:port 8000}
+{;; :lein {:profile "+client"}
  :builds {:client {:target :browser
                    :output-dir "resources/public/assets/js"
                    :asset-path "/assets/js"
-                   :modules {:title {:entries [lilactown.client.title.core]}}
-                   :devtools {:before-load lilactown.client.title.core/stop
-                              :after-load lilactown.client.title.core/start}}}}
+                   :modules {:main {:entries [lilactown.client.core]}}
+                   ;; :devtools {:before-load lilactown.client.core/stop
+                   ;;            :after-load lilactown.client.core/start}
+                   }}}

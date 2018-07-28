@@ -135,7 +135,8 @@
      [:body
       [:div#main
        [:div {:style "margin: 0 10px"}
-        [:h1.title "lilac.town"]
+        [:div#title
+         [:h1.title "lilac.town"]]
        ;; [:div.tag-line
        ;;  [:p "I develop software of all kinds. Some of it even works!"]]
        [:div
@@ -145,4 +146,5 @@
        [:div
         [:h2 "Articles"]
         [:ul.articles
-         (map article medium)]]]]]]))
+         (map article medium)]]]]
+      [:script {:src "assets/js/main.js"}]]]))

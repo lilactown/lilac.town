@@ -64,7 +64,8 @@
 
 (def _ identity)
 
-(def frames [[{:y 10} _ _ _ _ _ _ _ _ _]])
+(def frames [[{:x 117.5} {:x 15} {:x 15} {:x 15} {:x 15} {:x 15} {:x 15} {:x 15} {:x -102.5} _]
+             [{:x (- 45.8 117.5)} _ _ {:x (- 117.5 30.8 15)} _ _ _ _ _ {:x 7}]])
 
 (defn apply-frame [initial frame]
   (->> (map vector frame initial)
@@ -77,12 +78,14 @@
 (defn draw-frame! [frame]
   (dorun (map #(text! context %) frame)))
 
+(js/console.log (apply-frame initial-letters (first frames)))
+
 (defn draw! []
   (js/console.log "drawing")
   (rect! context {:x 0 :y 0 :width (.-width canvas) :height (.-height canvas)
                   :fill "#DCD0FF"})
-  (draw-frame! initial-letters)
-  (draw-frame! (apply-frame initial-letters (first frames)))
+  ;; (draw-frame! initial-letters)
+  (draw-frame! (apply-frame (apply-frame initial-letters (first frames)) (second frames)))
   )
 
 (defn ^:export init []
