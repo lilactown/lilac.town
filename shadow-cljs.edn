@@ -4,6 +4,5 @@
                    :output-dir "resources/public/assets/js"
                    :asset-path "/assets/js"
                    :modules {:main {:entries [lilactown.client.core]}}
-                   ;; :devtools {:before-load lilactown.client.core/stop
-                   ;;            :after-load lilactown.client.core/start}
+                   :compiler-options {:infer-externs :auto}
                    }}}
