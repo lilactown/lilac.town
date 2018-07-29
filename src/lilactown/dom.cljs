@@ -30,6 +30,8 @@
 
 (def get-in$ gobj/getValueByKeys)
 
+(def set$ gobj/set)
+
 (defn props* [this & keys]
   (apply get-in$ this "props" keys))
 

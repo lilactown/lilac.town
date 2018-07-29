@@ -50,7 +50,8 @@
 
 (def toggle-animate
   (dom/component
-   {:getInitialState
+   {:displayName "toggle-animate"
+    :getInitialState
     (fn [] #js {})
 
     :componentDidMount
@@ -63,21 +64,22 @@
          id
          (fn [_k _r old-v new-v]
            (when (not= (old-v id) (new-v id))
-             (. this setState
+             (dom/set-state!
+              (fn [_]
                 #js {:start (get-in new-v [id :end])
-                     :end (get-in new-v [id :start])}))))
-        (gobj/set this "watch" id)))
+                     :end (get-in new-v [id :start])})))))
+        (dom/set-this! :watch id)))
 
     :componentWillUnmount
     (fn [this]
-      (println "Unmounting" (. this -watch))
-      (remove-watch !state (. this -watch)))
+      (println "Unmounting" (dom/this :watch))
+      (remove-watch !state (dom/this :watch)))
 
     :handleEnter
     (dom/send-this
      []
      (fn [this]
-       (let [id (. this -watch)]
+       (let [id (dom/this :watch)]
          (swap-state!
           (fn [cur]
             (assoc
@@ -88,12 +90,11 @@
 
     :render
     (fn [this]
-      (let [id (dom/this watch)
+      (let [id (dom/this :watch)
             start (or (get-in @!state [id :start])
                       (:start initial-state))
             end (or (get-in @!state [id :end])
                     (:end initial-state))]
-        (js/console.log (dom/this :handleEnter))
         (motion
          {:defaultStyle {:value start}
           :style {:value (rm/spring end)}}

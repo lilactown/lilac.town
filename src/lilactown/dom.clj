@@ -21,3 +21,10 @@
 
 (defmacro children []
   `(children* ~'this))
+
+(defmacro set-this! [k v]
+  `(set$ ~'this (name ~k) ~v))
+
+(defmacro set-state! [f]
+  `(.setState ~'this
+      ~f))
