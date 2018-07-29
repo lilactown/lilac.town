@@ -116,7 +116,9 @@
                         :color "#371940"
                         :fontSize "10px"
                         ;; :opacity 0.5
-                        :boxShadow "2px 2px 3px rgba(100, 100, 100, .5)"}}
+                        ;; :boxShadow "2px 2px 3px rgba(100, 100, 100, .5)"
+                        :border 0
+                        }}
                props)
               label))
 
@@ -137,7 +139,7 @@
    (dom/div
     {:style {:position "absolute"
              :bottom -20
-             :left 0}}
+             :left 92}}
     (dom/div
      {:style {:display "flex"
               :opacity 0.6}}
