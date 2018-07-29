@@ -86,13 +86,8 @@
 
 (defn control [{:keys [on-click] :as props} label]
   (dom/button (merge
-               {:onClick on-click}
-               {:style {:backgroundColor "rgba(55, 25, 64, .1)"
-                        :margin "1px"
-                        :padding "2px 5px"
-                        :color "#371940"
-                        :fontSize "10px"
-                        :border 0}}
+               {:onClick on-click
+                :className "control"}
                props)
               label))
 

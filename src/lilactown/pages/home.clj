@@ -72,7 +72,17 @@
                   :border-radius "4px"
                   :color "#DCD0FF"
                   :font-size ".8rem"}
-      [:&:hover {:background-color "rgba(55, 25, 64, .7)"}]]]]])
+      [:&:hover {:background-color "rgba(55, 25, 64, .7)"}]]]]
+   [:.control
+    {:background-color "rgba(55, 25, 64, .1)"
+     :margin "1px"
+     :padding "2px 5px"
+     :color "#371940"
+     :font-size "10px"
+     :border 0}
+    [:&:active
+     {:background-color "rgba(55, 25, 64, 0.4)"
+      :color "white"}]]])
 
 (def star
   [:svg.star-glyph
