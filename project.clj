@@ -18,9 +18,13 @@
                  [clj-time "0.14.2"]
                  [org.clojure/core.async "0.4.474"]
                  [tick "0.3.5"]
-                 [thheller/shadow-cljs "2.4.24"]]
+                 ]
   :min-lein-version "2.0.0"
   :main ^:skip-aot lilactown.core
   :target-path "target/%s"
   :uberjar-name "lilactown.jar"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all}
+             :dev {:dependencies [[thheller/shadow-cljs "2.4.24"]]
+                   :source-paths ["src" "dev"]
+                   :repl-options {:init-ns user
+                                  :init (start!)}}})
