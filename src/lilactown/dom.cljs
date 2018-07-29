@@ -53,7 +53,9 @@
         (clj->js)))))
 
 (defn reactive-component
-  [{:keys [watch init] :as schema}]
+  [{:keys [watch init should-update]
+    :or {should-update (fn [_ _ _] true)}
+    :as schema}]
   (-> {:getInitialState
        (fn [] #js {})
 
@@ -62,20 +64,22 @@
          (let [id (random-uuid)]
            [println "[reactive] Mounting" id]
            (when init (init id this))
-           (add-watch
-            watch
-            id
-            (fn [_k _r old-v new-v]
-              (when (not= (old-v id) (new-v id))
-                (lilactown.dom/set-state!
-                 (fn [_]
-                   #js {:triggered true})))))
+           (when watch
+             (add-watch
+              watch
+              id
+              (fn [_k _r old-v new-v]
+                (when (should-update id old-v new-v)
+                  (lilactown.dom/set-state!
+                   (fn [_]
+                     #js {:triggered true}))))))
            (lilactown.dom/set-this! :watch-id id)))
 
        :componentWillUnmount
        (fn [this]
          (println "[reactive] Unmounting" (lilactown.dom/this :watch-id))
-         (remove-watch watch (lilactown.dom/this :watch-id)))}
+         (when watch
+           (remove-watch watch (lilactown.dom/this :watch-id))))}
       (merge schema)
       (component)))
 

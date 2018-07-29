@@ -1,7 +1,5 @@
 (ns lilactown.client.title
   (:require [lilactown.dom :as dom :refer [child-fn]]
-            [goog.object :as gobj]
-            [goog.functions :refer [debounce]]
             [react-dom :as react-dom]
             [react-motion :as rm]))
 
@@ -49,37 +47,19 @@
                 second))))
 
 (def toggle-animate
-  (dom/component
+  (dom/reactive-component
    {:displayName "toggle-animate"
-    :getInitialState
-    (fn [] #js {})
-
-    :componentDidMount
-    (fn [this]
-      (let [id (random-uuid)]
-        (swap-state! assoc id
-                     initial-state)
-        (add-watch
-         !state
-         id
-         (fn [_k _r old-v new-v]
-           (when (not= (old-v id) (new-v id))
-             (dom/set-state!
-              (fn [_]
-                #js {:start (get-in new-v [id :end])
-                     :end (get-in new-v [id :start])})))))
-        (dom/set-this! :watch id)))
-
-    :componentWillUnmount
-    (fn [this]
-      (println "Unmounting" (dom/this :watch))
-      (remove-watch !state (dom/this :watch)))
-
+    :watch !state
+    :init (fn [id]
+            (swap-state! assoc id initial-state))
+    :should-update
+    (fn [id old-v new-v]
+      (not= (old-v id) (new-v id)))
     :handleEnter
     (dom/send-this
      []
      (fn [this]
-       (let [id (dom/this :watch)]
+       (let [id (dom/this :watch-id)]
          (swap-state!
           (fn [cur]
             (assoc
@@ -87,10 +67,10 @@
              id
              {:end (get-in cur [id :start])
               :start (get-in cur [id :end])}))))))
-
     :render
     (fn [this]
-      (let [id (dom/this :watch)
+      (println "render")
+      (let [id (dom/this :watch-id)
             start (or (get-in @!state [id :start])
                       (:start initial-state))
             end (or (get-in @!state [id :end])
@@ -113,11 +93,25 @@
                         :padding "2px 5px"
                         :color "#371940"
                         :fontSize "10px"
-                        ;; :opacity 0.5
-                        ;; :boxShadow "2px 2px 3px rgba(100, 100, 100, .5)"
                         :border 0}}
                props)
               label))
+
+(def controls
+  (dom/reactive-component
+   {:displayName "Controls"
+    :watch !should-change
+    :render
+    (fn [this]
+      (dom/div
+       {:style {:display "flex"
+                :opacity 0.6}}
+       (control {:onClick (partial reset-state! :start)} "<")
+       (control {:onClick #(swap! !should-change not)}
+                (if @!should-change
+                  "■"
+                  "▶"))
+       (control {:onClick (partial reset-state! :end)} ">")))}))
 
 (defn title []
   (dom/div
@@ -137,15 +131,7 @@
     {:style {:position "absolute"
              :bottom -20
              :left 92}}
-    (dom/div
-     {:style {:display "flex"
-              :opacity 0.6}}
-     (control {:onClick (partial reset-state! :start)} "<")
-     (control {:onClick #(swap! !should-change not)}
-              (if @!should-change
-                "■"
-                "▶"))
-     (control {:onClick (partial reset-state! :end)} ">")))))
+    (controls))))
 
 (defn ^:export start! [node]
   (react-dom/render (title) node))
