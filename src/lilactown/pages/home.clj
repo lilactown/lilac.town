@@ -157,4 +157,4 @@
         [:h2 "Articles"]
         [:ul.articles
          (map article medium)]]]]
-      [:script {:src "assets/js/main.js"}]]]))
+      [:script {:src "assets/js/main.js" :async true :defer true}]]]))
