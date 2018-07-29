@@ -30,7 +30,7 @@
   (when @!should-change
     (apply swap! !state args)))
 
-(defn letter-motion
+(defn letter
   [first second on-enter style]
   (let [style (js->clj style :keywordize-keys true)]
     (if (> (:value style) 1)
@@ -46,9 +46,9 @@
                          :display "inline-block"}}
                 second))))
 
-(def toggle-animate
+(def ToggleAnimate
   (dom/reactive-component
-   {:displayName "toggle-animate"
+   {:displayName "ToggleAnimate"
     :watch !state
     :init (fn [id]
             (swap-state! assoc id initial-state))
@@ -81,8 +81,8 @@
                   (dom/this :handle-enter)))))}))
 
 (defn create-letter [[a b]]
-  (toggle-animate {:key [a b]}
-                  (partial letter-motion a b)))
+  (ToggleAnimate {:key [a b]}
+                  (partial letter a b)))
 
 (defn control [{:keys [on-click] :as props} label]
   (dom/button (merge
@@ -91,7 +91,7 @@
                props)
               label))
 
-(def controls
+(def Controls
   (dom/reactive-component
    {:displayName "Controls"
     :watch !should-change
@@ -125,7 +125,7 @@
     {:style {:position "absolute"
              :bottom -20
              :left 92}}
-    (controls))))
+    (Controls))))
 
 (defn ^:export start! [node]
   (react-dom/render (title) node))
