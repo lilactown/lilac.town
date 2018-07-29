@@ -55,7 +55,7 @@
     :should-update
     (fn [id old-v new-v]
       (not= (old-v id) (new-v id)))
-    :handleEnter
+    :handle-enter
     (dom/send-this
      []
      (fn [this]
@@ -69,7 +69,6 @@
               :start (get-in cur [id :end])}))))))
     :render
     (fn [this]
-      (println "render")
       (let [id (dom/this :watch-id)
             start (or (get-in @!state [id :start])
                       (:start initial-state))
@@ -79,7 +78,7 @@
          {:defaultStyle {:value start}
           :style {:value (rm/spring end)}}
          (partial (dom/children)
-                  (dom/this :handleEnter)))))}))
+                  (dom/this :handle-enter)))))}))
 
 (defn create-letter [[a b]]
   (toggle-animate {:key [a b]}
