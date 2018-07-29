@@ -60,7 +60,7 @@
              :width "3rem"
              :border-right "1px solid #3b3b3b"
              ;; :text-align "center"
-             }]
+}]
     [:.categories {:list-style "none"
                    :padding "0"
                    :margin "0"}
@@ -102,19 +102,19 @@
 
 (defn repo [{:keys [name url description createdAt updatedAt pushedAt stargazers
                     primaryLanguage]}]
-   [:div.repo
-    [:a {:href url :target "_blank"}
-     [:div.title [:strong name]
-      [:span.stars star (:totalCount stargazers)]]]
-    [:div.desc description]
-    [:div.bottom
-     [:div.display
-      [:div.lang
-       [:span.repo-lang-circle {:style (str "background: "
-                                            (get lang-color
-                                                 (:name primaryLanguage)
-                                                 "black"))}]
-       "  " (:name primaryLanguage)]]]])
+  [:div.repo
+   [:a {:href url :target "_blank"}
+    [:div.title [:strong name]
+     [:span.stars star (:totalCount stargazers)]]]
+   [:div.desc description]
+   [:div.bottom
+    [:div.display
+     [:div.lang
+      [:span.repo-lang-circle {:style (str "background: "
+                                           (get lang-color
+                                                (:name primaryLanguage)
+                                                "black"))}]
+      "  " (:name primaryLanguage)]]]])
 
 (defn article-category [name]
   [:li.category name])
@@ -125,8 +125,7 @@
    [:div.title
     [:div.text
      [:span [:a {:href link :target "_blank"}
-             title
-             ]]]
+             title]]]
     [:ul.categories (map article-category tags) [:li.category [:span.fas.fa-thumbs-up] " " claps]]]])
 
 (defn html [{:keys [github medium]}]
@@ -137,9 +136,11 @@
      [:head
       [:title "Will Acton"]
       [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
-              :rel "stylesheet"}]
+              :rel "preload"
+              :as "style"}]
       [:link {:href "https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab"
-              :rel "stylesheet"}]
+              :rel "preload"
+              :as "style"}]
       [:style
        (garden/css styles)]]
      [:body
@@ -149,12 +150,16 @@
          [:h1.title "lilac.town"]]
        ;; [:div.tag-line
        ;;  [:p "I develop software of all kinds. Some of it even works!"]]
-       [:div
-        [:h2 "Open source"]
-        [:div.repos
-         (map repo repos)]]
-       [:div
-        [:h2 "Articles"]
-        [:ul.articles
-         (map article medium)]]]]
+        [:div
+         [:h2 "Open source"]
+         [:div.repos
+          (map repo repos)]]
+        [:div
+         [:h2 "Articles"]
+         [:ul.articles
+          (map article medium)]]]]
+      [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
+              :rel "stylesheet"}]
+      [:link {:href "https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab"
+              :rel "stylesheet"}]
       [:script {:src "assets/js/main.js" :async true :defer true}]]]))
