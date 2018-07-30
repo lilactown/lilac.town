@@ -2,6 +2,7 @@
   (:require [garden.core :as garden]
             [garden.stylesheet :refer [at-media]]
             [garden.units :refer [px]]
+            [lilactown.client.core :as client]
             [clj-time.format :as f]
             [clj-time.coerce :as coerce]))
 
@@ -148,6 +149,10 @@
        [:div {:style "margin: 0 10px"}
         [:div#title
          [:h1.title "lilac.town"]]
+        (client/module {:module :title
+                        :init 'lilactown.client.title/start!
+                        :data {:testing 123}
+                        :ref "#title"})
        ;; [:div.tag-line
        ;;  [:p "I develop software of all kinds. Some of it even works!"]]
         [:div
@@ -164,4 +169,4 @@
               :rel "stylesheet"}]
       [:style
        (garden/css styles)]
-      [:script {:src "assets/js/main.js" :async true :defer true}]]]))
+      (client/main)]]))

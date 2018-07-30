@@ -24,7 +24,8 @@
   :target-path "target/%s"
   :uberjar-name "lilactown.jar"
   :profiles {:uberjar {:aot :all}
-             :dev {:dependencies [[thheller/shadow-cljs "2.4.24"]]
+             :dev {:dependencies [[thheller/shadow-cljs "2.4.24"]
+                                  [binaryage/devtools "0.9.10"]]
                    :source-paths ["src" "dev"]
                    :repl-options {:init-ns user
                                   :init (start!)}}})

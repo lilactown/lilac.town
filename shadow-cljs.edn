@@ -3,6 +3,9 @@
  :builds {:client {:target :browser
                    :output-dir "resources/public/assets/js"
                    :asset-path "/assets/js"
-                   :modules {:main {:entries [lilactown.client.core]}}
+                   :module-loader true
+                   :modules {:main {:entries [lilactown.client.core]}
+                             :title {:entries [lilactown.client.title]
+                                     :depends-on #{:main}}}
                    :compiler-options {:infer-externs :auto}
                    }}}
