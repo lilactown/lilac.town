@@ -13,6 +13,8 @@
 
 (def end-state {:start 2 :end 0})
 
+(def halfway (/ (- (:end initial-state) (:start initial-state)) 2))
+
 (defn reset-state!
   [key]
   (swap! !state
@@ -33,7 +35,7 @@
 (defn letter
   [first second on-enter style]
   (let [style (js->clj style :keywordize-keys true)]
-    (if (> (:value style) 1)
+    (if (> (:value style) halfway)
       (dom/span {:className "title"
                  :onMouseEnter on-enter
                  :style {:transform (str "rotate(" (/ (:value style) 2) "turn)")
@@ -127,5 +129,5 @@
              :left 92}}
     (Controls))))
 
-(defn ^:export start! [node]
+(defn ^{:export true} start! [node]
   (react-dom/render (title) node))

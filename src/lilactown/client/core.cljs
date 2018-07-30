@@ -14,9 +14,8 @@
         data (.-innerHTML node)]
     (.then (loader/load module)
            (fn []
-             (println [module] "load")
+             (println [module] "Loaded")
              (let [init-fn (goog/getObjectByName (ns-var->js init))]
-               (js/console.log (ns-var->js init) init-fn)
                (when init-fn
                  (init-fn (case dom-ref
                             ":self" node
