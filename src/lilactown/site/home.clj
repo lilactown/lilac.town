@@ -1,8 +1,12 @@
-(ns lilactown.pages.home
+(ns lilactown.site.home
   (:require [garden.core :as garden]
             [garden.stylesheet :refer [at-media]]
             [garden.units :refer [px]]
-            [lilactown.pages.home.format :as format]))
+            [clj-time.format :as f]
+            [clj-time.coerce :as coerce]))
+
+(defn article-date [d]
+  (f/unparse (f/formatter "MMM YYYY") (clj-time.coerce/from-long d)))
 
 (def styles
   [[:* {:box-sizing "border-box"}]
@@ -58,9 +62,7 @@
              :vertical-align "unset"
              :display "inline-block"
              :width "3rem"
-             :border-right "1px solid #3b3b3b"
-             ;; :text-align "center"
-}]
+             :border-right "1px solid #3b3b3b"}]
     [:.categories {:list-style "none"
                    :padding "0"
                    :margin "0"}
@@ -121,14 +123,14 @@
 
 (defn article [{:keys [title link created-at tags claps]}]
   [:li.article
-   [:div.date (format/article-date created-at)]
+   [:div.date (article-date created-at)]
    [:div.title
     [:div.text
      [:span [:a {:href link :target "_blank"}
              title]]]
     [:ul.categories (map article-category tags) [:li.category [:span.fas.fa-thumbs-up] " " claps]]]])
 
-(defn html [{:keys [github medium]}]
+(defn render [{:keys [github medium]}]
   (let [repos (get-in github [:data :viewer :pinnedRepositories :nodes])]
     [:html
      [:meta {:charset "UTF-8"}]
@@ -140,9 +142,7 @@
               :as "style"}]
       [:link {:href "https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab"
               :rel "preload"
-              :as "style"}]
-      [:style
-       (garden/css styles)]]
+              :as "style"}]]
      [:body
       [:div#main
        [:div {:style "margin: 0 10px"}
@@ -162,4 +162,6 @@
               :rel "stylesheet"}]
       [:link {:href "https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab"
               :rel "stylesheet"}]
+      [:style
+       (garden/css styles)]
       [:script {:src "assets/js/main.js" :async true :defer true}]]]))

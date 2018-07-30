@@ -1,5 +1,5 @@
-(ns lilactown.state
-  (:require [lilactown.data :as data]
+(ns lilactown.site.home.state
+  (:require [lilactown.site.home.data :as data]
             [lilactown.config :as config]
             [mount.core :refer [defstate]]
             [tick.core]
