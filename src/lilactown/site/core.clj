@@ -7,8 +7,7 @@
             [hiccup.core :refer [html]]
             [lilactown.site.home :as home]
             [lilactown.site.home.state :as state]
-            [lilactown.site.home.data :as data])
-  (:gen-class))
+            [lilactown.site.home.data :as data]))
 
 (defn home [request]
   {:status 200

@@ -1,6 +1,7 @@
 (ns lilactown.core
   (:require [lilactown.site.core :as site]
-            [mount.core :as mount]))
+            [mount.core :as mount])
+  (:gen-class))
 
 (comment (mount/start))
 
