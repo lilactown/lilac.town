@@ -18,7 +18,7 @@
                  [clj-time "0.14.2"]
                  [org.clojure/core.async "0.4.474"]
                  [tick "0.3.5"]
-                 ]
+                 [com.taoensso/timbre "4.10.0"]]
   :min-lein-version "2.0.0"
   :main ^:skip-aot lilactown.core
   :target-path "target/%s"
