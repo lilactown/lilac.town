@@ -1,5 +1,6 @@
 (ns lilactown.client.title
-  (:require [lilactown.dom :as dom :refer [child-fn]]
+  (:require [lilactown.dom :as dom]
+            [taoensso.timbre :as t]
             [react-dom :as react-dom]
             [react-motion :as rm]))
 
@@ -130,4 +131,5 @@
     (Controls))))
 
 (defn ^{:export true} start! [node]
+  (t/info "Title started")
   (react-dom/render (title) node))

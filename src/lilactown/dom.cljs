@@ -1,6 +1,7 @@
 (ns lilactown.dom
   (:require [react :as react]
             [goog.object :as gobj]
+            [taoensso.timbre :as t :include-macros true]
             [create-react-class :as create-react-class])
   (:require-macros [lilactown.dom]))
 
@@ -62,7 +63,8 @@
        :componentDidMount
        (fn [this]
          (let [id (random-uuid)]
-           [println "[reactive] Mounting" id]
+           ;; [println "[reactive] Mounting" id]
+           (t/debug "[reactive]" "Mounting" id)
            (when init (init id this))
            (when watch
              (add-watch
@@ -77,7 +79,7 @@
 
        :componentWillUnmount
        (fn [this]
-         (println "[reactive] Unmounting" (lilactown.dom/this :watch-id))
+         (t/debug "[reactive] Unmounting" (lilactown.dom/this :watch-id))
          (when watch
            (remove-watch watch (lilactown.dom/this :watch-id))))}
       (merge schema)
