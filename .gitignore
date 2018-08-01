@@ -14,3 +14,4 @@ resources/secrets.edn
 image.tar
 node_modules/
 .shadow-cljs
+.cpcache
