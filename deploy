@@ -1,5 +1,10 @@
 #!/bin/sh
 
-docker build -t lilactown/lilac.town . \
-       --build-arg GIT_COMMIT=$(git rev-parse --verify HEAD) && \
-docker push lilactown/lilac.town:latest
+if [ -z "$(git status --untracked-files=no --porcelain)" ]; then 
+    docker build -t lilactown/lilac.town . \
+           --build-arg GIT_COMMIT=$(git rev-parse --verify HEAD) && \
+        docker push lilactown/lilac.town:latest
+else
+    echo "Uncommitted changes! Not deploying."
+    exit 1
+fi
