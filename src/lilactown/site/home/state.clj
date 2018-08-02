@@ -1,11 +1,15 @@
 (ns lilactown.site.home.state
   (:require [lilactown.site.home.data :as data]
             [lilactown.config :as config]
-            [mount.core :refer [defstate]]
+            [mount.core :as mount :refer [defstate]]
             [tick.core]
             [tick.timeline]
             [tick.clock]
             [tick.schedule]))
+
+(defstate version
+  :start (-> (mount/args)
+             :version))
 
 ;; The request to the medium API is very slow
 ;; sometimes taking 1-6 seconds!!

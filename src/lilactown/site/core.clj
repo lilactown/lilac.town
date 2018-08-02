@@ -10,20 +10,17 @@
             [lilactown.site.home.state :as state]
             [lilactown.site.home.data :as data]))
 
-(defstate version
-  :start (-> (mount/args)
-                 :version))
-
 (defn home [request]
   {:status 200
    :headers {"Content-Type" "text/html"}
    :body (html (home/render {:github @state/github
-                             :medium @state/medium}))})
+                             :medium @state/medium
+                             :version state/version}))})
 
-(defn version-handler [request]
+(defn version [request]
   {:status 200
    :headers {"Content-Type" "text/plain"}
-   :body version})
+   :body state/version})
 
 (def app (-> (ring/ring-handler
               (ring/router
@@ -41,3 +38,6 @@
   :start (->> (mount/args)
               (start))
   :stop (.stop server))
+
+#_(mount/stop)
+#_(mount/start)

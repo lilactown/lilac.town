@@ -18,6 +18,9 @@
    [:a {:color "#371940"
         :text-decoration "none"}
     [:&:hover {:color "#9a549a"}]]
+   [:#version {:float "right"
+               :font-size "0.8em"
+               :padding-right "10px"}]
    [:#main {:max-width "670px"
             :margin "40px auto"}]
    [:.repos {:display "grid"
@@ -131,7 +134,7 @@
              title]]]
     [:ul.categories (map article-category tags) [:li.category [:span.fas.fa-thumbs-up] " " claps]]]])
 
-(defn render [{:keys [github medium]}]
+(defn render [{:keys [github medium version]}]
   (let [repos (get-in github [:data :viewer :pinnedRepositories :nodes])]
     [:html
      [:meta {:charset "UTF-8"}]
@@ -162,7 +165,11 @@
         [:div
          [:h2 "Articles"]
          [:ul.articles
-          (map article medium)]]]]
+          (map article medium)]]]
+       [:div#version
+        [:a
+         {:href (str "https://github.com/Lokeh/lilac.town/commit/" version)}
+         version]]]
       [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
               :rel "stylesheet"}]
       [:link {:href "https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab"
