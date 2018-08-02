@@ -20,6 +20,7 @@
     [:&:hover {:color "#9a549a"}]]
    [:#version {:float "right"
                :font-size "0.8em"
+               :padding-top "10px"
                :padding-right "10px"}]
    [:#main {:max-width "670px"
             :margin "40px auto"}]

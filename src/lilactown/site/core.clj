@@ -26,7 +26,7 @@
               (ring/router
                ["/"
                 ["" {:get {:handler home}}]
-                ["version" {:get {:handler version-handler}}]]))
+                ["version" {:get {:handler version}}]]))
              (wrap-params)
              (wrap-resource "public")
              (wrap-content-type)))
