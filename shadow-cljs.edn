@@ -1,5 +1,7 @@
 ;; shadow-cljs configuration
-{;; :lein {:profile "+client"}
+{;; :dependencies
+ ;; [[com.taoensso/timbre "4.10.0"]
+ ;;  [binaryage/devtools "0.9.10"]]
  :builds {:client {:target :browser
                    :output-dir "resources/public/assets/js"
                    :asset-path "/assets/js"
