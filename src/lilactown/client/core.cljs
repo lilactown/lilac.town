@@ -50,7 +50,8 @@
 (defn ^{:export true
         :dev/after-load true}
   start! []
-  (t/set-level! :fatal)
+  (when (not js/goog.DEBUG)
+    (t/set-level! :fatal))
   (load!)
   (t/info "Started"))
 
