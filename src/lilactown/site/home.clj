@@ -18,10 +18,19 @@
    [:a {:color "#371940"
         :text-decoration "none"}
     [:&:hover {:color "#9a549a"}]]
-   [:#version {:float "right"
-               :font-size "0.8em"
-               :padding-top "10px"
-               :padding-right "10px"}]
+   [:#version
+    {:position "absolute"
+     :bottom "0"
+     :right "0"
+     :font-size "0.7em"
+     :opacity "0.6"
+     :padding-bottom "5px"
+     :padding-right "10px"}
+    (at-media
+     {:screen true :max-width (px 425)}
+     [:& {:float "right"
+          :padding-top "10px"
+          :position "initial"}])]
    [:#main {:max-width "670px"
             :margin "40px auto"}]
    [:.repos {:display "grid"
