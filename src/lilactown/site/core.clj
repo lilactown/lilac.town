@@ -4,10 +4,15 @@
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.params :refer [wrap-params]]
+            [reitit.ring :as ring]
             [hiccup.core :refer [html]]
             [lilactown.site.home :as home]
             [lilactown.site.home.state :as state]
             [lilactown.site.home.data :as data]))
+
+(defstate version
+  :start (-> (mount/args)
+                 :version))
 
 (defn home [request]
   {:status 200
@@ -15,7 +20,16 @@
    :body (html (home/render {:github @state/github
                              :medium @state/medium}))})
 
-(def app (-> home
+(defn version-handler [request]
+  {:status 200
+   :headers {"Content-Type" "text/plain"}
+   :body version})
+
+(def app (-> (ring/ring-handler
+              (ring/router
+               ["/"
+                ["" {:get {:handler home}}]
+                ["version" {:get {:handler version-handler}}]]))
              (wrap-params)
              (wrap-resource "public")
              (wrap-content-type)))

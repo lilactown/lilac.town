@@ -5,8 +5,9 @@
 
 (comment (mount/start))
 
-(defn parse-args [[port]]
-  {:port (Integer. port)})
+(defn parse-args [[port version]]
+  {:port (Integer. port)
+   :version version})
 
 (defn -main [& args]
   (println args)
