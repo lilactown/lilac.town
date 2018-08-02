@@ -1,7 +1,6 @@
 (ns lilactown.site.core
   (:require [mount.core :as mount :refer [defstate]]
             [ring.adapter.jetty :as j]
-            [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.params :refer [wrap-params]]
             [reitit.ring :as ring]
@@ -26,10 +25,12 @@
               (ring/router
                ["/"
                 ["" {:get {:handler home}}]
-                ["version" {:get {:handler version}}]]))
-             (wrap-params)
-             (wrap-resource "public")
-             (wrap-content-type)))
+                ["version" {:get {:handler version}}]]
+               {:data {:middleware [wrap-params
+                                    wrap-content-type]}})
+              (ring/routes
+               (ring/create-resource-handler {:path "/" :root "/public"})
+               (ring/create-default-handler)))))
 
 (defn start [{:keys [port]}]
   (j/run-jetty #'app {:port (or port 3000) :join? false}))
