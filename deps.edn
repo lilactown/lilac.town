@@ -1,10 +1,9 @@
-{:deps {}
+{:deps {org.clojure/clojure {:mvn/version "1.9.0"}}
 
  :paths ["src" "resources"]
 
  :aliases
- {:server {:extra-deps {org.clojure/clojure {:mvn/version "1.9.0"}
-                        mount {:mvn/version "0.1.12"}
+ {:server {:extra-deps {mount {:mvn/version "0.1.12"}
                         clj-time {:mvn/version "0.14.2"}
                         tick {:mvn/version "0.3.5"}
                         ring/ring-jetty-adapter {:mvn/version "1.6.3"}
@@ -29,5 +28,5 @@
   {:extra-deps
    {pack/pack.alpha
     {:git/url "git@github.com:juxt/pack.alpha.git"
-     :sha     "e6d0691c5f58135e1ef6fb1c9dda563611d36205"}}
-   :main-opts ["-m" "mach.pack.alpha.capsule" "deps.edn" "dist/lilactown.jar"]}}}
+     :sha     "1d455f6c591f440560c57a29e6d930004d735dcf"}}
+   :main-opts ["-m" "mach.pack.alpha.capsule" "-d" "dist/lilactown.jar" "-m" "lilactown.core"]}}}
