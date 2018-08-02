@@ -1,9 +1,9 @@
 #!/bin/sh
 
-if [ -z "$(git status --untracked-files=no --porcelain)" ]; then 
+if [ -z "$(git status --untracked-files=no --porcelain)" ]; then
     docker build -t lilactown/lilac.town . \
            --build-arg GIT_COMMIT=$(git rev-parse --verify HEAD) && \
-        docker push lilactown/lilac.town:latest
+    docker push lilactown/lilac.town:latest
 else
     echo "Uncommitted changes! Not deploying."
     exit 1
