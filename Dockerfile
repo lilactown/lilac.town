@@ -1,4 +1,7 @@
-FROM clojure:alpine
+FROM clojure:tools-deps-alpine
+
+# Install npm
+RUN apk add --update nodejs nodejs-npm
 
 RUN mkdir -p /usr/src/app
 
@@ -8,8 +11,10 @@ COPY . /usr/src/app
 
 RUN npm install
 
-RUN lein run -m shadow.cljs.devtools.cli release client
+RUN clojure -A:client:client/build
 
-RUN lein uberjar
+# RUN clojure -A:uberjar
 
-CMD ["java", "-jar", "target/uberjar/lilactown.jar", "3001"]
+CMD ["clojure", "-A:server:client", "-m", "lilactown.core", "3001"]
+
+# CMD ["java", "-jar", "dist/lilactown.jar"]
