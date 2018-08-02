@@ -1,0 +1,4 @@
+.shadow-cljs
+.git
+dist/
+target/

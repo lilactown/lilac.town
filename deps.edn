@@ -27,6 +27,11 @@
   :uberjar
   {:extra-deps
    {pack/pack.alpha
-    {:git/url "git@github.com:juxt/pack.alpha.git"
-     :sha     "1d455f6c591f440560c57a29e6d930004d735dcf"}}
-   :main-opts ["-m" "mach.pack.alpha.capsule" "-d" "dist/lilactown.jar" "-m" "lilactown.core"]}}}
+    ;; {:local/root "/Users/will/Code/pack.alpha"}
+    {:git/url "https://github.com/Lokeh/pack.alpha.git"
+     :sha     "c444ae3af083b0bfa68160daac576607232f556c"}}
+   :main-opts ["-m" "mach.pack.alpha.capsule" "dist/lilactown.jar"
+               "-a" ":server" "-m" "lilactown.core"]}}
+
+ :mvn/repos {"central" {:url "https://repo1.maven.org/maven2/"}
+             "clojars" {:url "https://repo.clojars.org/"}}}

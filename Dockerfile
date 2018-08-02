@@ -13,8 +13,6 @@ RUN npm install
 
 RUN clojure -A:client:client/build
 
-# RUN clojure -A:uberjar
+RUN clojure -A:uberjar
 
-CMD ["clojure", "-A:server:client", "-m", "lilactown.core", "3001"]
-
-# CMD ["java", "-jar", "dist/lilactown.jar"]
+CMD ["java", "-jar", "dist/lilactown.jar", "3001"]
