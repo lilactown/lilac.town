@@ -5,7 +5,10 @@
             [create-react-class :as create-react-class])
   (:require-macros [lilactown.dom]))
 
-(defn factory [component]
+(defn factory
+  "Takes a React component, and creates a function that returns
+  a new React element"
+  [component]
   (let [f (react/createFactory component)]
     (fn [props & children]
       (if (map? props)
@@ -33,20 +36,29 @@
 
 (def set$ gobj/set)
 
-(defn props* [this & keys]
+(defn props*
+  "Takes a component and a variable number of string keys, and returns the value
+  in the props object on the component at the end of the path."
+  [this & keys]
   (apply get-in$ this "props" keys))
 
-(defn children* [this]
+(defn children*
+  "Takes a component and returns the \"children\" prop"
+  [this]
   (props* this "children"))
 
-(defn state* [this & keys]
+(defn state*
+  "Takes a component and a variable number of string keys, and returns the value
+  in the state object on the component at the end of the path."
+  [this & keys]
   (apply get-in$ "state" keys))
 
 (defn component
-  [schema]
+  "Creates a new component factory from a given React component definition."
+  [definition]
   (factory
    (create-react-class
-    (-> schema
+    (-> definition
         (bind-method :getInitialState)
         (bind-method :componentDidMount)
         (bind-method :componentWillUnmount)
@@ -54,10 +66,14 @@
         (clj->js)))))
 
 (defn reactive-component
-  [{:keys [watch init should-update]
+  "Creates a new ReactiveComponent factory from a given React component
+  definition."
+  [{:keys [watch init should-update
+           display-name]
     :or {should-update (fn [_ _ _] true)}
-    :as schema}]
-  (-> {:getInitialState
+    :as definition}]
+  (-> {:displayName (or display-name "ReactiveComponent")
+       :getInitialState
        (fn [] #js {})
 
        :componentDidMount
@@ -82,7 +98,7 @@
          (t/debug "[reactive] Unmounting" (lilactown.dom/this :watch-id))
          (when watch
            (remove-watch watch (lilactown.dom/this :watch-id))))}
-      (merge schema)
+      (merge definition)
       (component)))
 
 (def div (factory "div"))
