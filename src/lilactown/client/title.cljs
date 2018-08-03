@@ -4,11 +4,11 @@
             [react-dom :as react-dom]
             [react-motion :as rm]))
 
-(def motion (dom/factory rm/Motion))
+(def Motion (dom/factory rm/Motion))
 
 (def !state (atom {}))
 
-(def !should-change (atom true))
+(defonce !should-change (atom true))
 
 (def initial-state {:start 0 :end 2})
 
@@ -77,7 +77,7 @@
                       (:start initial-state))
             end (or (get-in @!state [id :end])
                     (:end initial-state))]
-        (motion
+        (Motion
          {:defaultStyle {:value start}
           :style {:value (rm/spring end)}}
          (partial (dom/children)
