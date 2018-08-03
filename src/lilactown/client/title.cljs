@@ -28,6 +28,9 @@
                         :end end-state)])
                  cur)))))
 
+(defn initial-state! [id]
+  (swap! !state assoc id initial-state))
+
 (defn swap-state!
   [& args]
   (when @!should-change
@@ -54,7 +57,7 @@
    {:displayName "ToggleAnimate"
     :watch !state
     :init (fn [id]
-            (swap-state! assoc id initial-state))
+            (initial-state! id))
     :should-update
     (fn [id old-v new-v]
       (not= (old-v id) (new-v id)))
