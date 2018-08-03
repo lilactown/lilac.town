@@ -79,25 +79,26 @@
        :componentDidMount
        (fn [this]
          (let [id (random-uuid)]
-           ;; [println "[reactive] Mounting" id]
            (t/debug "[reactive]" "Mounting" id)
            (when init (init id this))
            (when watch
-             (add-watch
-              watch
-              id
-              (fn [_k _r old-v new-v]
-                (when (should-update id old-v new-v)
-                  (lilactown.dom/set-state!
-                   (fn [_]
-                     #js {:triggered true}))))))
+             (doseq [w watch]
+               (add-watch
+                w
+                id
+                (fn [_k _r old-v new-v]
+                  (when (should-update id old-v new-v)
+                    (lilactown.dom/set-state!
+                     (fn [_]
+                       #js {:triggered true})))))))
            (lilactown.dom/set-this! :watch-id id)))
 
        :componentWillUnmount
        (fn [this]
          (t/debug "[reactive] Unmounting" (lilactown.dom/this :watch-id))
          (when watch
-           (remove-watch watch (lilactown.dom/this :watch-id))))}
+           (doseq [w watch]
+             (remove-watch w (lilactown.dom/this :watch-id)))))}
       (merge definition)
       (component)))
 
