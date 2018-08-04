@@ -17,7 +17,7 @@
   (let [this (gensym 'this)]
     `(fn ~args
        (~'this-as ~this
-        ~(when (count args)
+        ~(if (count args)
            `(apply ~f ~this ~@args)
            `(~f ~this))))))
 
