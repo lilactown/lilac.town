@@ -67,7 +67,18 @@
 
 (defn reactive-component
   "Creates a new ReactiveComponent factory from a given React component
-  definition."
+  definition. Special methods/properties are:
+
+   - :watch - a map of key-values where values are the atoms to watch and
+              reactively re-render
+
+   - :init - a function called before the watches are added to the atoms.
+             Gets passed in the uuid generated for the element and a reference
+             to the component.
+
+   - :should-update - a function that is passed in the element uuid, old value
+                      of the atom and new value of the atom - returns a boolean
+                      discerning whether the component should update or not."
   [{:keys [watch init should-update
            display-name]
     :or {should-update (fn [_ _ _] true)}
@@ -80,7 +91,7 @@
            (t/debug "[reactive]" "Mounting" id)
            (when init (init id this))
            (when watch
-             (doseq [w watch]
+             (doseq [[k w] watch]
                (add-watch
                 w
                 id
