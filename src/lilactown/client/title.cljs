@@ -2,6 +2,7 @@
   (:require [lilactown.react.dom :as dom]
             [lilactown.react :as r]
             [taoensso.timbre :as t]
+            [react :as react]
             [react-dom :as react-dom]
             [react-motion :as rm]))
 
@@ -16,6 +17,24 @@
 (def end-state {:start 2 :end 0})
 
 (def halfway (/ (- (:end initial-state) (:start initial-state)) 2))
+
+(def atom-context (.createContext react))
+
+(defn atom-provider [a]
+  (let [Provider (dom/factory (.-Provider atom-context))]
+    (dom/reactive-component
+     {:watch {:av a}
+
+      :render
+      (fn [this {:keys [av]}]
+        (Provider
+         {:value av}
+         (dom/children)))})))
+
+(def ToggleProvider (atom-provider !should-change))
+
+(def AtomConsumer (dom/factory (.-Consumer atom-context)))
+
 
 (defn reset-state!
   [key]
@@ -96,19 +115,20 @@
                props)
               label))
 
-(r/defreactive Controls
-  :watch (fn [this] {:should-change? !should-change})
-  :render
-  (fn [this {:keys [should-change?]}]
-    (dom/div
-     {:style {:display "flex"
-              :opacity 0.6}}
-     (control {:onClick (partial reset-state! :end)} "<")
-     (control {:onClick #(swap! !should-change not)}
-              (if should-change?
-                "■"
-                "▶"))
-     (control {:onClick (partial reset-state! :start)} ">"))))
+(def Controls
+  (dom/factory
+   (fn []
+     (AtomConsumer
+      (fn [should-change?]
+            (dom/div
+             {:style {:display "flex"
+                      :opacity 0.6}}
+             (control {:onClick (partial reset-state! :end)} "<")
+             (control {:onClick #(swap! !should-change not)}
+                      (if should-change?
+                        "■"
+                        "▶"))
+             (control {:onClick (partial reset-state! :start)} ">")))))))
 
 (defn title []
   (dom/div
@@ -128,7 +148,8 @@
     {:style {:position "absolute"
              :bottom -20
              :left 92}}
-    (Controls))))
+    (ToggleProvider
+     (Controls)))))
 
 (defn ^{:export true} start! [node]
   (t/info "Title started")
