@@ -69,8 +69,8 @@
   "Creates a new ReactiveComponent factory from a given React component
   definition. Special methods/properties are:
 
-   - :watch - a map of key-values where values are the atoms to watch and
-              reactively re-render
+   - :watch - a fn that returns a map of key-values where values are the atoms
+              to watch and reactively re-render
 
    - :init - a function called before the watches are added to the atoms.
              Gets passed in the uuid generated for the element and a reference
@@ -81,7 +81,7 @@
                       discerning whether the component should update or not."
   [{:keys [watch init should-update
            display-name]
-    :or {should-update (fn [_ _ _] true)}
+    :or {should-update (fn [_ _ _ _] true)}
     :as definition}]
   (-> {:displayName (or display-name "ReactiveComponent")
 
@@ -91,7 +91,7 @@
            (t/debug "[reactive]" "Mounting" id)
            (when init (init id this))
            (when watch
-             (doseq [[k w] watch]
+             (doseq [[k w] (watch this)]
                (add-watch
                 w
                 id
@@ -104,14 +104,14 @@
        (fn [this]
          (t/debug "[reactive] Unmounting" (lilactown.dom/this :watch-id))
          (when watch
-           (doseq [[k w] watch]
+           (doseq [[k w] (watch this)]
              (remove-watch w (lilactown.dom/this :watch-id)))))}
       (merge definition)
       (merge {:render
               (fn [this]
                 ((:render definition) this
                  ;; deref all the atoms in the watch map
-                 (reduce-kv #(assoc %1 %2 @%3) {} watch)))})
+                 (reduce-kv #(assoc %1 %2 @%3) {} (watch this))))})
       (component)))
 
 (def div (factory "div"))

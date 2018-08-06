@@ -55,7 +55,7 @@
 (def ToggleAnimate
   (dom/reactive-component
    {:displayName "ToggleAnimate"
-    :watch {:letter-state !state}
+    :watch (fn [this] {:letter-state !state})
     :init (fn [id]
             (initial-state! id))
     :should-update
@@ -100,7 +100,7 @@
 (def Controls
   (dom/reactive-component
    {:displayName "Controls"
-    :watch {:should-change? !should-change}
+    :watch (fn [this] {:should-change? !should-change})
     :render
     (fn [this {:keys [should-change?]}]
       (dom/div
