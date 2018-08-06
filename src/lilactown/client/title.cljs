@@ -20,18 +20,21 @@
 
 (def atom-context (.createContext react))
 
-(defn atom-provider [a]
-  (let [Provider (dom/factory (.-Provider atom-context))]
-    (dom/reactive-component
-     {:watch {:av a}
+(defn atom-provider
+  ([a] (atom-provider a (fn [_ _ _ _] true)))
+  ([a should-update]
+   (let [Provider (dom/factory (.-Provider atom-context))]
+     (dom/reactive-component
+      {:watch {:av a}
 
-      :render
-      (fn [this {:keys [av]}]
-        (Provider
-         {:value {:value av
-                  :swap! (partial swap! a)
-                  :reset! (partial reset! a)}}
-         (dom/children)))})))
+       :should-update should-update
+       :render
+       (fn [this {:keys [av]}]
+         (Provider
+          {:value {:value av
+                   :swap! (partial swap! a)
+                   :reset! (partial reset! a)}}
+          (dom/children)))}))))
 
 (def ToggleProvider (atom-provider !should-change))
 
@@ -74,37 +77,41 @@
                          :display "inline-block"}}
                 second))))
 
-(r/defreactive ToggleAnimate
-  :watch (fn [this] {:letter-state !state})
-  :init (fn [id]
-          (initial-state! id))
-  :should-update
-  (fn [_ old-v new-v id]
-    (not= (old-v id) (new-v id)))
-  :handle-enter
-  (r/send-this
-   []
-   (fn [this]
-     (let [id (r/this :watch-id)]
-       (swap-state!
-        (fn [cur]
-          (assoc
-           cur
-           id
-           {:end (get-in cur [id :start])
-            :start (get-in cur [id :end])}))))))
-  :render
-  (fn [this {:keys [letter-state]}]
-    (let [id (r/this :watch-id)
-          start (or (get-in letter-state [id :start])
-                    (:start initial-state))
-          end (or (get-in letter-state [id :end])
-                  (:end initial-state))]
-      (Motion
-       {:defaultStyle {:value start}
-        :style {:value (rm/spring end)}}
-       (partial (r/children)
-                (r/this :handle-enter))))))
+(def ToggleAnimate
+  ;; (atom-provider )
+  (dom/reactive-component
+   {:displayName "ToggleAnimate"
+    :watch {:letter-state !state}
+    :init (fn [id]
+            (initial-state! id))
+    :should-update
+    (fn [_ old-v new-v id]
+      (not= (old-v id) (new-v id)))
+    :handle-enter
+    (dom/send-this
+     []
+     (fn [this]
+       (let [id (dom/this :watch-id)]
+         (swap-state!
+          (fn [cur]
+            (assoc
+             cur
+             id
+             {:end (get-in cur [id :start])
+              :start (get-in cur [id :end])}))))))
+    :render
+    (fn [this {:keys [letter-state]}]
+      (let [id (dom/this :watch-id)
+            start (or (get-in letter-state [id :start])
+                      (:start initial-state))
+            end (or (get-in letter-state [id :end])
+                    (:end initial-state))]
+        (Motion
+         {:defaultStyle {:value start}
+          :style {:value (rm/spring end)}}
+         (partial (dom/children)
+                  (dom/this :handle-enter)))))})
+  )
 
 (defn create-letter [[a b]]
   (ToggleAnimate {:key [a b]}
