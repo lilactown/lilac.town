@@ -96,7 +96,7 @@
                 w
                 id
                 (fn [_k _r old-v new-v]
-                  (when (should-update id old-v new-v)
+                  (when (should-update k old-v new-v id)
                     (. this forceUpdate))))))
            (lilactown.dom/set-this! :watch-id id)))
 

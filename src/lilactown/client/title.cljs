@@ -59,7 +59,7 @@
     :init (fn [id]
             (initial-state! id))
     :should-update
-    (fn [id old-v new-v]
+    (fn [_ old-v new-v id]
       (not= (old-v id) (new-v id)))
     :handle-enter
     (dom/send-this
