@@ -1,10 +1,9 @@
 (ns lilactown.client.title
-  (:require ;; [lilactown.dom :as dom]
-   [lilactown.react.dom :as dom]
-   [lilactown.react :as r]
-   [taoensso.timbre :as t]
-   [react-dom :as react-dom]
-   [react-motion :as rm]))
+  (:require [lilactown.react.dom :as dom]
+            [lilactown.react :as r]
+            [taoensso.timbre :as t]
+            [react-dom :as react-dom]
+            [react-motion :as rm]))
 
 (def Motion (r/factory rm/Motion))
 
@@ -90,7 +89,7 @@
 
 (defn create-letter [[a b]]
   (ToggleAnimate {:key [a b]}
-                  (partial letter a b)))
+                 (partial letter a b)))
 
 (defn control [{:keys [on-click] :as props} label]
   (dom/button (merge
