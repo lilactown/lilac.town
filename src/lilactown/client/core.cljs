@@ -2,8 +2,7 @@
   (:require [shadow.loader :as loader]
             [cljs.reader]
             [clojure.string :as s]
-            [taoensso.timbre :as t]
-            [lilactown.dom :include-macros true]))
+            [taoensso.timbre :as t]))
 
 (defonce loaded (atom {}))
 

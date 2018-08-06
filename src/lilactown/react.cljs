@@ -1,9 +1,9 @@
-(ns lilactown.dom
+(ns lilactown.react
   (:require [react :as react]
             [goog.object :as gobj]
             [taoensso.timbre :as t :include-macros true]
             [create-react-class :as create-react-class])
-  (:require-macros [lilactown.dom]))
+  (:require-macros [lilactown.react]))
 
 (defn factory
   "Takes a React component, and creates a function that returns
@@ -30,7 +30,7 @@
   (assoc-when
    m
    (m k)
-   k (lilactown.dom/send-this [] (m k))))
+   k (lilactown.react/send-this [] (m k))))
 
 (def get-in$ gobj/getValueByKeys)
 
@@ -98,14 +98,14 @@
                 (fn [_k _r old-v new-v]
                   (when (should-update k old-v new-v id)
                     (. this forceUpdate))))))
-           (lilactown.dom/set-this! :watch-id id)))
+           (lilactown.react/set-this! :watch-id id)))
 
        :componentWillUnmount
        (fn [this]
-         (t/debug "[reactive] Unmounting" (lilactown.dom/this :watch-id))
+         (t/debug "[reactive] Unmounting" (lilactown.react/this :watch-id))
          (when watch
            (doseq [[k w] (watch this)]
-             (remove-watch w (lilactown.dom/this :watch-id)))))}
+             (remove-watch w (lilactown.react/this :watch-id)))))}
       (merge definition)
       (merge {:render
               (fn [this]
@@ -114,10 +114,3 @@
                  (reduce-kv #(assoc %1 %2 @%3) {} (watch this))))})
       (component)))
 
-(def div (factory "div"))
-
-(def h1 (factory "h1"))
-
-(def span (factory "span"))
-
-(def button (factory "button"))

@@ -1,10 +1,12 @@
 (ns lilactown.client.title
-  (:require [lilactown.dom :as dom]
-            [taoensso.timbre :as t]
-            [react-dom :as react-dom]
-            [react-motion :as rm]))
+  (:require ;; [lilactown.dom :as dom]
+   [lilactown.react.dom :as dom]
+   [lilactown.react :as r]
+   [taoensso.timbre :as t]
+   [react-dom :as react-dom]
+   [react-motion :as rm]))
 
-(def Motion (dom/factory rm/Motion))
+(def Motion (r/factory rm/Motion))
 
 (def !state (atom {}))
 
@@ -53,7 +55,7 @@
                 second))))
 
 (def ToggleAnimate
-  (dom/reactive-component
+  (r/reactive-component
    {:displayName "ToggleAnimate"
     :watch (fn [this] {:letter-state !state})
     :init (fn [id]
@@ -62,10 +64,10 @@
     (fn [_ old-v new-v id]
       (not= (old-v id) (new-v id)))
     :handle-enter
-    (dom/send-this
+    (r/send-this
      []
      (fn [this]
-       (let [id (dom/this :watch-id)]
+       (let [id (r/this :watch-id)]
          (swap-state!
           (fn [cur]
             (assoc
@@ -75,7 +77,7 @@
               :start (get-in cur [id :end])}))))))
     :render
     (fn [this {:keys [letter-state]}]
-      (let [id (dom/this :watch-id)
+      (let [id (r/this :watch-id)
             start (or (get-in letter-state [id :start])
                       (:start initial-state))
             end (or (get-in letter-state [id :end])
@@ -83,8 +85,8 @@
         (Motion
          {:defaultStyle {:value start}
           :style {:value (rm/spring end)}}
-         (partial (dom/children)
-                  (dom/this :handle-enter)))))}))
+         (partial (r/children)
+                  (r/this :handle-enter)))))}))
 
 (defn create-letter [[a b]]
   (ToggleAnimate {:key [a b]}
@@ -98,7 +100,7 @@
               label))
 
 (def Controls
-  (dom/reactive-component
+  (r/reactive-component
    {:displayName "Controls"
     :watch (fn [this] {:should-change? !should-change})
     :render

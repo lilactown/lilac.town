@@ -1,4 +1,4 @@
-(ns lilactown.dom)
+(ns lilactown.react)
 
 (defmacro child-fn
   "A helper macro for using function-as-children in React. Pass in expected
