@@ -54,7 +54,6 @@
                 second))))
 
 (r/defreactive ToggleAnimate
-  :displayName "ToggleAnimate"
   :watch (fn [this] {:letter-state !state})
   :init (fn [id]
           (initial-state! id))
@@ -98,7 +97,6 @@
               label))
 
 (r/defreactive Controls
-  :displayName "Controls"
   :watch (fn [this] {:should-change? !should-change})
   :render
   (fn [this {:keys [should-change?]}]
