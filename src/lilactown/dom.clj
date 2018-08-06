@@ -17,9 +17,7 @@
   (let [this (gensym 'this)]
     `(fn ~args
        (~'this-as ~this
-        ~(if (count args)
-           `(apply ~f ~this ~@args)
-           `(~f ~this))))))
+        (~f ~this ~@args)))))
 
 (defmacro this
   "A helper macro for obtaining a property or method defined on a component
