@@ -117,21 +117,19 @@
                props)
               label))
 
-(def Controls
-  (dom/factory
-   (fn []
-     (AtomConsumer
-      (dom/child-fn
-       [{should-change? :value swap! :swap! :as value}]
-       (dom/div
-        {:style {:display "flex"
-                 :opacity 0.6}}
-        (control {:onClick (partial reset-state! :end)} "<")
-        (control {:onClick #(swap! not)}
-                 (if should-change?
-                   "■"
-                   "▶"))
-        (control {:onClick (partial reset-state! :start)} ">")))))))
+(defn controls []
+  (AtomConsumer
+   (dom/child-fn
+    [{should-change? :value swap! :swap! :as value}]
+    (dom/div
+     {:style {:display "flex"
+              :opacity 0.6}}
+     (control {:onClick (partial reset-state! :end)} "<")
+     (control {:onClick #(swap! not)}
+              (if should-change?
+                "■"
+                "▶"))
+     (control {:onClick (partial reset-state! :start)} ">")))))
 
 (defn title []
   (dom/div
@@ -152,7 +150,7 @@
              :bottom -20
              :left 92}}
     (ToggleProvider
-     (Controls)))))
+     (controls)))))
 
 (defn ^{:export true} start! [node]
   (t/info "Title started")
