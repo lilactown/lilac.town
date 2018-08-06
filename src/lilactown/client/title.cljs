@@ -6,13 +6,9 @@
             [react-dom :as react-dom]
             [react-motion :as rm]))
 
-(def Motion (r/factory rm/Motion))
+;; Setup
 
-(def initial-state {:start 0 :end 2})
-
-(def end-state {:start 2 :end 0})
-
-(def halfway (/ (- (:end initial-state) (:start initial-state)) 2))
+(def Motion (dom/factory rm/Motion))
 
 (def toggle-context (.createContext react))
 
@@ -40,6 +36,15 @@
 (def LettersConsumer
   (dom/factory (.-Consumer letters-context)))
 
+
+;; Biz logic
+
+(def ^:const initial-state {:start 0 :end 2})
+
+(def ^:const end-state {:start 2 :end 0})
+
+(def halfway (/ (- (:end initial-state) (:start initial-state)) 2))
+
 (defn reset-state!
   [state key]
   (swap! state
@@ -59,6 +64,9 @@
   [state should-change? & args]
   (when should-change?
     (apply swap! state args)))
+
+
+;; Render
 
 (defn letter
   [first second on-enter style]
