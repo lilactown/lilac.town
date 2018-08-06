@@ -56,14 +56,14 @@
 (defn component
   "Creates a new component factory from a given React component definition."
   [definition]
-  (factory
-   (create-react-class
-    (-> definition
-        (bind-method :getInitialState)
-        (bind-method :componentDidMount)
-        (bind-method :componentWillUnmount)
-        (bind-method :render)
-        (clj->js)))))
+  (-> definition
+      (bind-method :getInitialState)
+      (bind-method :componentDidMount)
+      (bind-method :componentWillUnmount)
+      (bind-method :render)
+      (clj->js)
+      (create-react-class)
+      (factory)))
 
 (defn reactive-component
   "Creates a new ReactiveComponent factory from a given React component

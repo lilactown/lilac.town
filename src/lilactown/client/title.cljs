@@ -53,39 +53,38 @@
                          :display "inline-block"}}
                 second))))
 
-(def ToggleAnimate
-  (r/reactive-component
-   {:displayName "ToggleAnimate"
-    :watch (fn [this] {:letter-state !state})
-    :init (fn [id]
-            (initial-state! id))
-    :should-update
-    (fn [_ old-v new-v id]
-      (not= (old-v id) (new-v id)))
-    :handle-enter
-    (r/send-this
-     []
-     (fn [this]
-       (let [id (r/this :watch-id)]
-         (swap-state!
-          (fn [cur]
-            (assoc
-             cur
-             id
-             {:end (get-in cur [id :start])
-              :start (get-in cur [id :end])}))))))
-    :render
-    (fn [this {:keys [letter-state]}]
-      (let [id (r/this :watch-id)
-            start (or (get-in letter-state [id :start])
-                      (:start initial-state))
-            end (or (get-in letter-state [id :end])
-                    (:end initial-state))]
-        (Motion
-         {:defaultStyle {:value start}
-          :style {:value (rm/spring end)}}
-         (partial (r/children)
-                  (r/this :handle-enter)))))}))
+(r/defreactive ToggleAnimate
+  :displayName "ToggleAnimate"
+  :watch (fn [this] {:letter-state !state})
+  :init (fn [id]
+          (initial-state! id))
+  :should-update
+  (fn [_ old-v new-v id]
+    (not= (old-v id) (new-v id)))
+  :handle-enter
+  (r/send-this
+   []
+   (fn [this]
+     (let [id (r/this :watch-id)]
+       (swap-state!
+        (fn [cur]
+          (assoc
+           cur
+           id
+           {:end (get-in cur [id :start])
+            :start (get-in cur [id :end])}))))))
+  :render
+  (fn [this {:keys [letter-state]}]
+    (let [id (r/this :watch-id)
+          start (or (get-in letter-state [id :start])
+                    (:start initial-state))
+          end (or (get-in letter-state [id :end])
+                  (:end initial-state))]
+      (Motion
+       {:defaultStyle {:value start}
+        :style {:value (rm/spring end)}}
+       (partial (r/children)
+                (r/this :handle-enter))))))
 
 (defn create-letter [[a b]]
   (ToggleAnimate {:key [a b]}
@@ -98,21 +97,20 @@
                props)
               label))
 
-(def Controls
-  (r/reactive-component
-   {:displayName "Controls"
-    :watch (fn [this] {:should-change? !should-change})
-    :render
-    (fn [this {:keys [should-change?]}]
-      (dom/div
-       {:style {:display "flex"
-                :opacity 0.6}}
-       (control {:onClick (partial reset-state! :end)} "<")
-       (control {:onClick #(swap! !should-change not)}
-                (if should-change?
-                  "■"
-                  "▶"))
-       (control {:onClick (partial reset-state! :start)} ">")))}))
+(r/defreactive Controls
+  :displayName "Controls"
+  :watch (fn [this] {:should-change? !should-change})
+  :render
+  (fn [this {:keys [should-change?]}]
+    (dom/div
+     {:style {:display "flex"
+              :opacity 0.6}}
+     (control {:onClick (partial reset-state! :end)} "<")
+     (control {:onClick #(swap! !should-change not)}
+              (if should-change?
+                "■"
+                "▶"))
+     (control {:onClick (partial reset-state! :start)} ">"))))
 
 (defn title []
   (dom/div
