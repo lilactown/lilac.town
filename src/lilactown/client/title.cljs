@@ -8,7 +8,7 @@
 
 (def Motion (r/factory rm/Motion))
 
-(def !state (atom {}))
+(def !letter-state (atom {}))
 
 (defonce !should-change (atom true))
 
@@ -18,32 +18,27 @@
 
 (def halfway (/ (- (:end initial-state) (:start initial-state)) 2))
 
-(def atom-context (.createContext react))
+(def toggle-context (.createContext react))
 
-(defn atom-provider
-  ([a] (atom-provider a (fn [_ _ _ _] true)))
-  ([a should-update]
-   (let [Provider (dom/factory (.-Provider atom-context))]
-     (dom/reactive-component
-      {:watch {:av a}
+(def ToggleProvider
+  (let [Provider (dom/factory (.-Provider toggle-context))]
+    (dom/reactive-component
+     {:watch (fn [this] {:av (dom/props :state)})
 
-       :should-update should-update
-       :render
-       (fn [this {:keys [av]}]
-         (Provider
-          {:value {:value av
-                   :swap! (partial swap! a)
-                   :reset! (partial reset! a)}}
-          (dom/children)))}))))
+      :render
+      (fn [this {:keys [av]}]
+        (Provider
+         {:value {:value av
+                  :swap! (partial swap! (dom/props :state))
+                  :reset! (partial reset! (dom/props :state))}}
+         (dom/children)))})))
 
-(def ToggleProvider (atom-provider !should-change))
-
-(def AtomConsumer (dom/factory (.-Consumer atom-context)))
+(def ToggleConsumer (dom/factory (.-Consumer toggle-context)))
 
 
 (defn reset-state!
-  [key]
-  (swap! !state
+  [state key]
+  (swap! state
          (fn [cur]
            (into
             {}
@@ -53,13 +48,13 @@
                         :end end-state)])
                  cur)))))
 
-(defn initial-state! [id]
-  (swap! !state assoc id initial-state))
+(defn initial-state! [state id]
+  (swap! state assoc id initial-state))
 
 (defn swap-state!
-  [& args]
+  [state & args]
   (when @!should-change
-    (apply swap! !state args)))
+    (apply swap! state args)))
 
 (defn letter
   [first second on-enter style]
@@ -78,27 +73,34 @@
                 second))))
 
 (def ToggleAnimate
-  ;; (atom-provider )
   (dom/reactive-component
    {:displayName "ToggleAnimate"
-    :watch {:letter-state !state}
-    :init (fn [id]
-            (initial-state! id))
+
+    :watch (fn [this]
+             {:letter-state (dom/props :state)})
+
+    :init (fn [id this]
+            (initial-state! (dom/props :state) id))
+
     :should-update
     (fn [_ old-v new-v id]
       (not= (old-v id) (new-v id)))
+
     :handle-enter
     (dom/send-this
      []
      (fn [this]
-       (let [id (dom/this :watch-id)]
+       (let [id (dom/this :watch-id)
+             state (dom/props :state)]
          (swap-state!
+          state
           (fn [cur]
             (assoc
              cur
              id
              {:end (get-in cur [id :start])
               :start (get-in cur [id :end])}))))))
+
     :render
     (fn [this {:keys [letter-state]}]
       (let [id (dom/this :watch-id)
@@ -110,12 +112,12 @@
          {:defaultStyle {:value start}
           :style {:value (rm/spring end)}}
          (partial (dom/children)
-                  (dom/this :handle-enter)))))})
-  )
+                  (dom/this :handle-enter)))))}))
 
-(defn create-letter [[a b]]
-  (ToggleAnimate {:key [a b]}
-                 (partial letter a b)))
+(defn create-letter [state [a b]]
+  (ToggleAnimate {:key [a b]
+                  :state state}
+                  (partial letter a b)))
 
 (defn control [{:keys [on-click] :as props} label]
   (dom/button (merge
@@ -125,40 +127,42 @@
               label))
 
 (defn controls []
-  (AtomConsumer
+  (ToggleConsumer
    (dom/child-fn
     [{should-change? :value swap! :swap! :as value}]
     (dom/div
      {:style {:display "flex"
               :opacity 0.6}}
-     (control {:onClick (partial reset-state! :end)} "<")
+     (control {:onClick (partial reset-state! !letter-state :end)} "<")
      (control {:onClick #(swap! not)}
               (if should-change?
                 "■"
                 "▶"))
-     (control {:onClick (partial reset-state! :start)} ">")))))
+     (control {:onClick (partial reset-state! !letter-state :start)} ">")))))
 
-(defn title []
+(defn title [letter-state]
   (dom/div
    {:style {:position "relative"}}
    (dom/h1
-    (map create-letter [["w" "l"]
-                        ["i" "i"]
-                        ["l" "l"]
-                        ["l" "a"]
-                        ["." "c"]
-                        ["a" "."]
-                        ["c" "t"]
-                        ["t" "o"]
-                        ["o" "w"]
-                        ["n" "n"]]))
+    (map (partial create-letter letter-state)
+         [["w" "l"]
+          ["i" "i"]
+          ["l" "l"]
+          ["l" "a"]
+          ["." "c"]
+          ["a" "."]
+          ["c" "t"]
+          ["t" "o"]
+          ["o" "w"]
+          ["n" "n"]]))
    (dom/div
     {:style {:position "absolute"
              :bottom -20
              :left 92}}
-    (ToggleProvider
-     (controls)))))
+    (controls))))
 
 (defn ^{:export true} start! [node]
   (t/info "Title started")
-  (react-dom/render (title) node))
+  (react-dom/render (ToggleProvider
+                     {:state !should-change}
+                     (title !letter-state)) node))
