@@ -8,10 +8,6 @@
 
 (def Motion (r/factory rm/Motion))
 
-(def !letter-state (atom {}))
-
-(defonce !should-change (atom true))
-
 (def initial-state {:start 0 :end 2})
 
 (def end-state {:start 2 :end 0})
@@ -23,18 +19,26 @@
 (def ToggleProvider
   (let [Provider (dom/factory (.-Provider toggle-context))]
     (dom/reactive-component
-     {:watch (fn [this] {:av (dom/props :state)})
+     {:watch (fn [this] {:av (dom/props :value)})
 
       :render
       (fn [this {:keys [av]}]
         (Provider
          {:value {:value av
-                  :swap! (partial swap! (dom/props :state))
-                  :reset! (partial reset! (dom/props :state))}}
+                  :swap! (partial swap! (dom/props :value))
+                  :reset! (partial reset! (dom/props :value))}}
          (dom/children)))})))
 
-(def ToggleConsumer (dom/factory (.-Consumer toggle-context)))
+(def ToggleConsumer
+  (dom/factory (.-Consumer toggle-context)))
 
+(def letters-context (.createContext react))
+
+(def LettersProvider
+  (dom/factory (.-Provider letters-context)))
+
+(def LettersConsumer
+  (dom/factory (.-Consumer letters-context)))
 
 (defn reset-state!
   [state key]
@@ -52,8 +56,8 @@
   (swap! state assoc id initial-state))
 
 (defn swap-state!
-  [state & args]
-  (when @!should-change
+  [state should-change? & args]
+  (when should-change?
     (apply swap! state args)))
 
 (defn letter
@@ -94,6 +98,7 @@
              state (dom/props :state)]
          (swap-state!
           state
+          (dom/props :should-change?)
           (fn [cur]
             (assoc
              cur
@@ -114,15 +119,20 @@
          (partial (dom/children)
                   (dom/this :handle-enter)))))}))
 
-(defn create-letter [state [a b]]
-  (ToggleAnimate {:key [a b]
-                  :state state}
-                  (partial letter a b)))
+(defn create-letter [[a b]]
+  (LettersConsumer
+   (fn [state]
+     (ToggleConsumer
+      (dom/child-fn
+       [{should-change? :value}]
+       (ToggleAnimate {:key [a b]
+                       :state state
+                       :should-change? should-change?}
+                      (partial letter a b)))))))
 
 (defn control [{:keys [on-click] :as props} label]
   (dom/button (merge
-               {:onClick on-click
-                :className "control"}
+               {:className "control"}
                props)
               label))
 
@@ -130,21 +140,23 @@
   (ToggleConsumer
    (dom/child-fn
     [{should-change? :value swap! :swap! :as value}]
-    (dom/div
-     {:style {:display "flex"
-              :opacity 0.6}}
-     (control {:onClick (partial reset-state! !letter-state :end)} "<")
-     (control {:onClick #(swap! not)}
-              (if should-change?
-                "■"
-                "▶"))
-     (control {:onClick (partial reset-state! !letter-state :start)} ">")))))
+    (LettersConsumer
+     (fn [letters-state]
+       (dom/div
+        {:style {:display "flex"
+                 :opacity 0.6}}
+        (control {:onClick (partial reset-state! letters-state :end)} "<")
+        (control {:onClick #(swap! not)}
+                 (if should-change?
+                   "■"
+                   "▶"))
+        (control {:onClick (partial reset-state! letters-state :start)} ">")))))))
 
-(defn title [letter-state]
+(defn title []
   (dom/div
    {:style {:position "relative"}}
    (dom/h1
-    (map (partial create-letter letter-state)
+    (map create-letter
          [["w" "l"]
           ["i" "i"]
           ["l" "l"]
@@ -163,6 +175,8 @@
 
 (defn ^{:export true} start! [node]
   (t/info "Title started")
-  (react-dom/render (ToggleProvider
-                     {:state !should-change}
-                     (title !letter-state)) node))
+  (react-dom/render
+   (->> (title)
+        (LettersProvider {:value (atom {})})
+        (ToggleProvider {:value (atom true)}))
+   node))
