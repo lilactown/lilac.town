@@ -104,9 +104,14 @@
        (fn [this]
          (t/debug "[reactive] Unmounting" (lilactown.dom/this :watch-id))
          (when watch
-           (doseq [w watch]
+           (doseq [[k w] watch]
              (remove-watch w (lilactown.dom/this :watch-id)))))}
       (merge definition)
+      (merge {:render
+              (fn [this]
+                ((:render definition) this
+                 ;; deref all the atoms in the watch map
+                 (reduce-kv #(assoc %1 %2 @%3) {} watch)))})
       (component)))
 
 (def div (factory "div"))

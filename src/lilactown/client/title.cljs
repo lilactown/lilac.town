@@ -55,7 +55,7 @@
 (def ToggleAnimate
   (dom/reactive-component
    {:displayName "ToggleAnimate"
-    :watch {:state !state}
+    :watch {:letter-state !state}
     :init (fn [id]
             (initial-state! id))
     :should-update
@@ -74,11 +74,11 @@
              {:end (get-in cur [id :start])
               :start (get-in cur [id :end])}))))))
     :render
-    (fn [this]
+    (fn [this {:keys [letter-state]}]
       (let [id (dom/this :watch-id)
-            start (or (get-in @!state [id :start])
+            start (or (get-in letter-state [id :start])
                       (:start initial-state))
-            end (or (get-in @!state [id :end])
+            end (or (get-in letter-state [id :end])
                     (:end initial-state))]
         (Motion
          {:defaultStyle {:value start}
@@ -100,15 +100,15 @@
 (def Controls
   (dom/reactive-component
    {:displayName "Controls"
-    :watch {:should-change !should-change}
+    :watch {:should-change? !should-change}
     :render
-    (fn [this]
+    (fn [this {:keys [should-change?]}]
       (dom/div
        {:style {:display "flex"
                 :opacity 0.6}}
        (control {:onClick (partial reset-state! :end)} "<")
        (control {:onClick #(swap! !should-change not)}
-                (if @!should-change
+                (if should-change?
                   "■"
                   "▶"))
        (control {:onClick (partial reset-state! :start)} ">")))}))
