@@ -62,7 +62,6 @@
 
 (defmacro defreactive [name & {:keys [displayName watch init should-update
                                       render] :as definition}]
-  (println definition)
   `(def ~name
      (lilactown.react/reactive-component
       (merge {:displayName ~name}
