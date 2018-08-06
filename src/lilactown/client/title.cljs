@@ -28,7 +28,9 @@
       :render
       (fn [this {:keys [av]}]
         (Provider
-         {:value av}
+         {:value {:value av
+                  :swap! (partial swap! a)
+                  :reset! (partial reset! a)}}
          (dom/children)))})))
 
 (def ToggleProvider (atom-provider !should-change))
@@ -119,16 +121,17 @@
   (dom/factory
    (fn []
      (AtomConsumer
-      (fn [should-change?]
-            (dom/div
-             {:style {:display "flex"
-                      :opacity 0.6}}
-             (control {:onClick (partial reset-state! :end)} "<")
-             (control {:onClick #(swap! !should-change not)}
-                      (if should-change?
-                        "■"
-                        "▶"))
-             (control {:onClick (partial reset-state! :start)} ">")))))))
+      (dom/child-fn
+       [{should-change? :value swap! :swap! :as value}]
+       (dom/div
+        {:style {:display "flex"
+                 :opacity 0.6}}
+        (control {:onClick (partial reset-state! :end)} "<")
+        (control {:onClick #(swap! not)}
+                 (if should-change?
+                   "■"
+                   "▶"))
+        (control {:onClick (partial reset-state! :start)} ">")))))))
 
 (defn title []
   (dom/div
