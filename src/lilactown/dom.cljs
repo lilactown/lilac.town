@@ -73,8 +73,6 @@
     :or {should-update (fn [_ _ _] true)}
     :as definition}]
   (-> {:displayName (or display-name "ReactiveComponent")
-       :getInitialState
-       (fn [] #js {})
 
        :componentDidMount
        (fn [this]
@@ -88,9 +86,7 @@
                 id
                 (fn [_k _r old-v new-v]
                   (when (should-update id old-v new-v)
-                    (lilactown.dom/set-state!
-                     (fn [_]
-                       #js {:triggered true})))))))
+                    (. this forceUpdate))))))
            (lilactown.dom/set-this! :watch-id id)))
 
        :componentWillUnmount
