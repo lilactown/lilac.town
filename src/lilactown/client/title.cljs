@@ -13,17 +13,19 @@
 (def toggle-context (.createContext react))
 
 (def ToggleProvider
-  (let [Provider (dom/factory (.-Provider toggle-context))]
-    (dom/reactive-component
-     {:watch (fn [this] {:av (dom/props :value)})
+  (dom/factory (.-Provider toggle-context))
+  ;; (let [Provider (dom/factory (.-Provider toggle-context))]
+  ;;   (dom/reactive-component
+  ;;    {:watch (fn [this] {:av (dom/props :value)})
 
-      :render
-      (fn [this {:keys [av]}]
-        (Provider
-         {:value {:value av
-                  :swap! (partial swap! (dom/props :value))
-                  :reset! (partial reset! (dom/props :value))}}
-         (dom/children)))})))
+  ;;     :render
+  ;;     (fn [this {:keys [av]}]
+  ;;       (Provider
+  ;;        {:value {:value av
+  ;;                 :swap! (partial swap! (dom/props :value))
+  ;;                 :reset! (partial reset! (dom/props :value))}}
+  ;;        (dom/children)))}))
+  )
 
 (def ToggleConsumer
   (dom/factory (.-Consumer toggle-context)))
@@ -129,13 +131,12 @@
 
 (defn create-letter [[a b]]
   (LettersConsumer
+   {:key [a b]}
    (fn [state]
      (ToggleConsumer
-      (dom/child-fn
-       [{should-change? :value}]
-       (ToggleAnimate {:key [a b]
-                       :state state
-                       :should-change? should-change?}
+      (fn [should-change?]
+       (ToggleAnimate {:state state
+                       :should-change? @should-change?}
                       (partial letter a b)))))))
 
 (defn control [{:keys [on-click] :as props} label]
@@ -146,16 +147,15 @@
 
 (defn controls []
   (ToggleConsumer
-   (dom/child-fn
-    [{should-change? :value swap! :swap! :as value}]
+   (fn [should-change?]
     (LettersConsumer
      (fn [letters-state]
        (dom/div
         {:style {:display "flex"
                  :opacity 0.6}}
         (control {:onClick (partial reset-state! letters-state :end)} "<")
-        (control {:onClick #(swap! not)}
-                 (if should-change?
+        (control {:onClick #(swap! should-change? not)}
+                 (if @should-change?
                    "■"
                    "▶"))
         (control {:onClick (partial reset-state! letters-state :start)} ">")))))))
