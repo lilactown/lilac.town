@@ -111,6 +111,7 @@
               (fn [this]
                 ((:render definition) this
                  ;; deref all the atoms in the watch map
-                 (reduce-kv #(assoc %1 %2 @%3) {} (watch this))))})
+                 (when watch
+                   (reduce-kv #(assoc %1 %2 @%3) {} (watch this)))))})
       (component)))
 
