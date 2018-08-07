@@ -54,7 +54,7 @@
 (defmacro defnc [name props & body]
   )
 
-(defmacro defcomponent [name & definition]
+(defmacro defcomponent [name & {:keys [displayName] :as definition}]
   `(def ~name
      (lilactown.react/component
       (merge {:displayName ~name}

@@ -58,6 +58,7 @@
   [definition]
   (-> definition
       (bind-method :getInitialState)
+      (bind-method :componentWillMount)
       (bind-method :componentDidMount)
       (bind-method :componentWillUnmount)
       (bind-method :render)
@@ -85,11 +86,18 @@
     :as definition}]
   (-> {:displayName (or display-name "ReactiveComponent")
 
-       :componentDidMount
+       :componentWillMount
        (fn [this]
          (let [id (random-uuid)]
-           (t/debug "[reactive]" "Mounting" id)
-           (when init (init id this))
+           (lilactown.react/set-this! :watch-id id)
+           (t/debug "[reactive]" "Initializing" id)
+           (when init
+             (t/debug "[reactive]" "Mounting" id)
+             (init id this))))
+
+       :componentDidMount
+       (fn [this]
+         (let [id (lilactown.react/this :watch-id)]
            (when watch
              (doseq [[k w] (watch this)]
                (add-watch
@@ -97,18 +105,18 @@
                 id
                 (fn [_k _r old-v new-v]
                   (when (should-update k old-v new-v id)
-                    (. this forceUpdate))))))
-           (lilactown.react/set-this! :watch-id id)))
+                    (. this forceUpdate))))))))
 
        :componentWillUnmount
        (fn [this]
-         (t/debug "[reactive] Unmounting" (lilactown.react/this :watch-id))
+         (t/debug "[reactive]" "Unmounting" (lilactown.react/this :watch-id))
          (when watch
            (doseq [[k w] (watch this)]
              (remove-watch w (lilactown.react/this :watch-id)))))}
       (merge definition)
       (merge {:render
               (fn [this]
+                (t/debug "[reactive]" "Rendering" (lilactown.react/this :watch-id))
                 ((:render definition) this
                  ;; deref all the atoms in the watch map
                  (when watch

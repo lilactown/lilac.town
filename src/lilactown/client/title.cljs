@@ -4,48 +4,19 @@
             [taoensso.timbre :as t]
             [react :as react]
             [react-dom :as react-dom]
-            [react-motion :as rm]))
+            [react-motion :as rm]
+            ["util" :as util]))
 
 ;; Setup
-
-(def Motion (r/factory rm/Motion))
-
-(def toggle-context (.createContext react))
-
-(def ToggleProvider
-  (r/factory (.-Provider toggle-context))
-  ;; (let [Provider (r/factory (.-Provider toggle-context))]
-  ;;   (r/reactive-component
-  ;;    {:watch (fn [this] {:av (r/props :value)})
-
-  ;;     :render
-  ;;     (fn [this {:keys [av]}]
-  ;;       (Provider
-  ;;        {:value {:value av
-  ;;                 :swap! (partial swap! (r/props :value))
-  ;;                 :reset! (partial reset! (r/props :value))}}
-  ;;        (r/children)))}))
-  )
-
-(def ToggleConsumer
-  (r/factory (.-Consumer toggle-context)))
-
-(def letters-context (.createContext react))
-
-(def LettersProvider
-  (r/factory (.-Provider letters-context)))
-
-(def LettersConsumer
-  (r/factory (.-Consumer letters-context)))
-
-
-;; Biz logic
 
 (def ^:const initial-state {:start 0 :end 2})
 
 (def ^:const end-state {:start 2 :end 0})
 
 (def halfway (/ (- (:end initial-state) (:start initial-state)) 2))
+
+
+;; Biz logic
 
 (defn reset-state!
   [state key]
@@ -68,6 +39,66 @@
     (apply swap! state args)))
 
 
+;; React stuff
+
+(def Motion (r/factory rm/Motion))
+
+(def toggle-context (.createContext react))
+
+(def ToggleProvider
+  (r/factory (.-Provider toggle-context)))
+
+(def ToggleConsumer
+  (let [Consumer (r/factory (.-Consumer toggle-context))
+        Watch (r/reactive-component
+               {:displayName "ToggleWatch"
+                :watch (fn [this] {:av (r/props :value)})
+
+                :render
+                (fn [this]
+                  ((r/children) (r/props :value)))})]
+    (r/component
+     {:displayName "ToggleConsumer"
+      :render
+      (fn [this _]
+        (Consumer
+         (fn [value]
+           (Watch {:value value}
+                  (fn [value]
+                    ((r/children) value))))))})))
+
+(def letters-context (.createContext react))
+
+(def LettersProvider
+  (r/factory (.-Provider letters-context)))
+
+(def LettersConsumer
+  (let [Consumer (r/factory (.-Consumer letters-context))
+        Watch (r/reactive-component
+               {:displayName "LettersWatch"
+                :watch (fn [this] {:letter-state (r/props :value)})
+                :init (fn [id this]
+                        (initial-state! (r/props :value) id))
+                :should-update
+                (fn [_ old-v new-v id]
+                  (not= (old-v id) (new-v id)))
+                :render
+                (fn [this _]
+                  ((r/children) {:value (r/props :value)
+                                 :watch-id (r/this :watch-id)}))})]
+    (r/component
+     {:displayName "LettersConsumer"
+      :render
+      (fn [this]
+        (Consumer
+         (fn [value]
+           (Watch
+            {:value value}
+            (fn [{:keys [value watch-id] :as blah}]
+              ((r/children) {:state value
+                             :watch-id watch-id}))))))})))
+
+
 ;; Render
 
 (defn letter
@@ -86,58 +117,47 @@
                          :display "inline-block"}}
                 second))))
 
-(def ToggleAnimate
-  (r/reactive-component
-   {:displayName "ToggleAnimate"
+(r/defcomponent ToggleAnimate
+  :handle-enter
+  (r/send-this
+   []
+   (fn [this]
+     (let [id (r/props :watch-id)
+           state (r/props :state)]
+       (swap-state!
+        state
+        (r/props :should-change?)
+        (fn [cur]
+          (assoc
+           cur
+           id
+           {:end (get-in cur [id :start])
+            :start (get-in cur [id :end])}))))))
 
-    :watch (fn [this]
-             {:letter-state (r/props :state)})
-
-    :init (fn [id this]
-            (initial-state! (r/props :state) id))
-
-    :should-update
-    (fn [_ old-v new-v id]
-      (not= (old-v id) (new-v id)))
-
-    :handle-enter
-    (r/send-this
-     []
-     (fn [this]
-       (let [id (r/this :watch-id)
-             state (r/props :state)]
-         (swap-state!
-          state
-          (r/props :should-change?)
-          (fn [cur]
-            (assoc
-             cur
-             id
-             {:end (get-in cur [id :start])
-              :start (get-in cur [id :end])}))))))
-
-    :render
-    (fn [this {:keys [letter-state]}]
-      (let [id (r/this :watch-id)
-            start (or (get-in letter-state [id :start])
-                      (:start initial-state))
-            end (or (get-in letter-state [id :end])
-                    (:end initial-state))]
-        (Motion
-         {:defaultStyle {:value start}
-          :style {:value (rm/spring end)}}
-         (partial (r/children)
-                  (r/this :handle-enter)))))}))
+  :render
+  (fn [this]
+    (let [letter-state @(r/props :state)
+          id (r/props :watch-id)
+          start (or (get-in letter-state [id :start])
+                    (:start initial-state))
+          end (or (get-in letter-state [id :end])
+                  (:end initial-state))]
+      (Motion
+       {:defaultStyle {:value start}
+        :style {:value (rm/spring end)}}
+       (partial (r/children)
+                (r/this :handle-enter))))))
 
 (defn create-letter [[a b]]
   (LettersConsumer
    {:key [a b]}
-   (fn [state]
+   (fn [{:keys [state watch-id]}]
      (ToggleConsumer
       (fn [should-change?]
-       (ToggleAnimate {:state state
-                       :should-change? @should-change?}
-                      (partial letter a b)))))))
+        (ToggleAnimate {:state state
+                        :watch-id watch-id
+                        :should-change? @should-change?}
+                       (partial letter a b)))))))
 
 (defn control [{:keys [on-click] :as props} label]
   (dom/button (merge
@@ -148,17 +168,17 @@
 (defn controls []
   (ToggleConsumer
    (fn [should-change?]
-    (LettersConsumer
-     (fn [letters-state]
-       (dom/div
-        {:style {:display "flex"
-                 :opacity 0.6}}
-        (control {:onClick (partial reset-state! letters-state :end)} "<")
-        (control {:onClick #(swap! should-change? not)}
-                 (if @should-change?
-                   "■"
-                   "▶"))
-        (control {:onClick (partial reset-state! letters-state :start)} ">")))))))
+     (LettersConsumer
+      (fn [{letters-state :state}]
+        (dom/div
+         {:style {:display "flex"
+                  :opacity 0.6}}
+         (control {:onClick (partial reset-state! letters-state :end)} "<")
+         (control {:onClick #(swap! should-change? not)}
+                  (if @should-change?
+                    "■"
+                    "▶"))
+         (control {:onClick (partial reset-state! letters-state :start)} ">")))))))
 
 (defn title []
   (dom/div
