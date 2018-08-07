@@ -8,35 +8,35 @@
 
 ;; Setup
 
-(def Motion (dom/factory rm/Motion))
+(def Motion (r/factory rm/Motion))
 
 (def toggle-context (.createContext react))
 
 (def ToggleProvider
-  (dom/factory (.-Provider toggle-context))
-  ;; (let [Provider (dom/factory (.-Provider toggle-context))]
-  ;;   (dom/reactive-component
-  ;;    {:watch (fn [this] {:av (dom/props :value)})
+  (r/factory (.-Provider toggle-context))
+  ;; (let [Provider (r/factory (.-Provider toggle-context))]
+  ;;   (r/reactive-component
+  ;;    {:watch (fn [this] {:av (r/props :value)})
 
   ;;     :render
   ;;     (fn [this {:keys [av]}]
   ;;       (Provider
   ;;        {:value {:value av
-  ;;                 :swap! (partial swap! (dom/props :value))
-  ;;                 :reset! (partial reset! (dom/props :value))}}
-  ;;        (dom/children)))}))
+  ;;                 :swap! (partial swap! (r/props :value))
+  ;;                 :reset! (partial reset! (r/props :value))}}
+  ;;        (r/children)))}))
   )
 
 (def ToggleConsumer
-  (dom/factory (.-Consumer toggle-context)))
+  (r/factory (.-Consumer toggle-context)))
 
 (def letters-context (.createContext react))
 
 (def LettersProvider
-  (dom/factory (.-Provider letters-context)))
+  (r/factory (.-Provider letters-context)))
 
 (def LettersConsumer
-  (dom/factory (.-Consumer letters-context)))
+  (r/factory (.-Consumer letters-context)))
 
 
 ;; Biz logic
@@ -87,28 +87,28 @@
                 second))))
 
 (def ToggleAnimate
-  (dom/reactive-component
+  (r/reactive-component
    {:displayName "ToggleAnimate"
 
     :watch (fn [this]
-             {:letter-state (dom/props :state)})
+             {:letter-state (r/props :state)})
 
     :init (fn [id this]
-            (initial-state! (dom/props :state) id))
+            (initial-state! (r/props :state) id))
 
     :should-update
     (fn [_ old-v new-v id]
       (not= (old-v id) (new-v id)))
 
     :handle-enter
-    (dom/send-this
+    (r/send-this
      []
      (fn [this]
-       (let [id (dom/this :watch-id)
-             state (dom/props :state)]
+       (let [id (r/this :watch-id)
+             state (r/props :state)]
          (swap-state!
           state
-          (dom/props :should-change?)
+          (r/props :should-change?)
           (fn [cur]
             (assoc
              cur
@@ -118,7 +118,7 @@
 
     :render
     (fn [this {:keys [letter-state]}]
-      (let [id (dom/this :watch-id)
+      (let [id (r/this :watch-id)
             start (or (get-in letter-state [id :start])
                       (:start initial-state))
             end (or (get-in letter-state [id :end])
@@ -126,8 +126,8 @@
         (Motion
          {:defaultStyle {:value start}
           :style {:value (rm/spring end)}}
-         (partial (dom/children)
-                  (dom/this :handle-enter)))))}))
+         (partial (r/children)
+                  (r/this :handle-enter)))))}))
 
 (defn create-letter [[a b]]
   (LettersConsumer
