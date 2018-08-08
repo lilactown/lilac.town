@@ -53,18 +53,36 @@
   [this & keys]
   (apply get-in$ "state" keys))
 
+(defn- static? [method]
+  (and (meta method) (:static (meta method))))
+
+(defn- set-statics! [o static-map]
+  (doseq [[k v] static-map]
+    (set$ o (name k) v))
+  ;; return mutated obj
+  o)
+
 (defn component
   "Creates a new component factory from a given React component definition."
   [definition]
-  (-> definition
-      (bind-method :getInitialState)
-      (bind-method :componentWillMount)
-      (bind-method :componentDidMount)
-      (bind-method :componentWillUnmount)
-      (bind-method :render)
-      (clj->js)
-      (create-react-class)
-      (factory)))
+  (let [statics (into {} (filter (comp static? second) definition))]
+    (-> definition
+        (as-> m
+          (filter (comp not static? second) m)
+          (into {} m))
+        (bind-method :getInitialState)
+        (bind-method :UNSAFE_componentWillMount)
+        (bind-method :componentDidMount)
+        (bind-method :shouldComponentUpdate)
+        (bind-method :getSnapshotBeforeUpdate)
+        (bind-method :componentDidUpdate)
+        (bind-method :componentDidCatch)
+        (bind-method :componentWillUnmount)
+        (bind-method :render)
+        (clj->js)
+        (create-react-class)
+        (set-statics! statics)
+        (factory))))
 
 (defn reactive-component
   "Creates a new ReactiveComponent factory from a given React component
@@ -86,7 +104,7 @@
     :as definition}]
   (-> {:displayName (or display-name "ReactiveComponent")
 
-       :componentWillMount
+       :UNSAFE_componentWillMount
        (fn [this]
          (let [id (random-uuid)]
            (lilactown.react/set-this! :watch-id id)
