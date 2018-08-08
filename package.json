@@ -1,8 +1,10 @@
 {
   "dependencies": {
     "create-react-class": "^15.6.3",
+    "highlight.js": "^9.12.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
+    "react-grid-layout": "^0.16.6",
     "react-motion": "^0.5.2"
   },
   "devDependencies": {
