@@ -3,7 +3,7 @@
 (defmacro send-this
   "A helper macro for defining methods on a React component definition.
   Creates a function that receives the component as it's first argument
-  and `args` as the following arguments."
+  and applies any other args as the following arguments."
   [f]
   (let [this (gensym 'this)]
     `(fn [& args#]
@@ -53,9 +53,9 @@
        ~@body)))
 
 (defmacro defnc
-  "Defines a simple \"functional\" React component that takes in props as its
-  argument and returns a React element. Props are shallowly converted to a CLJ
-  map and can be destructured just like in defn."
+  "Defines a simple \"functional\" React component factory that takes in props as
+  its argument and returns a React element. Props are shallowly converted to a
+  CLJ map and can be destructured just like in defn."
   [name props & body]
   `(def ~name
      (lilactown.react/pure-component
