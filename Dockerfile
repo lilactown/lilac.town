@@ -12,9 +12,15 @@ RUN mkdir -p /usr/app
 
 WORKDIR /usr/app
 
-COPY . /usr/app
+COPY package.json .
 
 RUN npm install
+
+COPY deps.edn .
+
+RUN clojure -A:server -Spath
+
+COPY . /usr/app
 
 RUN npx shadow-cljs release client
 
