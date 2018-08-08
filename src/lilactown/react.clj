@@ -52,14 +52,24 @@
     `(fn []
        ~@body)))
 
-(defmacro defnc [name props & body]
+(defmacro defnc
+  "Defines a simple \"functional\" React component that takes in props as its
+  argument and returns a React element. Props are shallowly converted to a CLJ
+  map and can be destructured just like in defn."
+  [name props & body]
   `(def ~name
      (lilactown.react/pure-component
       {:displayName ~(str name)
        :render
        (fnc ~props ~@body)})))
 
-(defmacro defcomponent [name & definition]
+(defmacro defcomponent
+  "Defines a React component class factory. `definition` is a spread of
+  key-value pairs, where keys are keywords that will be used as method names,
+  and values are functions. Methods are automatically bound to the component
+  class, and standard React methods automatically are passed in `this` as the
+  first argument to them."
+  [name & definition]
   `(def ~name
      (lilactown.react/component
       (merge {:displayName ~(str name)}

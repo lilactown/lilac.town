@@ -80,7 +80,11 @@
   o)
 
 (defn component
-  "Creates a new component factory from a given React component definition."
+  "Creates a new component factory from a given React component definition.
+  `definition` is a map of key-value pairs, where keys are keywords that will
+  be used as method names, and values are functions. Methods are automatically
+  bound to the component class, and standard React methods automatically are
+  passed in `this` as the first argument to them."
   [definition]
   (let [statics (into {} (filter (comp static? second) definition))]
     (-> definition
