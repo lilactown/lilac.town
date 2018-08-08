@@ -62,7 +62,6 @@
     (not= (old-v id) (new-v id)))
   :handle-enter
   (r/send-this
-   []
    (fn [this]
      (let [id (r/this :watch-id)]
        (swap-letters!

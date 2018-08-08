@@ -3,12 +3,12 @@
 (defmacro send-this
   "A helper macro for defining methods on a React component definition.
   Creates a function that receives the component as it's first argument
-  and ~args~ as the following arguments."
-  [args f]
+  and `args` as the following arguments."
+  [f]
   (let [this (gensym 'this)]
-    `(fn ~args
+    `(fn [& args#]
        (~'this-as ~this
-        (~f ~this ~@args)))))
+        (apply ~f ~this args#)))))
 
 (defmacro this
   "A helper macro for obtaining a property or method defined on a component

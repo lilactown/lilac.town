@@ -33,13 +33,18 @@
     (assoc m k v)
     m))
 
+(defn- ?assoc
+  "Assocs m with k v only when k doesn't already exist"
+  [m k v]
+  (assoc-when m (comp not k) k v))
+
 (defn- bind-method
   "Creates "
   [m k]
   (assoc-when
    m
    (m k)
-   k (lilactown.react/send-this [] (m k))))
+   k (lilactown.react/send-this (m k))))
 
 (def get-in$ gobj/getValueByKeys)
 
@@ -95,6 +100,15 @@
         (create-react-class)
         (set-statics! statics)
         (factory))))
+
+(defn pure-component
+  "Creates a new component factory from a given React component definition that
+  implements a shallow props equality check."
+  [definition]
+  (-> definition
+      (?assoc :shouldComponentUpdate
+              (fn [props state]
+                ()))))
 
 (defn reactive-component
   "Creates a new ReactiveComponent factory from a given React component
