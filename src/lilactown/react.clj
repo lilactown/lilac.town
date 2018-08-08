@@ -65,6 +65,12 @@
       (merge {:displayName ~(str name)}
              ~definition))))
 
+(defmacro defpure [name & definition]
+  `(def ~name
+     (lilactown.react/pure-component
+      (merge {:displayName ~(str name)}
+             ~definition))))
+
 (defmacro defreactive [name & {:keys [displayName watch init should-update
                                       render] :as definition}]
   `(def ~name
