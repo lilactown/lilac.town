@@ -6,6 +6,9 @@
     "react-motion": "^0.5.2"
   },
   "devDependencies": {
-    "shadow-cljs": "^2.4.24"
+    "shadow-cljs": "^2.4.33"
+  },
+  "scripts": {
+    "start": "npx shadow-cljs watch client"
   }
 }
