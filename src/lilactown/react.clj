@@ -54,7 +54,7 @@
 
 (defmacro defnc [name props & body]
   `(def ~name
-     (lilactown.react/component
+     (lilactown.react/pure-component
       {:displayName ~(str name)
        :render
        (fnc ~props ~@body)})))

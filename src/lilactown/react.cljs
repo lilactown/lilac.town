@@ -106,9 +106,13 @@
   implements a shallow props equality check."
   [definition]
   (-> definition
-      (?assoc :shouldComponentUpdate
-              (fn [props state]
-                ()))))
+      (?assoc
+       :shouldComponentUpdate
+       (fn [this props state]
+         ;; use goog.obj/equals for now to shallow compare
+         (or (not (gobj/equals (lilactown.react/this :props) props))
+             (not (gobj/equals (lilactown.react/this :state) state)))))
+      (component)))
 
 (defn reactive-component
   "Creates a new ReactiveComponent factory from a given React component
@@ -162,8 +166,10 @@
               (fn [this]
                 (t/debug "[reactive]" "Rendering" (lilactown.react/this :watch-id))
                 ((:render definition) this
+                 (when watch (watch this))
                  ;; deref all the atoms in the watch map
-                 (when watch
-                   (reduce-kv #(assoc %1 %2 @%3) {} (watch this)))))})
+                 ;; (when watch
+                 ;;   (reduce-kv #(assoc %1 %2 @%3) {} (watch this)))
+                 ))})
       (component)))
 

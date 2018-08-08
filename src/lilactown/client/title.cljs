@@ -74,9 +74,9 @@
   :render
   (fn [this {:keys [letter-state]}]
     (let [id (r/this :watch-id)
-          start (or (get-in letter-state [id :start])
+          start (or (get-in @letter-state [id :start])
                     (:start initial-state))
-          end (or (get-in letter-state [id :end])
+          end (or (get-in @letter-state [id :end])
                   (:end initial-state))]
       (Motion
        {:defaultStyle {:value start}
@@ -96,18 +96,21 @@
               label))
 
 (r/defreactive Controls
-  :watch (fn [this] {:should-change? !should-change})
+  :watch (fn [this] {:!should-change? !should-change})
+  :reset-end (fn [_] (reset-letters! :end))
+  :reset-start (fn [_] (reset-letters! :start))
+  :toggle-change (fn [_] (swap! !should-change not))
   :render
-  (fn [this {:keys [should-change?]}]
+  (fn [this {:keys [!should-change?]}]
     (dom/div
      {:style {:display "flex"
               :opacity 0.6}}
-     (Control {:onClick (partial reset-letters! :end)} "<")
-     (Control {:onClick #(swap! !should-change not)}
-              (if should-change?
+     (Control {:onClick (r/this :reset-end)} "<")
+     (Control {:onClick (r/this :toggle-change)}
+              (if @!should-change?
                 "■"
                 "▶"))
-     (Control {:onClick (partial reset-letters! :start)} ">"))))
+     (Control {:onClick (r/this :reset-start)} ">"))))
 
 (r/defnc Title []
   (dom/div
