@@ -8,15 +8,15 @@ ENV GIT_COMMIT=$GIT_COMMIT
 # Install npm
 RUN apk add --update nodejs nodejs-npm
 
-RUN mkdir -p /usr/src/app
+RUN mkdir -p /usr/app
 
-WORKDIR /usr/src/app
+WORKDIR /usr/app
 
-COPY . /usr/src/app
+COPY . /usr/app
 
 RUN npm install
 
-RUN clojure -A:client:client/build
+RUN npx shadow-cljs release client
 
 RUN clojure -A:uberjar
 
