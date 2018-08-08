@@ -110,7 +110,7 @@
                 "▶"))
      (Control {:onClick (partial reset-letters! :start)} ">"))))
 
-(defn title []
+(r/defnc Title []
   (dom/div
    {:style {:position "relative"}}
    (dom/h1
@@ -132,4 +132,4 @@
 
 (defn ^{:export true} start! [node]
   (t/info "Title started")
-  (react-dom/render (title) node))
+  (react-dom/render (Title) node))

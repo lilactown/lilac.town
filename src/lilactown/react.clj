@@ -1,14 +1,5 @@
 (ns lilactown.react)
 
-(defmacro child-fn
-  "A helper macro for using function-as-children in React. Pass in expected
-  arguments and a body to return, and it will automatically convert the args
-  to CLJS (with keywordize keys) and destructure them for you."
-  [props & body]
-  `(fn [args#]
-     (let [~@props (~'js->clj args# :keywordize-keys true)]
-       ~@body)))
-
 (defmacro send-this
   "A helper macro for defining methods on a React component definition.
   Creates a function that receives the component as it's first argument
@@ -49,27 +40,34 @@
   (#js state, #js props) => #js update."
   [f]
   `(.setState ~'this
-      ~f))
+              ~f))
+
+(defmacro fnc [props & body]
+  (if (> (count props) 0)
+    `(fn [this#]
+       (let [~@props (lilactown.react/shallow-js->clj
+                      (get-in$ this# "props"))]
+         ~@body))
+
+    `(fn []
+       ~@body)))
 
 (defmacro defnc [name props & body]
   `(def ~name
      (lilactown.react/component
       {:displayName ~(str name)
        :render
-       (fn [this#]
-         (let [~@props (lilactown.react/shallow-js->clj
-                       (get-in$ this# "props"))]
-           ~@body))})))
+       (fnc ~props ~@body)})))
 
 (defmacro defcomponent [name & definition]
   `(def ~name
      (lilactown.react/component
       (merge {:displayName ~(str name)}
-              ~definition))))
+             ~definition))))
 
 (defmacro defreactive [name & {:keys [displayName watch init should-update
                                       render] :as definition}]
   `(def ~name
      (lilactown.react/reactive-component
       (merge {:displayName ~(str name)}
-              ~definition))))
+             ~definition))))
