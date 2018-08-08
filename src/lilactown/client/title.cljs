@@ -17,7 +17,7 @@
 
 (def halfway (/ (- (:end initial-state) (:start initial-state)) 2))
 
-(defn reset-state!
+(defn reset-letters!
   [key]
   (swap! !state
          (fn [cur]
@@ -29,10 +29,10 @@
                         :end end-state)])
                  cur)))))
 
-(defn initial-state! [id]
+(defn initial-letters! [id]
   (swap! !state assoc id initial-state))
 
-(defn swap-state!
+(defn swap-letters!
   [& args]
   (when @!should-change
     (apply swap! !state args)))
@@ -56,7 +56,7 @@
 (r/defreactive ToggleAnimate
   :watch (fn [this] {:letter-state !state})
   :init (fn [id]
-          (initial-state! id))
+          (initial-letters! id))
   :should-update
   (fn [_ old-v new-v id]
     (not= (old-v id) (new-v id)))
@@ -65,7 +65,7 @@
    []
    (fn [this]
      (let [id (r/this :watch-id)]
-       (swap-state!
+       (swap-letters!
         (fn [cur]
           (assoc
            cur
@@ -103,12 +103,12 @@
     (dom/div
      {:style {:display "flex"
               :opacity 0.6}}
-     (Control {:onClick (partial reset-state! :end)} "<")
+     (Control {:onClick (partial reset-letters! :end)} "<")
      (Control {:onClick #(swap! !should-change not)}
               (if should-change?
                 "■"
                 "▶"))
-     (Control {:onClick (partial reset-state! :start)} ">"))))
+     (Control {:onClick (partial reset-letters! :start)} ">"))))
 
 (defn title []
   (dom/div
