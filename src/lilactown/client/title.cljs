@@ -89,7 +89,7 @@
   (ToggleAnimate {:key [a b]}
                  (partial letter a b)))
 
-(defn control [{:keys [on-click] :as props} label]
+(r/defnc Control [{on-click :on-click label :children :as props}]
   (dom/button (merge
                {:onClick on-click
                 :className "control"}
@@ -103,12 +103,12 @@
     (dom/div
      {:style {:display "flex"
               :opacity 0.6}}
-     (control {:onClick (partial reset-state! :end)} "<")
-     (control {:onClick #(swap! !should-change not)}
+     (Control {:onClick (partial reset-state! :end)} "<")
+     (Control {:onClick #(swap! !should-change not)}
               (if should-change?
                 "■"
                 "▶"))
-     (control {:onClick (partial reset-state! :start)} ">"))))
+     (Control {:onClick (partial reset-state! :start)} ">"))))
 
 (defn title []
   (dom/div

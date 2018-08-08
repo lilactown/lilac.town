@@ -52,17 +52,24 @@
       ~f))
 
 (defmacro defnc [name props & body]
-  )
+  `(def ~name
+     (lilactown.react/component
+      {:displayName ~(str name)
+       :render
+       (fn [this#]
+         (let [~@props (lilactown.react/shallow-js->clj
+                       (get-in$ this# "props"))]
+           ~@body))})))
 
 (defmacro defcomponent [name & definition]
   `(def ~name
      (lilactown.react/component
-      (merge {:displayName ~name}
+      (merge {:displayName ~(str name)}
               ~definition))))
 
 (defmacro defreactive [name & {:keys [displayName watch init should-update
                                       render] :as definition}]
   `(def ~name
      (lilactown.react/reactive-component
-      (merge {:displayName ~name}
+      (merge {:displayName ~(str name)}
               ~definition))))

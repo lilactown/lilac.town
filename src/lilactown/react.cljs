@@ -5,6 +5,15 @@
             [create-react-class :as create-react-class])
   (:require-macros [lilactown.react]))
 
+;; Utils
+
+(defn shallow-js->clj
+  "Convert a Javascript object into a Clojure map *shallowly*. See
+   `shallow-clj->js`."
+  [o]
+  (let [kseq (gobj/getKeys o)]
+    (into {} (map (fn [k] [(keyword k) (aget o k)]) kseq))))
+
 (defn factory
   "Takes a React component, and creates a function that returns
   a new React element"
@@ -53,6 +62,9 @@
   [this & keys]
   (apply get-in$ "state" keys))
 
+
+;; Defining components
+
 (defn- static? [method]
   (and (meta method) (:static (meta method))))
 
@@ -99,10 +111,10 @@
                       of the atom and new value of the atom - returns a boolean
                       discerning whether the component should update or not."
   [{:keys [watch init should-update
-           display-name]
+           displayName]
     :or {should-update (fn [_ _ _ _] true)}
     :as definition}]
-  (-> {:displayName (or display-name "ReactiveComponent")
+ (-> {:displayName (or displayName "ReactiveComponent")
 
        :UNSAFE_componentWillMount
        (fn [this]
