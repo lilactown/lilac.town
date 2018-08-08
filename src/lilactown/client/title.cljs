@@ -18,9 +18,9 @@
 
 ;; Biz logic
 
-(defn reset-state!
-  [state key]
-  (swap! state
+(defn reset-letters!
+  [!state key]
+  (swap! !state
          (fn [cur]
            (into
             {}
@@ -120,7 +120,6 @@
 (r/defcomponent ToggleAnimate
   :handle-enter
   (r/send-this
-   []
    (fn [this]
      (let [id (r/props :watch-id)
            state (r/props :state)]
@@ -159,7 +158,7 @@
                         :should-change? @should-change?}
                        (partial letter a b)))))))
 
-(defn control [{:keys [on-click] :as props} label]
+(r/defnc Control [{on-click :on-click label :children :as props}]
   (dom/button (merge
                {:className "control"}
                props)
@@ -173,14 +172,15 @@
         (dom/div
          {:style {:display "flex"
                   :opacity 0.6}}
-         (control {:onClick (partial reset-state! letters-state :end)} "<")
-         (control {:onClick #(swap! should-change? not)}
+         (Control {:onClick (partial reset-letters! letters-state :end)} "<")
+         (Control {:onClick #(swap! should-change? not)}
                   (if @should-change?
                     "■"
                     "▶"))
-         (control {:onClick (partial reset-state! letters-state :start)} ">")))))))
+         (Control {:onClick (partial reset-letters! letters-state :start)} ">")))))))
 
-(defn title []
+
+(r/defnc Title []
   (dom/div
    {:style {:position "relative"}}
    (dom/h1
@@ -204,7 +204,7 @@
 (defn ^{:export true} start! [node]
   (t/info "Title started")
   (react-dom/render
-   (->> (title)
+   (->> (Title)
         (LettersProvider {:value (atom {})})
         (ToggleProvider {:value (atom true)}))
    node))

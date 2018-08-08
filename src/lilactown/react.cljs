@@ -5,6 +5,15 @@
             [create-react-class :as create-react-class])
   (:require-macros [lilactown.react]))
 
+;; Utils
+
+(defn shallow-js->clj
+  "Convert a Javascript object into a Clojure map *shallowly*. See
+   `shallow-clj->js`."
+  [o]
+  (let [kseq (gobj/getKeys o)]
+    (into {} (map (fn [k] [(keyword k) (aget o k)]) kseq))))
+
 (defn factory
   "Takes a React component, and creates a function that returns
   a new React element"
@@ -24,13 +33,18 @@
     (assoc m k v)
     m))
 
+(defn- ?assoc
+  "Assocs m with k v only when k doesn't already exist"
+  [m k v]
+  (assoc-when m (comp not k) k v))
+
 (defn- bind-method
   "Creates "
   [m k]
   (assoc-when
    m
    (m k)
-   k (lilactown.react/send-this [] (m k))))
+   k (lilactown.react/send-this (m k))))
 
 (def get-in$ gobj/getValueByKeys)
 
@@ -53,18 +67,56 @@
   [this & keys]
   (apply get-in$ "state" keys))
 
+
+;; Defining components
+
+(defn- static? [method]
+  (and (meta method) (:static (meta method))))
+
+(defn- set-statics! [o static-map]
+  (doseq [[k v] static-map]
+    (set$ o (name k) v))
+  ;; return mutated obj
+  o)
+
 (defn component
-  "Creates a new component factory from a given React component definition."
+  "Creates a new component factory from a given React component definition.
+  `definition` is a map of key-value pairs, where keys are keywords that will
+  be used as method names, and values are functions. Methods are automatically
+  bound to the component class, and standard React methods automatically are
+  passed in `this` as the first argument to them."
+  [definition]
+  (let [statics (into {} (filter (comp static? second) definition))]
+    (-> definition
+        (as-> m
+            (filter (comp not static? second) m)
+          (into {} m))
+        (bind-method :getInitialState)
+        (bind-method :UNSAFE_componentWillMount)
+        (bind-method :componentDidMount)
+        (bind-method :shouldComponentUpdate)
+        (bind-method :getSnapshotBeforeUpdate)
+        (bind-method :componentDidUpdate)
+        (bind-method :componentDidCatch)
+        (bind-method :componentWillUnmount)
+        (bind-method :render)
+        (clj->js)
+        (create-react-class)
+        (set-statics! statics)
+        (factory))))
+
+(defn pure-component
+  "Creates a new component factory from a given React component definition that
+  implements a shallow props equality check."
   [definition]
   (-> definition
-      (bind-method :getInitialState)
-      (bind-method :componentWillMount)
-      (bind-method :componentDidMount)
-      (bind-method :componentWillUnmount)
-      (bind-method :render)
-      (clj->js)
-      (create-react-class)
-      (factory)))
+      (?assoc
+       :shouldComponentUpdate
+       (fn [this props state]
+         ;; use goog.obj/equals for now to shallow compare
+         (or (not (gobj/equals (lilactown.react/this :props) props))
+             (not (gobj/equals (lilactown.react/this :state) state)))))
+      (component)))
 
 (defn reactive-component
   "Creates a new ReactiveComponent factory from a given React component
@@ -81,12 +133,12 @@
                       of the atom and new value of the atom - returns a boolean
                       discerning whether the component should update or not."
   [{:keys [watch init should-update
-           display-name]
+           displayName]
     :or {should-update (fn [_ _ _ _] true)}
     :as definition}]
-  (-> {:displayName (or display-name "ReactiveComponent")
+  (-> {:displayName (or displayName "ReactiveComponent")
 
-       :componentWillMount
+       :UNSAFE_componentWillMount
        (fn [this]
          (let [id (random-uuid)]
            (lilactown.react/set-this! :watch-id id)
@@ -118,8 +170,10 @@
               (fn [this]
                 (t/debug "[reactive]" "Rendering" (lilactown.react/this :watch-id))
                 ((:render definition) this
+                 (when watch (watch this))
                  ;; deref all the atoms in the watch map
-                 (when watch
-                   (reduce-kv #(assoc %1 %2 @%3) {} (watch this)))))})
+                 ;; (when watch
+                 ;;   (reduce-kv #(assoc %1 %2 @%3) {} (watch this)))
+                 ))})
       (component)))
 
