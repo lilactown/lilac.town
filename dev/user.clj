@@ -1,14 +1,9 @@
 (ns user
-  (:require [shadow.cljs.devtools.server :as server]
-            [shadow.cljs.devtools.api :as shadow]
-            [lilactown.core :as lilactown]
+  (:require [lilactown.core :as lilactown]
             [mount.core :as mount]))
 
 (defn start! []
-  (mount/start)
-  (server/start!)
-  (shadow/watch :client))
+  (mount/start))
 
 (defn stop! []
-  (server/stop!)
   (mount/stop))
