@@ -1,10 +1,5 @@
 FROM clojure:tools-deps-alpine AS build
 
-# Pass in git commit SHA from build command
-ARG GIT_COMMIT=unknown
-
-ENV GIT_COMMIT=$GIT_COMMIT
-
 # Install npm
 RUN apk add --update nodejs nodejs-npm
 
@@ -31,6 +26,11 @@ RUN clojure -A:uberjar
 
 ## Create the deploy containerthing
 FROM openjdk:8-alpine
+
+# Pass in git commit SHA from build command
+ARG GIT_COMMIT=unknown
+
+ENV GIT_COMMIT=$GIT_COMMIT
 
 COPY --from=build /usr/app/dist/lilactown.jar /lilactown.jar
 
