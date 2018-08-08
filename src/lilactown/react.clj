@@ -75,14 +75,32 @@
       (merge {:displayName ~(str name)}
              ~definition))))
 
-(defmacro defpure [name & definition]
+(defmacro defpure
+  "Defines a React component class factory that implements
+  `shouldComponentUpdate` as a shallow equality check. Good for use with
+  immutable data structures."
+  [name & definition]
   `(def ~name
      (lilactown.react/pure-component
       (merge {:displayName ~(str name)}
              ~definition))))
 
-(defmacro defreactive [name & {:keys [displayName watch init should-update
-                                      render] :as definition}]
+(defmacro defreactive
+  "Defines a new ReactiveComponent factory from a given React component
+  definition. Special methods/properties are:
+
+   - :watch - a fn that returns a map of key-values where values are the atoms
+              to watch and reactively re-render
+
+   - :init - a function called before the watches are added to the atoms.
+             Gets passed in the uuid generated for the element and a reference
+             to the component.
+
+   - :should-update - a function that is passed in the element uuid, old value
+                      of the atom and new value of the atom - returns a boolean
+                      discerning whether the component should update or not."
+  [name & {:keys [displayName watch init should-update
+                  render] :as definition}]
   `(def ~name
      (lilactown.react/reactive-component
       (merge {:displayName ~(str name)}
