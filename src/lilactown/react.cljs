@@ -89,7 +89,7 @@
   (let [statics (into {} (filter (comp static? second) definition))]
     (-> definition
         (as-> m
-          (filter (comp not static? second) m)
+            (filter (comp not static? second) m)
           (into {} m))
         (bind-method :getInitialState)
         (bind-method :UNSAFE_componentWillMount)
@@ -136,15 +136,15 @@
            displayName]
     :or {should-update (fn [_ _ _ _] true)}
     :as definition}]
- (-> {:displayName (or displayName "ReactiveComponent")
+  (-> {:displayName (or displayName "ReactiveComponent")
 
        :UNSAFE_componentWillMount
        (fn [this]
          (let [id (random-uuid)]
            (lilactown.react/set-this! :watch-id id)
-           (t/debug "[reactive]" "Initializing" id)
+           (t/debug "[reactive]" "Mounting" id)
            (when init
-             (t/debug "[reactive]" "Mounting" id)
+             (t/debug "[reactive]" "Initializing" id)
              (init id this))))
 
        :componentDidMount
