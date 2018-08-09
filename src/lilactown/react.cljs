@@ -138,18 +138,16 @@
     :as definition}]
   (-> {:displayName (or displayName "ReactiveComponent")
 
-       :UNSAFE_componentWillMount
+       :componentDidMount
        (fn [this]
          (let [id (random-uuid)]
            (lilactown.react/set-this! :watch-id id)
            (t/debug "[reactive]" "Mounting" id)
+
            (when init
              (t/debug "[reactive]" "Initializing" id)
-             (init id this))))
+             (init id this))
 
-       :componentDidMount
-       (fn [this]
-         (let [id (lilactown.react/this :watch-id)]
            (when watch
              (doseq [[k w] (watch this)]
                (add-watch
