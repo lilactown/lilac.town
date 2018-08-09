@@ -3,7 +3,8 @@
             [lilactown.react :as r]
             [taoensso.timbre :as t]
             [react-dom :as react-dom]
-            [react-motion :as rm]))
+            [react-motion :as rm]
+            [goog.functions :as gfunc]))
 
 (def Motion (r/factory rm/Motion))
 
@@ -32,10 +33,12 @@
 (defn initial-letters! [id]
   (swap! !state assoc id initial-state))
 
-(defn swap-letters!
-  [& args]
-  (when @!should-change
-    (apply swap! !state args)))
+(def swap-letters!
+  (gfunc/debounce
+   (fn [& args]
+     (when @!should-change
+       (apply swap! !state args)))
+   10))
 
 (defn letter
   [first second on-enter style]
@@ -66,6 +69,7 @@
      (let [id (r/this :watch-id)]
        (swap-letters!
         (fn [cur]
+          (println (cur id))
           (assoc
            cur
            id
