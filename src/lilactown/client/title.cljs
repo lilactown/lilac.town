@@ -38,7 +38,7 @@
    (fn [& args]
      (when @!should-change
        (apply swap! !state args)))
-   10))
+   ))
 
 (defn letter
   [first second on-enter style]
@@ -69,7 +69,6 @@
      (let [id (r/this :watch-id)]
        (swap-letters!
         (fn [cur]
-          (println (cur id))
           (assoc
            cur
            id
