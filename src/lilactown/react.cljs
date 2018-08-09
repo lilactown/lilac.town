@@ -131,16 +131,25 @@
 
    - :should-update - a function that is passed in the element uuid, old value
                       of the atom and new value of the atom - returns a boolean
-                      discerning whether the component should update or not."
-  [{:keys [watch init should-update
-           displayName]
-    :or {should-update (fn [_ _ _ _] true)}
+                      discerning whether the component should update or not.
+
+   - :async? - a boolean that determines whether to re-render the component
+               using `setState` (async, low-priority) or `forceUpdate`
+               (immediately). Set to `false` if you are doing e.g. animations
+               or other things that HAVE to happen RIGHT NOW. Otherwise, leave
+               it defaulted to `true`."
+  [{:keys [watch init should-update async? displayName render]
+    :or {should-update (fn [_ _ _ _] true)
+         async? true}
     :as definition}]
   (-> {:displayName (or displayName "ReactiveComponent")
 
        :componentDidMount
        (fn [this]
-         (let [id (random-uuid)]
+         (let [id (random-uuid)
+               update (if async?
+                        #(. ^js this setState #js {})
+                        #(. ^js this forceUpdate))]
            (lilactown.react/set-this! :watch-id id)
            (t/debug "[reactive]" "Mounting" id)
 
@@ -155,7 +164,7 @@
                 id
                 (fn [_k _r old-v new-v]
                   (when (should-update k old-v new-v id)
-                    (. ^js this setState #js {}))))))))
+                    (update))))))))
 
        :componentWillUnmount
        (fn [this]

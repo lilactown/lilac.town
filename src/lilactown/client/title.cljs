@@ -136,8 +136,6 @@
              :left 92}}
     (Controls))))
 
-(def AsyncMode (r/factory react/unstable_AsyncMode))
-
 (defn ^{:export true} start! [node]
   (t/info "Title started")
-  (react-dom/render (AsyncMode (Title)) node))
+  (react-dom/render (Title) node))
