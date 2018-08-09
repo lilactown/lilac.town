@@ -11,7 +11,10 @@
                    :module-loader true
                    :modules {:main {:entries [lilactown.client.core]}
                              :title {:entries [lilactown.client.title]
-                                     :depends-on #{:main}}}
+                                     :depends-on #{:main}}
+                             :pts {:entries [lilactown.client.pts]
+                                   :depends-on #{:main}}}
+                   :js-options {:language-out :ecmascript6}
                    :compiler-options {:infer-externs :auto}}
           :workspaces {:target :browser
                        :output-dir "resources/public/workspaces/js/"
