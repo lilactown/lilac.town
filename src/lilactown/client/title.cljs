@@ -1,6 +1,7 @@
 (ns lilactown.client.title
   (:require [lilactown.react.dom :as dom]
             [lilactown.react :as r]
+            [react :as react]
             [taoensso.timbre :as t]
             [react-dom :as react-dom]
             [react-motion :as rm]
@@ -135,6 +136,8 @@
              :left 92}}
     (Controls))))
 
+(def AsyncMode (r/factory react/unstable_AsyncMode))
+
 (defn ^{:export true} start! [node]
   (t/info "Title started")
-  (react-dom/render (Title) node))
+  (react-dom/render (AsyncMode (Title)) node))

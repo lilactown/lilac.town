@@ -155,7 +155,7 @@
                 id
                 (fn [_k _r old-v new-v]
                   (when (should-update k old-v new-v id)
-                    (. ^js this forceUpdate))))))))
+                    (. ^js this setState #js {}))))))))
 
        :componentWillUnmount
        (fn [this]
