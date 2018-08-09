@@ -11,7 +11,7 @@
      ;; setup
      (let [space (-> (r/this :pts-canvas)
                      (pts/CanvasSpace.)
-                     (.setup #js {:bgColor "#fff"
+                     (.setup #js {;; :bgcolor "#fff"
                                   :resize true
                                   :retina true}))
            form (.getForm space)]
@@ -19,25 +19,42 @@
        (r/set-this! :form form)
 
        (.add ^js space
-             (fn []
-               (.point ^js form
-                       (.-pointer ^js space) 10)))
+             (fn [time, ftime]
+               (let [radius (* 20 (.cycle pts/Num (-> time
+                                                      (mod 1000)
+                                                      (/ 1000))))]
+                 (-> form
+                     (.fill "#09f")
+                     (.point (.-pointer ^js space)
+                             radius
+                             "circle")))))
 
        (-> space
            (.bindMouse)
            (.bindTouch))
 
        (-> space
-           (.playOnce 200)))))
+           (.play)))))
+
+  :destroy-chart
+  (r/send-this
+   (fn [this]
+     (-> (r/this :space)
+         (.stop)
+         (.removeAll))))
 
   :componentDidMount
   (fn [this]
     ((r/this :create-chart)))
 
-  :componentDidUpdate
+  :componentWillUnmount
   (fn [this]
-    (js/console.log "updated")
-    ((r/this :space :playOnce) 0))
+    ((r/this :destroy-chart)))
+
+  ;; :componentDidUpdate
+  ;; (fn [this]
+  ;;   (js/console.log "updated")
+  ;;   ((r/this :space :playOnce) 0))
 
   :render
   (fn [this]
