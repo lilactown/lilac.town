@@ -69,7 +69,7 @@
   and values are functions. Methods are automatically bound to the component
   class, and standard React methods automatically are passed in `this` as the
   first argument to them."
-  [name & definition]
+  [name & {:keys [render] :as definition}]
   `(def ~name
      (lilactown.react/component
       (merge {:displayName ~(str name)}
@@ -79,7 +79,7 @@
   "Defines a React component class factory that implements
   `shouldComponentUpdate` as a shallow equality check. Good for use with
   immutable data structures."
-  [name & definition]
+  [name & {:keys [render] :as definition}]
   `(def ~name
      (lilactown.react/pure-component
       (merge {:displayName ~(str name)}
