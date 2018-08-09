@@ -2,7 +2,8 @@
 {:dependencies
  [[com.taoensso/timbre "4.10.0"]
   [binaryage/devtools "0.9.10"]
-  [nubank/workspaces "1.0.0-preview5"]]
+  [com.cognitect/transit-clj "0.8.309"]
+  [nubank/workspaces "1.0.0-preview7"]]
  :source-paths ["src"]
  :builds {:client {:target :browser
                    :output-dir "resources/public/assets/js"
@@ -18,5 +19,7 @@
                        :devtools {:http-root "resources/public/workspaces"
                                   :http-port 3689
                                   :http-resource-root "."}
+                       ;; :compiler-options {:language-in :es6}
+                       :js-options {:language-out :ecmascript6}
                        :modules {:main {:entries [lilactown.workspace.core]}}}
           }}
