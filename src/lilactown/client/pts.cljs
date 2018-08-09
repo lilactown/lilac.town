@@ -4,8 +4,13 @@
             [react-dom :as react-dom]
             ["pts" :as pts]))
 
+(defn pt
+  ([] (pts/Pt.))
+  ([obj] (pts/Pt. (clj->js obj)))
+  ([& args] (apply pts/Pt. args)))
+
 (r/defcomponent Pts
-  :create-chart
+  :create-pts
   (r/send-this
    (fn [this]
      ;; setup
@@ -25,9 +30,11 @@
                                                       (/ 1000))))]
                  (-> form
                      (.fill "#09f")
-                     (.point (.-pointer ^js space)
-                             radius
-                             "circle")))))
+                     (.point ;; (.-pointer ^js space)
+                      (pt {:x 140 :y 80})
+                      radius
+                      "circle"))
+                 )))
 
        (-> space
            (.bindMouse)
@@ -36,25 +43,20 @@
        (-> space
            (.play)))))
 
-  :destroy-chart
+  :destroy-pts
   (r/send-this
    (fn [this]
-     (-> (r/this :space)
-         (.stop)
+     (-> ^js (r/this :space)
+         ^js (.stop)
          (.removeAll))))
 
   :componentDidMount
   (fn [this]
-    ((r/this :create-chart)))
+    ((r/this :create-pts)))
 
   :componentWillUnmount
   (fn [this]
-    ((r/this :destroy-chart)))
-
-  ;; :componentDidUpdate
-  ;; (fn [this]
-  ;;   (js/console.log "updated")
-  ;;   ((r/this :space :playOnce) 0))
+    ((r/this :destroy-pts)))
 
   :render
   (fn [this]
