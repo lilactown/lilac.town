@@ -64,6 +64,7 @@
   :should-update
   (fn [_ old-v new-v id]
     (not= (old-v id) (new-v id)))
+  :async? false
   :handle-enter
   (r/send-this
    (fn [this]
