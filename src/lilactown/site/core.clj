@@ -7,7 +7,8 @@
             [hiccup.core :refer [html]]
             [lilactown.site.home :as home]
             [lilactown.site.home.state :as state]
-            [lilactown.site.home.data :as data]))
+            [lilactown.site.home.data :as data]
+            [lilactown.site.workshop :as workshop]))
 
 (defn home [request]
   {:status 200
@@ -21,11 +22,17 @@
    :headers {"Content-Type" "text/plain"}
    :body state/version})
 
+(defn workshop [request]
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body (html (workshop/render))})
+
 (def app (-> (ring/ring-handler
               (ring/router
                ["/"
                 ["" {:get {:handler home}}]
-                ["version" {:get {:handler version}}]]
+                ["version" {:get {:handler version}}]
+                ["workshop" {:get {:handler workshop}}]]
                {:data {:middleware [wrap-params
                                     wrap-content-type]}})
               (ring/routes
