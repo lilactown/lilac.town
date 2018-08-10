@@ -36,7 +36,7 @@
 (r/defrc Foo
   {:watch (fn [this]
             {:state (cursor/select (r/props :app-db) :foo)})}
-  [{dispatch :dispatch :as props} {state :state}]
+  [{dispatch :dispatch} {state :state}]
   (dom/div
    (dom/div "Foo: " @state)
    (dom/button {:onClick #(dispatch :foo/update)}
