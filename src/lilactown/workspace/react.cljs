@@ -22,6 +22,9 @@
   (ct.react/react-card
    (Input)))
 
+
+;; Example of a redux-like pattern
+
 (defmulti dispatch (fn [action ref payload]
                      action))
 
