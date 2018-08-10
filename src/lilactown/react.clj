@@ -20,7 +20,7 @@
   "A helper macro for obtaining a value on the props object defined by the path
   of keys passed in while in a method on the component."
   [& keys]
-  `(props* ~'this ~@keys))
+  `(props* ~'this ~@(map name keys)))
 
 (defmacro children
   "A helper macro for obtaining the \"children\" prop while in a method on the

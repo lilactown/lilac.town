@@ -25,12 +25,9 @@
 (def app-db (atom {:foo "bar"
                        :baz 0}))
 
-(def foo-db (cursor/select app-db :foo))
-
-(def baz-db (cursor/select app-db :baz))
-
 (r/defrc Foo
-  {:watch (fn [_] {:state foo-db})}
+  {:watch (fn [this]
+            {:state (cursor/select (r/props :app-db) :foo)})}
   [_ {state :state}]
   (dom/div
    (dom/div "Foo: " @state)
@@ -38,7 +35,8 @@
                "Universe")))
 
 (r/defrc Baz
-  {:watch (fn [_] {:state baz-db})}
+  {:watch (fn [this]
+            {:state (cursor/select (r/props :app-db) :baz)})}
   [_ {state :state}]
   (dom/div
    (dom/div "Baz: " @state)
@@ -48,9 +46,5 @@
 (ws/defcard App-db
   (ct.react/react-card
    (dom/div
-    (Foo)
-    (Baz))))
-
-(ws/defcard state-management
-  (ct.react/react-card
-   (dom/div "State")))
+    (Foo {:app-db app-db})
+    (Baz {:app-db app-db}))))
