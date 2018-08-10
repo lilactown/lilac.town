@@ -35,7 +35,8 @@
 
 (r/defrc Foo
   {:watch (fn [this]
-            {:state (cursor/select (r/props :app-db) :foo)})}
+            {:state (-> (r/props :app-db)
+                        (cursor/select :foo))})}
   [{dispatch :dispatch} {state :state}]
   (dom/div
    (dom/div "Foo: " @state)
@@ -44,7 +45,8 @@
 
 (r/defrc Baz
   {:watch (fn [this]
-            {:state (cursor/select (r/props :app-db) :baz)})}
+            {:state (-> (r/props :app-db)
+                        (cursor/select :baz))})}
   [{dispatch :dispatch} {state :state}]
   (dom/div
    (dom/div "Baz: " @state)
