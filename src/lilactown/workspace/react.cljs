@@ -22,33 +22,35 @@
   (ct.react/react-card
    (Input)))
 
-(defonce app-db (atom {:foo "bar"
+(def app-db (atom {:foo "bar"
                        :baz 0}))
 
 (def foo-db (cursor/select app-db :foo))
 
 (def baz-db (cursor/select app-db :baz))
 
-(r/defreactive Foo
-  :watch (fn [_] {:state foo-db})
-  :render
-  (fn [this {state :state}]
-    (dom/div
-     (dom/div "Foo: " @state)
-     (dom/button {:onClick #(swap! app-db assoc :foo "42")}
-                 "Universe"))))
+(r/defrc Foo
+  {:watch (fn [_] {:state foo-db})}
+  [_ {state :state}]
+  (dom/div
+   (dom/div "Foo: " @state)
+   (dom/button {:onClick #(swap! app-db assoc :foo "42")}
+               "Universe")))
 
-(r/defreactive Baz
-  :watch (fn [_] {:state baz-db})
-  :render
-  (fn [this {state :state}]
-    (dom/div
-     (dom/div "Baz: " @state)
-     (dom/button {:onClick #(swap! app-db update :baz inc)}
-                 "+"))))
+(r/defrc Baz
+  {:watch (fn [_] {:state baz-db})}
+  [_ {state :state}]
+  (dom/div
+   (dom/div "Baz: " @state)
+   (dom/button {:onClick #(swap! app-db update :baz inc)}
+               "+")))
 
 (ws/defcard App-db
   (ct.react/react-card
    (dom/div
     (Foo)
     (Baz))))
+
+(ws/defcard state-management
+  (ct.react/react-card
+   (dom/div "State")))

@@ -85,6 +85,18 @@
       (merge {:displayName ~(str name)}
              ~definition))))
 
+(defmacro defrc [name {:keys [watch should-update async] :as opts} props & body]
+  `(def ~name
+     (lilactown.react/reactive-component
+      (assoc ~opts
+             :displayName ~(str name)
+             :render
+             (fn [this# watch#]
+               (let [~(first props) (lilactown.react/shallow-js->clj
+                                      (get-in$ this# "props"))
+                     ~(second props) watch#]
+                 ~@body))))))
+
 (defmacro defreactive
   "Defines a new ReactiveComponent factory from a given React component
   definition. Special methods/properties are:
