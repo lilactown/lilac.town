@@ -22,29 +22,42 @@
   (ct.react/react-card
    (Input)))
 
-(def app-db (atom {:foo "bar"
-                       :baz 0}))
+(defmulti dispatch (fn [action ref payload]
+                     action))
+
+(defmethod dispatch :foo/update
+  [action ref _]
+  (swap! ref assoc :foo 42))
+
+(defmethod dispatch :baz/update
+  [action ref _]
+  (swap! ref update :baz inc))
 
 (r/defrc Foo
   {:watch (fn [this]
             {:state (cursor/select (r/props :app-db) :foo)})}
-  [_ {state :state}]
+  [{dispatch :dispatch :as props} {state :state}]
   (dom/div
    (dom/div "Foo: " @state)
-   (dom/button {:onClick #(swap! app-db assoc :foo "42")}
+   (dom/button {:onClick #(dispatch :foo/update)}
                "Universe")))
 
 (r/defrc Baz
   {:watch (fn [this]
             {:state (cursor/select (r/props :app-db) :baz)})}
-  [_ {state :state}]
+  [{dispatch :dispatch} {state :state}]
   (dom/div
    (dom/div "Baz: " @state)
-   (dom/button {:onClick #(swap! app-db update :baz inc)}
+   (dom/button {:onClick #(dispatch :baz/update)}
                "+")))
 
 (ws/defcard App-db
   (ct.react/react-card
-   (dom/div
-    (Foo {:app-db app-db})
-    (Baz {:app-db app-db}))))
+   (let [app-db (atom {:foo "bar"
+                       :baz 0})
+         dispatcher #(dispatch %1 app-db %2)]
+     (dom/div
+      (Foo {:app-db app-db
+            :dispatch dispatcher})
+      (Baz {:app-db app-db
+            :dispatch dispatcher})))))
