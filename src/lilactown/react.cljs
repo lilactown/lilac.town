@@ -137,12 +137,20 @@
                using `setState` (async, low-priority) or `forceUpdate`
                (immediately). Set to `false` if you are doing e.g. animations
                or other things that HAVE to happen RIGHT NOW. Otherwise, leave
-               it defaulted to `true`."
+               it defaulted to `true`.
+
+   - :render - render function that is given `this` as it's first argument and
+               the map of atoms returned by `:watch` as it's second argument."
   [{:keys [watch init should-update async? displayName render]
     :or {should-update (fn [_ _ _ _] true)
          async? true}
     :as definition}]
   (-> {:displayName (or displayName "ReactiveComponent")
+
+       :getInitialState
+       (fn [this]
+         (when watch
+           #js {:watch (watch this)}))
 
        :componentDidMount
        (fn [this]
@@ -157,27 +165,30 @@
              (t/debug "[reactive]" "Initializing" id)
              (init id this))
 
-           (when watch
-             (doseq [[k w] (watch this)]
-               (add-watch
-                w
-                id
-                (fn [_k _r old-v new-v]
-                  (when (should-update k old-v new-v id)
-                    (update))))))))
+           (when (lilactown.react/this :state :watch)
+             (let [watches (lilactown.react/this :state :watch)]
+               (lilactown.react/set-this! :watched watches)
+               (doseq [[k w] watches]
+                 (println "adding watch" k w id)
+                 (add-watch
+                  w
+                  id
+                  (fn [_k _r old-v new-v]
+                    (when (should-update k old-v new-v id)
+                      (update)))))))))
 
        :componentWillUnmount
        (fn [this]
          (t/debug "[reactive]" "Unmounting" (lilactown.react/this :watch-id))
-         (when watch
-           (doseq [[k w] (watch this)]
+         (when (lilactown.react/this :state :watch)
+           (doseq [[k w] (lilactown.react/this :state :watch)]
              (remove-watch w (lilactown.react/this :watch-id)))))}
       (merge definition)
       (merge {:render
               (fn [this]
                 (t/debug "[reactive]" "Rendering" (lilactown.react/this :watch-id))
                 ((:render definition) this
-                 (when watch (watch this))
+                 (when watch (lilactown.react/this :state :watch))
                  ;; deref all the atoms in the watch map
                  ;; (when watch
                  ;;   (reduce-kv #(assoc %1 %2 @%3) {} (watch this)))

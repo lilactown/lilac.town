@@ -98,7 +98,16 @@
 
    - :should-update - a function that is passed in the element uuid, old value
                       of the atom and new value of the atom - returns a boolean
-                      discerning whether the component should update or not."
+                      discerning whether the component should update or not.
+
+   - :async? - a boolean that determines whether to re-render the component
+               using `setState` (async, low-priority) or `forceUpdate`
+               (immediately). Set to `false` if you are doing e.g. animations
+               or other things that HAVE to happen RIGHT NOW. Otherwise, leave
+               it defaulted to `true`.
+
+   - :render - render function that is given `this` as it's first argument and
+               the map of atoms returned by `:watch` as it's second argument."
   [name & {:keys [displayName watch init should-update
                   render] :as definition}]
   `(def ~name
