@@ -33,7 +33,6 @@
   :watch (fn [_] {:state foo-db})
   :render
   (fn [this {state :state}]
-    (println "foo render")
     (dom/div
      (dom/div "Foo: " @state)
      (dom/button {:onClick #(swap! app-db assoc :foo "42")}
@@ -43,7 +42,6 @@
   :watch (fn [_] {:state baz-db})
   :render
   (fn [this {state :state}]
-    (println "baz render")
     (dom/div
      (dom/div "Baz: " @state)
      (dom/button {:onClick #(swap! app-db update :baz inc)}
