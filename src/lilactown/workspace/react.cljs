@@ -6,7 +6,6 @@
 
 (defn on-change! [ref ev]
   (let [v (.. ev -target -value)]
-    (println v)
     (reset! ref v)))
 
 (r/defreactive Input

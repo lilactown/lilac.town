@@ -169,7 +169,6 @@
              (let [watches (lilactown.react/this :state :watch)]
                (lilactown.react/set-this! :watched watches)
                (doseq [[k w] watches]
-                 (println "adding watch" k w id)
                  (add-watch
                   w
                   id
