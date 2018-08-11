@@ -14,6 +14,17 @@
   (let [kseq (gobj/getKeys o)]
     (into {} (map (fn [k] [(keyword k) (aget o k)]) kseq))))
 
+(defn shallow-clj->js
+  "Convert a Clojure map to a Javascript object *shallowly*. This can be used
+   to pass arguments to Javascript functions which expect objects of certain
+   shapes but are *invariant* to the deeper contents. If `clj->js` were to be
+   used instead it would destroy the Clojure objects being passed in."
+  [map]
+  (let [o #js{}]
+    (doseq [[k v] map]
+      (aset o (name k) v))
+    o))
+
 (defn factory
   "Takes a React component, and creates a function that returns
   a new React element"
@@ -21,7 +32,7 @@
   (let [f (react/createFactory component)]
     (fn [props & children]
       (if (map? props)
-        (apply f (clj->js props) children)
+        (apply f (shallow-clj->js props) children)
 
         ;; props are children
         (apply f nil props children)))))
@@ -105,6 +116,14 @@
         (set-statics! statics)
         (factory))))
 
+(defn- updated? [A B]
+  (every? true?
+          (for [k (. js/Object keys A)]
+            (or
+             (:no-update (meta (gobj/get A k)))
+             (:no-update (meta (gobj/get B k)))
+             (= (gobj/get A k) (gobj/get B k))))))
+
 (defn pure-component
   "Creates a new component factory from a given React component definition that
   implements a shallow props equality check."
@@ -114,7 +133,7 @@
        :shouldComponentUpdate
        (fn [this props state]
          ;; use goog.obj/equals for now to shallow compare
-         (or (not (gobj/equals (lilactown.react/this :props) props))
+         (or (not (updated? props (lilactown.react/this :props)))
              (not (gobj/equals (lilactown.react/this :state) state)))))
       (component)))
 
