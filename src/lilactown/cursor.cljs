@@ -1,4 +1,6 @@
-(ns lilactown.cursor)
+(ns lilactown.cursor
+  (:require [clojure.zip]
+            [clojure.walk :as w]))
 
 (deftype ReadCursor [ref select meta]
   Object
@@ -25,15 +27,15 @@
                (fn [_ _ old-v new-v]
                  (let [old (select old-v)
                        new (select new-v)]
-                 (when (not= old new)
-                   (run key this old new))))))
+                   (when (not= old new)
+                     (run key this old new))))))
   (-remove-watch [this key]
     (remove-watch ref (list this key))
     this))
 
 (defn select
   ([ref selector]
-   (ReadCursor. ref selector nil))
+   (select ref selector nil))
 
   ([ref selector & {meta :meta}]
-   [ReadCursor. ref selector meta]))
+   (ReadCursor. ref selector meta)))

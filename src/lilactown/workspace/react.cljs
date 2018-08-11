@@ -25,6 +25,17 @@
 
 ;; Example of a redux-like pattern
 
+(defn select-props [structure]
+  (fn [this]
+    (reduce-kv
+     (fn [m k f]
+       (assoc m
+              k
+              (cursor/select
+               (r/get-in$ this "props" (name k)) f)))
+     {}
+     structure)))
+
 (defmulti dispatch (fn [action ref payload]
                      action))
 
@@ -37,20 +48,18 @@
   (swap! ref update :baz inc))
 
 (r/defrc Foo
-  {:watch (fn [this]
-            {:state (-> (r/props :app-db)
-                        (cursor/select :foo))})}
-  [{dispatch :dispatch} {state :state}]
+  {:watch (select-props
+           {:db #(get-in % [:foo :bar])})}
+  [{dispatch :dispatch} {state :db}]
   (dom/div
-   (dom/div "Foo: " @state)
+   (dom/div "Foo: " (prn-str @state))
    (dom/button {:onClick #(dispatch :foo/update)}
                "Universe")))
 
 (r/defrc Baz
-  {:watch (fn [this]
-            {:state (-> (r/props :app-db)
-                        (cursor/select :baz))})}
-  [{dispatch :dispatch} {state :state}]
+  {:watch (select-props
+           {:db :baz})}
+  [{dispatch :dispatch} {state :db}]
   (dom/div
    (dom/div "Baz: " @state)
    (dom/button {:onClick #(dispatch :baz/update)}
@@ -58,11 +67,11 @@
 
 (ws/defcard App-db
   (ct.react/react-card
-   (let [app-db (atom {:foo "bar"
+   (let [app-db (atom {:foo {:bar "asdf"}
                        :baz 0})
          dispatcher #(dispatch %1 app-db %2)]
      (dom/div
-      (Foo {:app-db app-db
+      (Foo {:db app-db
             :dispatch dispatcher})
-      (Baz {:app-db app-db
+      (Baz {:db app-db
             :dispatch dispatcher})))))
