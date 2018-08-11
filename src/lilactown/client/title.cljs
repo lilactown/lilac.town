@@ -47,14 +47,14 @@
     (if (> (:value style) halfway)
       (dom/span {:className "title"
                  :onMouseEnter on-enter
-                 :style {:transform (str "rotate(" (/ (:value style) 2) "turn)")
+                 :style #js {:transform (str "rotate(" (/ (:value style) 2) "turn)")
                          :display "inline-block"}}
                 first)
 
       (dom/span {:className "title"
                  :onMouseEnter on-enter
-                 :style {:transform (str "rotate(" (:value style) "turn)")
-                         :display "inline-block"}}
+                 :style #js {:transform (str "rotate(" (:value style) "turn)")
+                             :display "inline-block"}}
                 second))))
 
 (r/defreactive ToggleAnimate
@@ -84,8 +84,8 @@
           end (or (get-in @letter-state [id :end])
                   (:end initial-state))]
       (Motion
-       {:defaultStyle {:value start}
-        :style {:value (rm/spring end)}}
+       {:defaultStyle #js {:value start}
+        :style #js {:value (rm/spring end)}}
        (partial (r/children)
                 (r/this :handle-enter))))))
 
@@ -108,8 +108,8 @@
   :render
   (fn [this {:keys [!should-change?]}]
     (dom/div
-     {:style {:display "flex"
-              :opacity 0.6}}
+     {:style #js {:display "flex"
+                  :opacity 0.6}}
      (Control {:onClick (r/this :reset-end)} "<")
      (Control {:onClick (r/this :toggle-change)}
               (if @!should-change?
@@ -119,7 +119,7 @@
 
 (r/defnc Title []
   (dom/div
-   {:style {:position "relative"}}
+   {:style #js {:position "relative"}}
    (dom/h1
     (map create-letter [["w" "l"]
                         ["i" "i"]
@@ -132,9 +132,9 @@
                         ["o" "w"]
                         ["n" "n"]]))
    (dom/div
-    {:style {:position "absolute"
-             :bottom -20
-             :left 92}}
+    {:style #js {:position "absolute"
+                 :bottom -20
+                 :left 92}}
     (Controls))))
 
 (defn ^{:export true} start! [node]
