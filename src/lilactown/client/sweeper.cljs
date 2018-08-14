@@ -1,7 +1,8 @@
 (ns lilactown.client.sweeper
   (:require [lilactown.react :as r]
             [lilactown.react.dom :as dom]
-            [lilactown.css :as css]))
+            [lilactown.css :as css]
+            [react-dom :as react-dom]))
 
 ;; State
 
@@ -82,7 +83,8 @@
     :justify-content "center"
     :align-items "center"
     :box-shadow "2px 2px 3px rgba(100, 100, 100, .5)"
-    :cursor "pointer"}))
+    :cursor "pointer"
+    :border-radius "3px"}))
 
 (def cleared-style
   (css/edn
@@ -182,3 +184,6 @@
             (dom/button {:onClick #(reset-grid! (:size @state)
                                                 (:mines @state))} "Reset"))
    (Grid {:state (:grid @state)})))
+
+(defn start! [node]
+  (react-dom/render (Container) node))
