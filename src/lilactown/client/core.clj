@@ -4,7 +4,7 @@
   [:script {:type "lilactown/module"
             :data-module (name module)
             :data-init init
-            :data-ref ref}
+            :data-ref (str ref)}
    (prn-str data)])
 
 (defn main []
