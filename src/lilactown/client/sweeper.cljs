@@ -22,7 +22,8 @@
                          :marked? false
                          :cleared? false)]))))
 
-(def sweeper-state (atom {:grid (initial-grid 15 80)}))
+(def sweeper-state (atom {:controls {:size 15 :mines 80}
+                          :grid (initial-grid 15 80)}))
 
 (defn neighbors [row col]
   (let [grid (:grid @sweeper-state)]
@@ -118,11 +119,11 @@
                          [false true] (str marked-style " " hover-buzz-style)
                          ([true false]
                           [true true]) cleared-style)
-            :onClick (when (not cleared?)
-                       (if explodes?
-                         #(explode-square! row col)
-                         #(clear-square! row col)))
-            :onContextMenu (when (not cleared?)
+            :onClick (case [cleared? explodes?]
+                       [false true] #(explode-square! row col)
+                       [false false] #(clear-square! row col)
+                       nil)
+           :onContextMenu (when (not cleared?)
                              #(do
                                 (. % preventDefault)
                                 (if marked?
