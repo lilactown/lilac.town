@@ -5,7 +5,7 @@
 
 ;; State
 
-(defn initial-state [size mines]
+(defn initial-grid [size mines]
   ;; convert into a map so we can navigate the grid cheaply
   (into
    {}
@@ -22,10 +22,10 @@
                          :marked? false
                          :cleared? false)]))))
 
-(defonce grid-state (atom (initial-state 15 80)))
+(defonce sweeper-state (atom (initial-grid 15 80)))
 
 (defn neighbors [row col]
-  (let [grid @grid-state]
+  (let [grid @sweeper-state]
     [(grid [(inc row) col])
      (grid [(inc row) (inc col)])
      (grid [row (inc col)])
@@ -39,13 +39,13 @@
 ;; Events
 
 (defn clear-square! [row col]
-  (swap! grid-state update [row col] assoc :cleared? true))
+  (swap! sweeper-state update [row col] assoc :cleared? true))
 
 (defn mark-square! [row col]
-  (swap! grid-state update [row col] assoc :marked? true))
+  (swap! sweeper-state update [row col] assoc :marked? true))
 
 (defn reset-grid! [size mines]
-  (reset! grid-state (initial-state size mines)))
+  (reset! sweeper-state (initial-grid size mines)))
 
 
 ;; Styles
@@ -68,6 +68,11 @@
    square-style
    {:box-shadow "0 0 0"
     :cursor "default"}))
+
+(def marked-style
+  (css/edn
+   square-style
+   {:background-color "rgb(214, 200, 255)"}))
 
 (def hover-buzz-animation
   (css/keyframes
@@ -95,11 +100,11 @@
                         :gridRow row
                         :backgroundColor (when (and cleared? explodes?)
                                            "black")}
-            :className (str (if cleared?
-                              cleared-style
-                              square-style) " "
-                            (when (not cleared?)
-                              hover-buzz-style))
+            :className (case [cleared? marked?]
+                         [false false] (str square-style " " hover-buzz-style)
+                         [false true] (str marked-style " " hover-buzz-style)
+                         ([true false]
+                          [true true]) cleared-style)
             :onClick (when (not cleared?)
                        #(clear-square! row col))
             :onContextMenu (when (not cleared?)
@@ -134,6 +139,6 @@
 ;; Hook up to state
 
 (r/defrc Container
-  {:watch (fn [_] {:state grid-state})}
+  {:watch (fn [_] {:state sweeper-state})}
   [_ {state :state}]
   (Grid {:state @state}))
