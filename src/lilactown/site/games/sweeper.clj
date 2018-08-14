@@ -17,6 +17,7 @@
    [:a {:color "#371940"
         :text-decoration "none"}
     [:&:hover {:color "#9a549a"}]]
+   [:.title {:margin-bottom "10px"}]
    [:#main {:max-width "670px"
             :margin "40px auto 20px"}]
    [:#sweeper {:background-color "#f9f7ff"
