@@ -1,8 +1,7 @@
 (ns lilactown.client.sweeper
   (:require [lilactown.react :as r]
             [lilactown.react.dom :as dom]
-            [lilactown.css :as css]
-            [lilactown.cursor :as cursor]))
+            [lilactown.css :as css]))
 
 ;; State
 
