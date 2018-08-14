@@ -8,7 +8,7 @@
             [lilactown.site.home :as home]
             [lilactown.site.home.state :as state]
             [lilactown.site.home.data :as data]
-            [lilactown.site.workshop :as workshop]))
+            [lilactown.site.games :as games]))
 
 (defn home [request]
   {:status 200
@@ -22,17 +22,17 @@
    :headers {"Content-Type" "text/plain"}
    :body state/version})
 
-(defn workshop [request]
+(defn games [request]
   {:status 200
    :headers {"Content-Type" "text/html"}
-   :body (html (workshop/render))})
+   :body (html (games/render))})
 
 (def app (-> (ring/ring-handler
               (ring/router
                ["/"
                 ["" {:get {:handler home}}]
                 ["version" {:get {:handler version}}]
-                ["workshop" {:get {:handler workshop}}]]
+                ["games" {:get {:handler games}}]]
                {:data {:middleware [wrap-params
                                     wrap-content-type]}})
               (ring/routes
