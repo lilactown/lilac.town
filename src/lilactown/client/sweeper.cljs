@@ -185,5 +185,5 @@
                                                 (:mines @state))} "Reset"))
    (Grid {:state (:grid @state)})))
 
-(defn start! [node]
+(defn ^:export start! [node]
   (react-dom/render (Container) node))
