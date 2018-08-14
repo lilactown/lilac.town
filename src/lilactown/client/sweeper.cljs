@@ -32,7 +32,9 @@
      (grid [row (inc col)])
      (grid [(dec row) col])
      (grid [(dec row) (dec col)])
-     (grid [row (dec col)])]))
+     (grid [row (dec col)])
+     (grid [(inc row) (dec col)])
+     (grid [(dec row) (inc col)])]))
 
 
 ;; Events
@@ -59,7 +61,8 @@
 (def cleared-style
   (css/edn
    square-style
-   {:box-shadow "0 0 0"}))
+   {:box-shadow "0 0 0"
+    :cursor "default"}))
 
 (def hover-buzz-animation
   (css/keyframes
@@ -85,19 +88,25 @@
   [{:keys [col row explodes? marked? cleared?]}]
   (dom/div {:style #js {:gridColumn col
                         :gridRow row
-                        :backgroundColor (when explodes? "black")}
+                        :backgroundColor (when (and cleared? explodes?)
+                                           "black")}
             :className (str (if cleared?
                               cleared-style
                               square-style) " "
                             (when (not cleared?)
                               hover-buzz-style))
-            :onClick #(clear-square! row col)}
-           (case [cleared? marked?]
-             [false false] nil
-             [false true] "?"
-             ([true false]
-              [true true]) (count (filter :explodes?
-                                          (neighbors row col))))))
+            :onClick (when (not cleared?)
+                       #(clear-square! row col))}
+           (case [cleared? marked? explodes?]
+             ([false false false]
+              [false false true]) nil
+             ([false true false]
+              [false true true]) "?"
+             ([true false false]
+              [true true false]) (count (filter :explodes?
+                                                (neighbors row col)))
+             ([true false true]
+              [true true true] "*"))))
 
 (r/defnc Grid [{state :state}]
   (dom/div
@@ -106,7 +115,7 @@
             ;; keys are [col row], value is square state
             (for [[[row col] square] state]
               (Square (assoc square
-                             :key [col row]
+                             :key [row col]
                              :col col
                              :row row))))))
 
