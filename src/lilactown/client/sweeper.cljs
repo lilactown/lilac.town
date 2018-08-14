@@ -24,8 +24,8 @@
                          :cleared? false)]))))
 
 (def sweeper-state (atom {:size 15
-                          :mines 80
-                          :grid (initial-grid 15 80)}))
+                          :mines 10
+                          :grid (initial-grid 10 10)}))
 
 (defn neighbors [row col]
   (let [grid (:grid @sweeper-state)]
