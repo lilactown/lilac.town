@@ -28,16 +28,15 @@
                           :wiggle? true
                           :grid (initial-grid 10 10)}))
 
-(defn neighbors [row col]
-  (let [grid (:grid @sweeper-state)]
-    [(grid [(inc row) col])
-     (grid [(inc row) (inc col)])
-     (grid [row (inc col)])
-     (grid [(dec row) col])
-     (grid [(dec row) (dec col)])
-     (grid [row (dec col)])
-     (grid [(inc row) (dec col)])
-     (grid [(dec row) (inc col)])]))
+(defn neighbors [grid row col]
+  [[(inc row) col]
+   [(inc row) (inc col)]
+   [row (inc col)]
+   [(dec row) col]
+   [(dec row) (dec col)]
+   [row (dec col)]
+   [(inc row) (dec col)]
+   [(dec row) (inc col)]])
 
 (defn clear-grid [grid]
   (reduce-kv
@@ -46,8 +45,22 @@
    {}
    grid))
 
+(defn count-mine-neighbors [grid row col]
+  (->> (neighbors grid row col)
+       (map grid)
+       (filter :explodes?
+               )
+       (count )))
 
 ;; Events
+
+(defn all-safe-neighbors [grid row col]
+  ;; flood fill algorithm
+  (if (:cleared? (grid [row col]))
+    nil
+    (filter
+     (fn [])
+     (neighbors grid row col))))
 
 (defn clear-square! [row col]
   (swap! sweeper-state update-in [:grid [row col]] assoc :cleared? true))
@@ -172,8 +185,7 @@
 
 (r/defnc Square
   [{:keys [col row explodes? marked? cleared? wiggle?]}]
-  (let [mine-count (count (filter :explodes?
-                                  (neighbors row col)))]
+  (let [mine-count (count-mine-neighbors (:grid @sweeper-state) row col)]
     (dom/div {:style #js {:gridColumn col
                           :gridRow row
                           :backgroundColor (when (and cleared? (not explodes?))
