@@ -175,7 +175,8 @@
        (fn [this]
          (let [id (random-uuid)
                update (if async?
-                        #(. ^js this setState #js {:update (.getTime (js/Date.))})
+                        #(. ^js this setState #js
+                            {:update (.getTime (js/Date.))})
                         #(. ^js this forceUpdate))]
            (lilactown.react/set-this! :watch-id id)
            (t/debug "[reactive]" "Mounting" id)
