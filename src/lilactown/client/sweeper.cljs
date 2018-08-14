@@ -42,6 +42,9 @@
 (defn clear-square! [row col]
   (swap! grid-state update [row col] assoc :cleared? true))
 
+(defn reset-grid! [size mines]
+  (reset! grid-state (initial-state size mines)))
+
 
 ;; Styles
 
@@ -110,6 +113,8 @@
 
 (r/defnc Grid [{state :state}]
   (dom/div
+   (dom/div {:style #js {:padding "20px 0"}}
+            (dom/button {:onClick #(reset-grid! 15 80)} "Reset"))
    (dom/div {:style #js {:display "grid"
                          :gridGap "5px"}}
             ;; keys are [col row], value is square state
