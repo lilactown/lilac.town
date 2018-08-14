@@ -120,7 +120,7 @@
               [true true false]) (count (filter :explodes?
                                                 (neighbors row col)))
              ([true false true]
-              [true true true] "*"))))
+              [true true true] "✸"))))
 
 (r/defnc Grid [{state :state}]
   (dom/div
