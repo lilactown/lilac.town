@@ -172,37 +172,49 @@
 
 (r/defnc Square
   [{:keys [col row explodes? marked? cleared? wiggle?]}]
-  (dom/div {:style #js {:gridColumn col
-                        :gridRow row}
-            :className (case [cleared? marked?]
-                         [false false]
-                         (str square-style " " (when wiggle? hover-buzz-style))
-                         [false true]
-                         (str marked-style " " (when wiggle? hover-buzz-style))
-                         ([true false]
-                          [true true]) (if explodes?
-                                         exploded-style
-                                         cleared-style))
-            :onClick (case [cleared? explodes?]
-                       [false true] #(explode-square! row col)
-                       [false false] #(clear-square! row col)
-                       nil)
-            :onContextMenu (when (not cleared?)
-                             #(do
-                                (. % preventDefault)
-                                (if marked?
-                                  (unmark-square! row col)
-                                  (mark-square! row col))))}
-           (case [cleared? marked? explodes?]
-             ([false false false]
-              [false false true]) nil
-             ([false true false]
-              [false true true]) "?"
-             ([true false false]
-              [true true false]) (count (filter :explodes?
-                                                (neighbors row col)))
-             ([true false true]
-              [true true true] "✸"))))
+  (let [mine-count (count (filter :explodes?
+                                  (neighbors row col)))]
+    (dom/div {:style #js {:gridColumn col
+                          :gridRow row
+                          :backgroundColor (when (and cleared? (not explodes?))
+                                             (case mine-count
+                                               0 "green"
+                                               1 "blue"
+                                               2 "blue"
+                                               3 "yellow"
+                                               4 "orange"
+                                               5 "orange"
+                                               6 "red"
+                                               7 "red"
+                                               8 "red"))}
+              :className (case [cleared? marked?]
+                           [false false]
+                           (str square-style " " (when wiggle? hover-buzz-style))
+                           [false true]
+                           (str marked-style " " (when wiggle? hover-buzz-style))
+                           ([true false]
+                            [true true]) (if explodes?
+                                           exploded-style
+                                           cleared-style))
+              :onClick (case [cleared? explodes?]
+                         [false true] #(explode-square! row col)
+                         [false false] #(clear-square! row col)
+                         nil)
+              :onContextMenu (when (not cleared?)
+                               #(do
+                                  (. % preventDefault)
+                                  (if marked?
+                                    (unmark-square! row col)
+                                    (mark-square! row col))))}
+             (case [cleared? marked? explodes?]
+               ([false false false]
+                [false false true]) nil
+               ([false true false]
+                [false true true]) "?"
+               ([true false false]
+                [true true false]) mine-count
+               ([true false true]
+                [true true true] "✸")))))
 
 (r/defnc Grid [{state :state wiggle? :wiggle?}]
   (dom/div {:style #js {:display "grid"
