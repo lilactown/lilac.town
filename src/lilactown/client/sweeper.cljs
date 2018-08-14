@@ -23,7 +23,7 @@
                          :marked? false
                          :cleared? false)]))))
 
-(def sweeper-state (atom {:size 10
+(defonce sweeper-state (atom {:size 10
                           :mines 10
                           :wiggle? true
                           :grid (initial-grid 10 10)}))
@@ -178,14 +178,14 @@
                           :gridRow row
                           :backgroundColor (when (and cleared? (not explodes?))
                                              (case mine-count
-                                               0 "green"
-                                               1 "blue"
-                                               2 "blue"
-                                               3 "yellow"
+                                               0 "#5cc75c"
+                                               1 "#ababfb"
+                                               2 "#8484ff"
+                                               3 "#ffdc33"
                                                4 "orange"
-                                               5 "orange"
-                                               6 "red"
-                                               7 "red"
+                                               5 "#ff8100"
+                                               6 "#ff7878"
+                                               7 "#ff4d4d"
                                                8 "red"))}
               :className (case [cleared? marked?]
                            [false false]
