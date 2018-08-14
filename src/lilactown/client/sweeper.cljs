@@ -195,5 +195,4 @@
    (Grid {:state (:grid @state)})))
 
 (defn ^:export start! [node]
-  (println node)
   (react-dom/render (Container) node))
