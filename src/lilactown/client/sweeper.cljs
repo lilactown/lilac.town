@@ -4,17 +4,20 @@
             [lilactown.css :as css]))
 
 (defn initial-state [size mines]
-  (for [[i square] (-> (- (* size size) mines) ;; size of grid minus the number of mines
-                       (repeat {:explodes? false}) ;; map them to squares that don't explode
-                       (into (repeat mines {:explodes? true})) ;; add squares that do explode
-                       (shuffle) ;; shuffle all of them so that they're in random order
-                       ;; associate the index with each square [i square]
-                       (as-> l (map-indexed vector l)))]
-    (assoc square
-           ;; we add 1 since CSS grid wants 1..n
-           :row (inc (quot i size))
-           :col (inc (mod i size))
-           :marked? false)))
+  ;; convert into a map so we can navigate the grid cheaply
+  (into
+   {}
+   (for [[i square] (-> (- (* size size) mines) ;; size of grid minus the number of mines
+                        (repeat {:explodes? false}) ;; map them to squares that don't explode
+                        (into (repeat mines {:explodes? true})) ;; add squares that do explode
+                        (shuffle) ;; shuffle all of them so that they're in random order
+                        ;; associate the index with each square [i square]
+                        (as-> l (map-indexed vector l)))]
+     ;; we add 1 since CSS grid wants 1..n
+     (let [row (inc (quot i size))
+           col (inc (mod i size))]
+       [[row col] (assoc square
+                         :marked? false)]))))
 
 (def square-style
   (fn [explodes?]
@@ -41,8 +44,11 @@
   (dom/div
    (dom/div {:style #js {:display "grid"
                          :gridGap "5px"}}
-            (for [square state]
-              (Square square)))))
+            ;; keys are [col row], value is square state
+            (for [[[col row] square] state]
+              (Square (assoc square
+                             :col col
+                             :row row))))))
 
 (r/defnc Container []
   (Grid {:state (initial-state 15 80)}))
