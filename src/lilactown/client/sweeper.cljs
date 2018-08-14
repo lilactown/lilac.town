@@ -1,45 +1,48 @@
 (ns lilactown.client.sweeper
   (:require [lilactown.react :as r]
-            [lilactown.react.dom :as dom]))
-
-(defn initial-square [size n s]
-  (assoc s
-         :row (inc (quot n size))
-         :col (inc (mod n size))
-         :marked? false))
+            [lilactown.react.dom :as dom]
+            [lilactown.css :as css]))
 
 (defn initial-state [size mines]
-  ;; (shuffle
-  ;;  (for [row (range 1 size)
-  ;;        col (range 1 size)]
-  ;;    {:explodes? (<= (* row col) mines)}))
-  (-> (- (* size size) mines)
-      (repeat {:explodes? false})
-      (into (repeat mines {:explodes? true}))
-      (shuffle)
-      (as-> squares
-          (map-indexed (partial initial-square size) squares))))
+  (for [[i square] (-> (- (* size size) mines) ;; size of grid minus the number of mines
+                       (repeat {:explodes? false}) ;; map them to squares that don't explode
+                       (into (repeat mines {:explodes? true})) ;; add squares that do explode
+                       (shuffle) ;; shuffle all of them so that they're in random order
+                       ;; associate the index with each square [i square]
+                       (as-> l (map-indexed vector l)))]
+    (assoc square
+           ;; we add 1 since CSS grid wants 1..n
+           :row (inc (quot i size))
+           :col (inc (mod i size))
+           :marked? false)))
+
+(def square-style
+  (fn [explodes?]
+    (css/edn
+     {:width "30px"
+      :height "30px"
+      :background-color (if explodes?
+                          "black"
+                          "rgb(187, 164, 255)")
+      :color "white"
+      :font-family "sans-serif"
+      :display "flex"
+      :justify-content "center"
+      :align-items "center"
+      :box-shadow "2px 2px 3px rgba(100, 100, 100, .5)"})))
 
 (r/defnc Square [{:keys [col row explodes? marked?]}]
   (dom/div {:style #js {:gridColumn col
-                        :gridRow row
-                        :width "30px"
-                        :height "30px"
-                        :backgroundColor (if explodes?
-                                           "black"
-                                           "rgb(187, 164, 255)")
-                        :color "white"
-                        :fontFamily "sans-serif"
-                        :display "flex"
-                        :justifyContent "center"
-                        :alignItems "center"}}
+                        :gridRow row}
+            :className (square-style explodes?)}
            (when marked? "?")))
 
-(r/defnc Container []
+(r/defnc Grid [{state :state}]
   (dom/div
    (dom/div {:style #js {:display "grid"
-                         :gridGap "5px"
-                         ;; :gridTemplateColumns "repeat(10, 1fr)"
-                         }}
-            (for [square (initial-state 10 10)]
+                         :gridGap "5px"}}
+            (for [square state]
               (Square square)))))
+
+(r/defnc Container []
+  (Grid {:state (initial-state 15 80)}))
