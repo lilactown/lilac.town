@@ -23,8 +23,9 @@
                          :marked? false
                          :cleared? false)]))))
 
-(def sweeper-state (atom {:size 15
+(def sweeper-state (atom {:size 10
                           :mines 10
+                          :wiggle? true
                           :grid (initial-grid 10 10)}))
 
 (defn neighbors [row col]
@@ -68,6 +69,9 @@
 
 (defn update-mines! [mines]
   (swap! sweeper-state assoc :mines mines))
+
+(defn toggle-wiggle! []
+  (swap! sweeper-state update :wiggle? not))
 
 
 ;; Styles
@@ -167,12 +171,14 @@
 ;; Components
 
 (r/defnc Square
-  [{:keys [col row explodes? marked? cleared?]}]
+  [{:keys [col row explodes? marked? cleared? wiggle?]}]
   (dom/div {:style #js {:gridColumn col
                         :gridRow row}
             :className (case [cleared? marked?]
-                         [false false] (str square-style " " hover-buzz-style)
-                         [false true] (str marked-style " " hover-buzz-style)
+                         [false false]
+                         (str square-style " " (when wiggle? hover-buzz-style))
+                         [false true]
+                         (str marked-style " " (when wiggle? hover-buzz-style))
                          ([true false]
                           [true true]) (if explodes?
                                          exploded-style
@@ -198,7 +204,7 @@
              ([true false true]
               [true true true] "✸"))))
 
-(r/defnc Grid [{state :state}]
+(r/defnc Grid [{state :state wiggle? :wiggle?}]
   (dom/div {:style #js {:display "grid"
                         :gridGap "5px"
                         :gridAutoColumns "min-content"
@@ -208,7 +214,8 @@
              (Square (assoc square
                             :key [row col]
                             :col col
-                            :row row)))))
+                            :row row
+                            :wiggle? wiggle?)))))
 
 
 ;; Hook up to state
@@ -243,8 +250,10 @@
                                                 (:mines @state))} "Reset")
             (dom/div
              {:style #js {:padding "0 10px"}}
-             "Wiggle? " (dom/input {:type "checkbox"})))
-   (Grid {:state (:grid @state)})))
+             "Wiggle? " (dom/input {:type "checkbox"
+                                    :checked (:wiggle? @state)
+                                    :onChange #(toggle-wiggle!)})))
+   (Grid {:state (:grid @state) :wiggle? (:wiggle? @state)})))
 
 (defn ^:export start! [node]
   (react-dom/render (Container) node))
