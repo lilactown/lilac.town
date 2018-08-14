@@ -22,10 +22,10 @@
                          :marked? false
                          :cleared? false)]))))
 
-(defonce sweeper-state (atom (initial-grid 15 80)))
+(defonce sweeper-state (atom {:grid (initial-grid 15 80)}))
 
 (defn neighbors [row col]
-  (let [grid @sweeper-state]
+  (let [grid (:grid @sweeper-state)]
     [(grid [(inc row) col])
      (grid [(inc row) (inc col)])
      (grid [row (inc col)])
@@ -39,13 +39,16 @@
 ;; Events
 
 (defn clear-square! [row col]
-  (swap! sweeper-state update [row col] assoc :cleared? true))
+  (swap! sweeper-state update-in [:grid [row col]] assoc :cleared? true))
 
 (defn mark-square! [row col]
-  (swap! sweeper-state update [row col] assoc :marked? true))
+  (swap! sweeper-state update-in [:grid [row col]] assoc :marked? true))
+
+(defn explode-square! [row col]
+  )
 
 (defn reset-grid! [size mines]
-  (reset! sweeper-state (initial-grid size mines)))
+  (swap! sweeper-state update :grid #(initial-grid size mines)))
 
 
 ;; Styles
@@ -141,4 +144,5 @@
 (r/defrc Container
   {:watch (fn [_] {:state sweeper-state})}
   [_ {state :state}]
-  (Grid {:state @state}))
+  (println @state)
+  (Grid {:state (:grid @state)}))
