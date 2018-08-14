@@ -20,7 +20,7 @@
       (as-> squares
           (map-indexed (partial initial-square size) squares))))
 
-(r/defnc Cell [{:keys [col row explodes? marked?]}]
+(r/defnc Square [{:keys [col row explodes? marked?]}]
   (dom/div {:style #js {:gridColumn col
                         :gridRow row
                         :width "30px"
@@ -42,4 +42,4 @@
                          ;; :gridTemplateColumns "repeat(10, 1fr)"
                          }}
             (for [square (initial-state 10 10)]
-              (Cell square)))))
+              (Square square)))))
