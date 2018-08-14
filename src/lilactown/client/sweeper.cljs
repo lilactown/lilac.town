@@ -25,7 +25,6 @@
 
 (def sweeper-state (atom {:size 10
                           :mines 10
-                          :wiggle? true
                           :grid (initial-grid 10 10)}))
 
 (defn neighbors [row col]
@@ -70,10 +69,6 @@
 (defn update-mines! [mines]
   (swap! sweeper-state assoc :mines mines))
 
-(defn toggle-wiggle! []
-  (swap! sweeper-state update :wiggle? not))
-
-
 ;; Styles
 
 (def square-style
@@ -107,48 +102,6 @@
    {:color "white"
     :background-color "black"}))
 
-(def hover-buzz-animation
-  (css/keyframes
-   "10% {
-    -webkit-transform: translateX(3px) rotate(2deg);
-    transform: translateX(3px) rotate(2deg);
-  }
-  20% {
-    -webkit-transform: translateX(-3px) rotate(-2deg);
-    transform: translateX(-3px) rotate(-2deg);
-  }
-  30% {
-    -webkit-transform: translateX(3px) rotate(2deg);
-    transform: translateX(3px) rotate(2deg);
-  }
-  40% {
-    -webkit-transform: translateX(-3px) rotate(-2deg);
-    transform: translateX(-3px) rotate(-2deg);
-  }
-  50% {
-    -webkit-transform: translateX(2px) rotate(1deg);
-    transform: translateX(2px) rotate(1deg);
-  }
-  60% {
-    -webkit-transform: translateX(-2px) rotate(-1deg);
-    transform: translateX(-2px) rotate(-1deg);
-  }
-  70% {
-    -webkit-transform: translateX(2px) rotate(1deg);
-    transform: translateX(2px) rotate(1deg);
-  }
-  80% {
-    -webkit-transform: translateX(-2px) rotate(-1deg);
-    transform: translateX(-2px) rotate(-1deg);
-  }
-  90% {
-    -webkit-transform: translateX(1px) rotate(0);
-    transform: translateX(1px) rotate(0);
-  }
-  100% {
-    -webkit-transform: translateX(-1px) rotate(0);
-    transform: translateX(-1px) rotate(0);
-  }")
   ;; (css/keyframes
   ;;  "50% {
   ;;     transform: translateX(3px) rotate(2deg)
@@ -158,27 +111,14 @@
   ;;  }")
   )
 
-(def hover-buzz-style
-  (css/edn
-   {"&:hover, &:focus, &:active"
-    {:animation-name hover-buzz-animation
-     :animation-duration "0.75s"
-     :animation-timing-function "linear"
-     :animation-iteration-count "1"
-     }}))
-
 
 ;; Components
 
 (r/defnc Square
-  [{:keys [col row explodes? marked? cleared? wiggle?]}]
+  [{:keys [col row explodes? marked? cleared?]}]
   (dom/div {:style #js {:gridColumn col
                         :gridRow row}
             :className (case [cleared? marked?]
-                         [false false]
-                         (str square-style " " (when wiggle? hover-buzz-style))
-                         [false true]
-                         (str marked-style " " (when wiggle? hover-buzz-style))
                          ([true false]
                           [true true]) (if explodes?
                                          exploded-style
@@ -204,7 +144,7 @@
              ([true false true]
               [true true true] "✸"))))
 
-(r/defnc Grid [{state :state wiggle? :wiggle?}]
+(r/defnc Grid [{state :state}]
   (dom/div {:style #js {:display "grid"
                         :gridGap "5px"
                         :gridAutoColumns "min-content"
@@ -214,8 +154,7 @@
              (Square (assoc square
                             :key [row col]
                             :col col
-                            :row row
-                            :wiggle? wiggle?)))))
+                            :row row)))))
 
 
 ;; Hook up to state
@@ -250,10 +189,8 @@
                                                 (:mines @state))} "Reset")
             (dom/div
              {:style #js {:padding "0 10px"}}
-             "Wiggle? " (dom/input {:type "checkbox"
-                                    :checked (:wiggle? @state)
-                                    :onChange #(toggle-wiggle!)})))
-   (Grid {:state (:grid @state) :wiggle? (:wiggle? @state)})))
+             ))
+   (Grid {:state (:grid @state)})))
 
 (defn ^:export start! [node]
   (react-dom/render (Container) node))
