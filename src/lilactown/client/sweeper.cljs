@@ -1,7 +1,8 @@
 (ns lilactown.client.sweeper
   (:require [lilactown.react :as r]
             [lilactown.react.dom :as dom]
-            [lilactown.css :as css]))
+            [lilactown.css :as css]
+            [lilactown.cursor :as cursor]))
 
 ;; State
 
@@ -19,9 +20,26 @@
      (let [row (inc (quot i size))
            col (inc (mod i size))]
        [[row col] (assoc square
-                         :marked? false)]))))
+                         :marked? false
+                         :cleared? false)]))))
 
 (def grid-state (atom (initial-state 15 80)))
+
+(defn neighbors [row col]
+  (let [grid @grid-state]
+    [(grid [(inc row) col])
+     (grid [(inc row) (inc col)])
+     (grid [row (inc col)])
+     (grid [(dec row) col])
+     (grid [(dec row) (dec col)])
+     (grid [row (dec col)])]))
+
+
+;; Events
+
+(defn clear-square! [row col]
+  (swap! grid-state update [row col] assoc :cleared? true))
+
 
 ;; Styles
 
@@ -35,7 +53,13 @@
     :display "flex"
     :justify-content "center"
     :align-items "center"
-    :box-shadow "2px 2px 3px rgba(100, 100, 100, .5)"}))
+    :box-shadow "2px 2px 3px rgba(100, 100, 100, .5)"
+    :cursor "pointer"}))
+
+(def cleared-style
+  (css/edn
+   square-style
+   {:box-shadow "0 0 0"}))
 
 (def hover-buzz-animation
   (css/keyframes
@@ -58,21 +82,29 @@
 ;; Components
 
 (r/defnc Square
-  ;; {:watch (fn [_] {:hover? (atom false)})}
-  [{:keys [col row explodes? marked?]} ;; {:keys [hover?]}
-   ]
+  [{:keys [col row explodes? marked? cleared?]}]
   (dom/div {:style #js {:gridColumn col
                         :gridRow row
                         :backgroundColor (when explodes? "black")}
-            :className (str square-style " " hover-buzz-style)}
-           (when marked? "?")))
+            :className (str (if cleared?
+                              cleared-style
+                              square-style) " "
+                            (when (not cleared?)
+                              hover-buzz-style))
+            :onClick #(clear-square! row col)}
+           (case [cleared? marked?]
+             [false false] nil
+             [false true] "?"
+             ([true false]
+              [true true]) (count (filter :explodes?
+                                          (neighbors row col))))))
 
 (r/defnc Grid [{state :state}]
   (dom/div
    (dom/div {:style #js {:display "grid"
                          :gridGap "5px"}}
             ;; keys are [col row], value is square state
-            (for [[[col row] square] state]
+            (for [[[row col] square] state]
               (Square (assoc square
                              :key [col row]
                              :col col
