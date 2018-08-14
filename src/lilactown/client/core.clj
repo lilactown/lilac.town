@@ -8,5 +8,5 @@
    (prn-str data)])
 
 (defn main []
-  [:script#mainjs {:src "assets/js/main.js" :async true
+  [:script#mainjs {:src "/assets/js/main.js" :async true
                    :type "text/javascript"}])
