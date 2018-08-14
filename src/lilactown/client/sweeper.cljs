@@ -99,20 +99,63 @@
 
 (def hover-buzz-animation
   (css/keyframes
-   "50% {
-      transform: translateX(3px) rotate(2deg)
-   }
-   100% {
-     transform: translateX(-3px) rotate(-2deg)
-   }"))
+   "10% {
+    -webkit-transform: translateX(3px) rotate(2deg);
+    transform: translateX(3px) rotate(2deg);
+  }
+  20% {
+    -webkit-transform: translateX(-3px) rotate(-2deg);
+    transform: translateX(-3px) rotate(-2deg);
+  }
+  30% {
+    -webkit-transform: translateX(3px) rotate(2deg);
+    transform: translateX(3px) rotate(2deg);
+  }
+  40% {
+    -webkit-transform: translateX(-3px) rotate(-2deg);
+    transform: translateX(-3px) rotate(-2deg);
+  }
+  50% {
+    -webkit-transform: translateX(2px) rotate(1deg);
+    transform: translateX(2px) rotate(1deg);
+  }
+  60% {
+    -webkit-transform: translateX(-2px) rotate(-1deg);
+    transform: translateX(-2px) rotate(-1deg);
+  }
+  70% {
+    -webkit-transform: translateX(2px) rotate(1deg);
+    transform: translateX(2px) rotate(1deg);
+  }
+  80% {
+    -webkit-transform: translateX(-2px) rotate(-1deg);
+    transform: translateX(-2px) rotate(-1deg);
+  }
+  90% {
+    -webkit-transform: translateX(1px) rotate(0);
+    transform: translateX(1px) rotate(0);
+  }
+  100% {
+    -webkit-transform: translateX(-1px) rotate(0);
+    transform: translateX(-1px) rotate(0);
+  }")
+  ;; (css/keyframes
+  ;;  "50% {
+  ;;     transform: translateX(3px) rotate(2deg)
+  ;;  }
+  ;;  100% {
+  ;;    transform: translateX(-3px) rotate(-2deg)
+  ;;  }")
+  )
 
 (def hover-buzz-style
   (css/edn
    {"&:hover, &:focus, &:active"
     {:animation-name hover-buzz-animation
-     :animation-duration "0.15s"
+     :animation-duration "0.75s"
      :animation-timing-function "linear"
-     :animation-iteration-count "infinite"}}))
+     :animation-iteration-count "1"
+     }}))
 
 
 ;; Components
