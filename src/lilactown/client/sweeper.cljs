@@ -44,8 +44,11 @@
 (defn mark-square! [row col]
   (swap! sweeper-state update-in [:grid [row col]] assoc :marked? true))
 
+(defn unmark-square! [row col]
+  (swap! sweeper-state update-in [:grid [row col]] assoc :marked? false))
+
 (defn explode-square! [row col]
-  )
+  (swap! sweeper-state update :grid map #(assoc % :cleared? true)))
 
 (defn reset-grid! [size mines]
   (swap! sweeper-state update :grid #(initial-grid size mines)))
@@ -113,7 +116,9 @@
             :onContextMenu (when (not cleared?)
                              #(do
                                 (. % preventDefault)
-                                (mark-square! row col)))}
+                                (if marked?
+                                  (unmark-square! row col)
+                                  (mark-square! row col))))}
            (case [cleared? marked? explodes?]
              ([false false false]
               [false false true]) nil
@@ -144,5 +149,4 @@
 (r/defrc Container
   {:watch (fn [_] {:state sweeper-state})}
   [_ {state :state}]
-  (println @state)
   (Grid {:state (:grid @state)}))
