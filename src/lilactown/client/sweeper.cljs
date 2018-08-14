@@ -77,7 +77,7 @@
    {:width "30px"
     :height "30px"
     :background-color "rgb(187, 164, 255)"
-    :color "white"
+    :color "#3b3b3b"
     :font-family "sans-serif"
     :display "flex"
     :justify-content "center"
@@ -96,6 +96,12 @@
   (css/edn
    square-style
    {:background-color "rgb(214, 200, 255)"}))
+
+(def exploded-style
+  (css/edn
+   cleared-style
+   {:color "white"
+    :background-color "black"}))
 
 (def hover-buzz-animation
   (css/keyframes
@@ -163,14 +169,14 @@
 (r/defnc Square
   [{:keys [col row explodes? marked? cleared?]}]
   (dom/div {:style #js {:gridColumn col
-                        :gridRow row
-                        :backgroundColor (when (and cleared? explodes?)
-                                           "black")}
+                        :gridRow row}
             :className (case [cleared? marked?]
                          [false false] (str square-style " " hover-buzz-style)
                          [false true] (str marked-style " " hover-buzz-style)
                          ([true false]
-                          [true true]) cleared-style)
+                          [true true]) (if explodes?
+                                         exploded-style
+                                         cleared-style))
             :onClick (case [cleared? explodes?]
                        [false true] #(explode-square! row col)
                        [false false] #(clear-square! row col)
@@ -234,7 +240,10 @@
                          #(update-mines! (js/parseInt
                                           (.. % -target -value)))}))
             (dom/button {:onClick #(reset-grid! (:size @state)
-                                                (:mines @state))} "Reset"))
+                                                (:mines @state))} "Reset")
+            (dom/div
+             {:style #js {:padding "0 10px"}}
+             "Wiggle? " (dom/input {:type "checkbox"})))
    (Grid {:state (:grid @state)})))
 
 (defn ^:export start! [node]
