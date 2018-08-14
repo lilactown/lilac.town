@@ -9,10 +9,16 @@
    [:body {:font-family "Roboto Condensed, sans-serif"
            :background-color "#DCD0FF"
            :color "#3b3b3b"}]
-   [:h1 :h2 :h3 :h4 {:font-family "Roboto Slab, serif"}]
+   [:h1 :h2 :h3 :h4 {:font-family "Roboto Slab, serif"}
+    [:small {:font-size "0.7em"
+             :display "block"
+             :color "#9a549a"
+             :margin "-10px 0 0 90px"}]]
    [:a {:color "#371940"
         :text-decoration "none"}
-    [:&:hover {:color "#9a549a"}]]])
+    [:&:hover {:color "#9a549a"}]]
+   [:#main {:max-width "670px"
+            :margin "40px auto"}]])
 
 (defn render []
   [:html
@@ -27,6 +33,13 @@
             :rel "preload"
             :as "style"}]]
    [:body
-    "Hi"
+    [:div#main
+     [:div {:style "margin: 0 10px"}
+      [:h1.title "lilac.town"
+       [:small "Games"]]]]
+    [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
+            :rel "stylesheet"}]
+    [:link {:href "https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab"
+            :rel "stylesheet"}]
     [:style
      (garden/css styles)]]])
