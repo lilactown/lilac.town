@@ -1,4 +1,4 @@
-(ns lilactown.site.games
+(ns lilactown.site.games.sweeper
   (:require [garden.core :as garden]
             [garden.stylesheet :refer [at-media]]
             [garden.units :refer [px]]

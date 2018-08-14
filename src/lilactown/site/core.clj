@@ -8,7 +8,7 @@
             [lilactown.site.home :as home]
             [lilactown.site.home.state :as state]
             [lilactown.site.home.data :as data]
-            [lilactown.site.games :as games]))
+            [lilactown.site.games.sweeper :as sweeper]))
 
 (defn home [request]
   {:status 200
@@ -22,17 +22,17 @@
    :headers {"Content-Type" "text/plain"}
    :body state/version})
 
-(defn games [request]
+(defn sweeper [request]
   {:status 200
    :headers {"Content-Type" "text/html"}
-   :body (html (games/render))})
+   :body (html (sweeper/render))})
 
 (def app (-> (ring/ring-handler
               (ring/router
                ["/"
                 ["" {:get {:handler home}}]
                 ["version" {:get {:handler version}}]
-                ["games" {:get {:handler games}}]]
+                ["games" ["/sweeper" {:get {:handler sweeper}}]]]
                {:data {:middleware [wrap-params
                                     wrap-content-type]}})
               (ring/routes
