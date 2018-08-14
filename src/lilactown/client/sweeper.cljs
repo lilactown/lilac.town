@@ -151,7 +151,9 @@
 
 (r/defnc Grid [{state :state}]
   (dom/div {:style #js {:display "grid"
-                        :gridGap "5px"}}
+                        :gridGap "5px"
+                        :gridAutoColumns "min-content"
+                        :justifyContent "center"}}
            ;; keys are [col row], value is square state
            (for [[[row col] square] state]
              (Square (assoc square

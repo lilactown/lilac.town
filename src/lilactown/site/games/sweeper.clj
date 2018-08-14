@@ -41,11 +41,11 @@
       [:a {:href "/"}
        [:h1.title "lilac.town"
         [:small "Games"]]]
-      [:div [:h2 "Sweeper"]
-       [:div#sweeper
-        (client/module {:module :sweeper
-                        :init 'lilactown.client.sweeper/start!
-                        :ref :parent})]]]]
+      [:div [:h2 "Sweeper"]]]]
+    [:div#sweeper
+     (client/module {:module :sweeper
+                     :init 'lilactown.client.sweeper/start!
+                     :ref :parent})]
     [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
             :rel "stylesheet"}]
     [:link {:href "https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab"
