@@ -42,6 +42,9 @@
 (defn clear-square! [row col]
   (swap! grid-state update [row col] assoc :cleared? true))
 
+(defn mark-square! [row col]
+  (swap! grid-state update [row col] assoc :marked? true))
+
 (defn reset-grid! [size mines]
   (reset! grid-state (initial-state size mines)))
 
@@ -99,7 +102,11 @@
                             (when (not cleared?)
                               hover-buzz-style))
             :onClick (when (not cleared?)
-                       #(clear-square! row col))}
+                       #(clear-square! row col))
+            :onContextMenu (when (not cleared?)
+                             #(do
+                                (. % preventDefault)
+                                (mark-square! row col)))}
            (case [cleared? marked? explodes?]
              ([false false false]
               [false false true]) nil
