@@ -22,7 +22,7 @@
                          :marked? false
                          :cleared? false)]))))
 
-(defonce sweeper-state (atom {:grid (initial-grid 15 80)}))
+(def sweeper-state (atom {:grid (initial-grid 15 80)}))
 
 (defn neighbors [row col]
   (let [grid (:grid @sweeper-state)]
@@ -34,6 +34,13 @@
      (grid [row (dec col)])
      (grid [(inc row) (dec col)])
      (grid [(dec row) (inc col)])]))
+
+(defn clear-grid [grid]
+  (reduce-kv
+   (fn [m k sq]
+     (assoc m k (assoc sq :cleared? true)))
+   {}
+   grid))
 
 
 ;; Events
@@ -48,7 +55,7 @@
   (swap! sweeper-state update-in [:grid [row col]] assoc :marked? false))
 
 (defn explode-square! [row col]
-  (swap! sweeper-state update :grid map #(assoc % :cleared? true)))
+  (swap! sweeper-state update :grid clear-grid))
 
 (defn reset-grid! [size mines]
   (swap! sweeper-state update :grid #(initial-grid size mines)))
@@ -112,7 +119,9 @@
                          ([true false]
                           [true true]) cleared-style)
             :onClick (when (not cleared?)
-                       #(clear-square! row col))
+                       (if explodes?
+                         #(explode-square! row col)
+                         #(clear-square! row col)))
             :onContextMenu (when (not cleared?)
                              #(do
                                 (. % preventDefault)
