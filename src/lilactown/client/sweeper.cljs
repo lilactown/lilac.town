@@ -3,6 +3,8 @@
             [lilactown.react.dom :as dom]
             [lilactown.css :as css]))
 
+;; State
+
 (defn initial-state [size mines]
   ;; convert into a map so we can navigate the grid cheaply
   (into
@@ -19,25 +21,50 @@
        [[row col] (assoc square
                          :marked? false)]))))
 
-(def square-style
-  (fn [explodes?]
-    (css/edn
-     {:width "30px"
-      :height "30px"
-      :background-color (if explodes?
-                          "black"
-                          "rgb(187, 164, 255)")
-      :color "white"
-      :font-family "sans-serif"
-      :display "flex"
-      :justify-content "center"
-      :align-items "center"
-      :box-shadow "2px 2px 3px rgba(100, 100, 100, .5)"})))
+(def grid-state (atom (initial-state 15 80)))
 
-(r/defnc Square [{:keys [col row explodes? marked?]}]
+;; Styles
+
+(def square-style
+  (css/edn
+   {:width "30px"
+    :height "30px"
+    :background-color "rgb(187, 164, 255)"
+    :color "white"
+    :font-family "sans-serif"
+    :display "flex"
+    :justify-content "center"
+    :align-items "center"
+    :box-shadow "2px 2px 3px rgba(100, 100, 100, .5)"}))
+
+(def hover-buzz-animation
+  (css/keyframes
+   "50% {
+      transform: translateX(3px) rotate(2deg)
+   }
+   100% {
+     transform: translateX(-3px) rotate(-2deg)
+   }"))
+
+(def hover-buzz-style
+  (css/edn
+   {"&:hover, &:focus, &:active"
+    {:animation-name hover-buzz-animation
+     :animation-duration "0.15s"
+     :animation-timing-function "linear"
+     :animation-iteration-count "infinite"}}))
+
+
+;; Components
+
+(r/defnc Square
+  ;; {:watch (fn [_] {:hover? (atom false)})}
+  [{:keys [col row explodes? marked?]} ;; {:keys [hover?]}
+   ]
   (dom/div {:style #js {:gridColumn col
-                        :gridRow row}
-            :className (square-style explodes?)}
+                        :gridRow row
+                        :backgroundColor (when explodes? "black")}
+            :className (str square-style " " hover-buzz-style)}
            (when marked? "?")))
 
 (r/defnc Grid [{state :state}]
@@ -47,8 +74,14 @@
             ;; keys are [col row], value is square state
             (for [[[col row] square] state]
               (Square (assoc square
+                             :key [col row]
                              :col col
                              :row row))))))
 
-(r/defnc Container []
-  (Grid {:state (initial-state 15 80)}))
+
+;; Hook up to state
+
+(r/defrc Container
+  {:watch (fn [_] {:state grid-state})}
+  [_ {state :state}]
+  (Grid {:state @state}))
