@@ -169,23 +169,31 @@
   [_ {state :state}]
   (dom/div
    (dom/div {:style #js {:padding "20px 0"
-                         :fontFamily "sans-serif"}}
-            "Size: " (dom/input {:type "number"
-                                 :style #js {:width "50px"}
-                                 :value (:size @state)
-                                 :onChange
-                                 #(update-size! (js/parseInt
-                                                 (.. % -target -value)))})
-            " "
-            "Mines: " (dom/input {:type "number"
-                                  :style #js {:width "50px"}
-                                  :value (:mines @state)
-                                  :onChange
-                                  #(update-mines! (js/parseInt
-                                                   (.. % -target -value)))})
+                         :fontFamily "sans-serif"
+                         :display "flex"
+                         :justifyContent "center"}}
+            (dom/div
+             {:style #js {:padding "0 10px"}}
+             "Size: "
+             (dom/input {:type "number"
+                         :style #js {:width "50px"}
+                         :value (:size @state)
+                         :onChange
+                         #(update-size! (js/parseInt
+                                         (.. % -target -value)))}))
+            (dom/div
+             {:style #js {:padding "0 10px"}}
+             "Mines: "
+             (dom/input {:type "number"
+                         :style #js {:width "50px"}
+                         :value (:mines @state)
+                         :onChange
+                         #(update-mines! (js/parseInt
+                                          (.. % -target -value)))}))
             (dom/button {:onClick #(reset-grid! (:size @state)
                                                 (:mines @state))} "Reset"))
    (Grid {:state (:grid @state)})))
 
 (defn ^:export start! [node]
+  (println node)
   (react-dom/render (Container) node))

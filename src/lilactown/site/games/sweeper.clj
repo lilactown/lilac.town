@@ -18,10 +18,10 @@
         :text-decoration "none"}
     [:&:hover {:color "#9a549a"}]]
    [:#main {:max-width "670px"
-            :margin "40px auto"}]
+            :margin "40px auto 20px"}]
    [:#sweeper {:background-color "#f9f7ff"
                :padding "0 50px 50px"
-               :border-radius "10px"}]])
+               :border-radius "5px"}]])
 
 (defn render []
   [:html
@@ -41,11 +41,11 @@
       [:a {:href "/"}
        [:h1.title "lilac.town"
         [:small "Games"]]]
-      [:div [:h2 "Sweeper"]]]]
-    [:div#sweeper
-     (client/module {:module :sweeper
-                     :init 'lilactown.client.sweeper/start!
-                     :ref :parent})]
+      [:div [:h2 {:style "margin: 0"}"Sweeper"]]]]
+    [:div#sweeper]
+    (client/module {:module :sweeper
+                    :init 'lilactown.client.sweeper/start!
+                    :ref "#sweeper"})
     [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
             :rel "stylesheet"}]
     [:link {:href "https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab"
