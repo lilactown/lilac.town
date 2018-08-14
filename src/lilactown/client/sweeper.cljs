@@ -23,7 +23,7 @@
                          :marked? false
                          :cleared? false)]))))
 
-(def grid-state (atom (initial-state 15 80)))
+(defonce grid-state (atom (initial-state 15 80)))
 
 (defn neighbors [row col]
   (let [grid @grid-state]
