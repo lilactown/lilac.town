@@ -22,7 +22,8 @@
                          :marked? false
                          :cleared? false)]))))
 
-(def sweeper-state (atom {:controls {:size 15 :mines 80}
+(def sweeper-state (atom {:size 15
+                          :mines 80
                           :grid (initial-grid 15 80)}))
 
 (defn neighbors [row col]
@@ -60,6 +61,12 @@
 
 (defn reset-grid! [size mines]
   (swap! sweeper-state update :grid #(initial-grid size mines)))
+
+(defn update-size! [size]
+  (swap! sweeper-state assoc :size size))
+
+(defn update-mines! [mines]
+  (swap! sweeper-state assoc :mines mines))
 
 
 ;; Styles
@@ -123,7 +130,7 @@
                        [false true] #(explode-square! row col)
                        [false false] #(clear-square! row col)
                        nil)
-           :onContextMenu (when (not cleared?)
+            :onContextMenu (when (not cleared?)
                              #(do
                                 (. % preventDefault)
                                 (if marked?
@@ -141,17 +148,14 @@
               [true true true] "✸"))))
 
 (r/defnc Grid [{state :state}]
-  (dom/div
-   (dom/div {:style #js {:padding "20px 0"}}
-            (dom/button {:onClick #(reset-grid! 15 80)} "Reset"))
-   (dom/div {:style #js {:display "grid"
-                         :gridGap "5px"}}
-            ;; keys are [col row], value is square state
-            (for [[[row col] square] state]
-              (Square (assoc square
-                             :key [row col]
-                             :col col
-                             :row row))))))
+  (dom/div {:style #js {:display "grid"
+                        :gridGap "5px"}}
+           ;; keys are [col row], value is square state
+           (for [[[row col] square] state]
+             (Square (assoc square
+                            :key [row col]
+                            :col col
+                            :row row)))))
 
 
 ;; Hook up to state
@@ -159,4 +163,22 @@
 (r/defrc Container
   {:watch (fn [_] {:state sweeper-state})}
   [_ {state :state}]
-  (Grid {:state (:grid @state)}))
+  (dom/div
+   (dom/div {:style #js {:padding "20px 0"
+                         :fontFamily "sans-serif"}}
+            "Size: " (dom/input {:type "number"
+                                 :style #js {:width "50px"}
+                                 :value (:size @state)
+                                 :onChange
+                                 #(update-size! (js/parseInt
+                                                 (.. % -target -value)))})
+            " "
+            "Mines: " (dom/input {:type "number"
+                                  :style #js {:width "50px"}
+                                  :value (:mines @state)
+                                  :onChange
+                                  #(update-mines! (js/parseInt
+                                                   (.. % -target -value)))})
+            (dom/button {:onClick #(reset-grid! (:size @state)
+                                                (:mines @state))} "Reset"))
+   (Grid {:state (:grid @state)})))
