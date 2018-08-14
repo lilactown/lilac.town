@@ -179,7 +179,7 @@
                           :backgroundColor (when (and cleared? (not explodes?))
                                              (case mine-count
                                                0 "#5cc75c"
-                                               1 "#ababfb"
+                                               1 "#a0d5ef"
                                                2 "#8484ff"
                                                3 "#ffdc33"
                                                4 "orange"
