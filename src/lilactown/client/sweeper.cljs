@@ -28,15 +28,18 @@
                           :wiggle? true
                           :grid (initial-grid 10 10)}))
 
-(defn neighbors [grid row col]
-  [[(inc row) col]
-   [(inc row) (inc col)]
-   [row (inc col)]
-   [(dec row) col]
-   [(dec row) (dec col)]
-   [row (dec col)]
-   [(inc row) (dec col)]
-   [(dec row) (inc col)]])
+(defn neighbors [grid row col & {:keys [four-connected?]
+                                 :or {four-connected? false}}]
+  (concat
+   [[(inc row) col]
+    [row (inc col)]
+    [(dec row) col]
+    [row (dec col)]]
+   (when (not four-connected?)
+     [[(inc row) (inc col)]
+      [(dec row) (dec col)]
+      [(inc row) (dec col)]
+      [(dec row) (inc col)]])))
 
 (defn clear-grid [grid]
   (reduce-kv
@@ -68,6 +71,9 @@
        (filter :explodes?)
        (some :cleared?)))
 
+(defn safe? [grid row col]
+  (= (count-mine-neighbors grid row col) 0))
+
 #_(swap! sweeper-state
          update :grid
          (fn [grid]
@@ -75,17 +81,42 @@
                  (for [[k v] grid]
                    [k (assoc v :cleared? true)]))))
 
-;; Events
+(defn flood-fill [grid row col]
+  ;; flood fill algorithm
+  (if (and grid
+           (grid [row col]) ;; inside grid
+           (not (:visited? (grid [row col]))) ;; hasn't been visited
+           (safe? grid row col)
+           )
+    (let [visited (assoc-in grid [[row col] :visited?] true)
+          neighbors (neighbors grid row col :four-connected? true)]
+      (-> (reduce (fn [g n]
+                    (flood-fill g (first n) (second n)))
+                  visited
+                  neighbors)))
+    grid))
 
 (defn all-safe-neighbors [grid row col]
-  ;; flood fill algorithm
-  (if (= (count-mine-neighbors grid row col) 0)
-    (loop [visited grid
-           safe? (= (count-mine-neighbors visited row col) 0)]
-      )))
+  (map first (filter (comp :visited? second) (flood-fill grid row col))))
+
+#_(all-safe-neighbors (:grid @sweeper-state) 1 1)
+
+
+;; Events
 
 (defn clear-square! [row col]
-  (swap! sweeper-state update-in [:grid [row col]] assoc :cleared? true))
+  ;; (swap! sweeper-state update-in [:grid [row col]] assoc :cleared? true)
+  (swap! sweeper-state
+         (fn [state]
+           (if (safe? (:grid state) row col)
+             (->> (reduce (fn [g n]
+                            (assoc-in g [n :cleared?] true))
+                          (:grid state)
+                          (all-safe-neighbors (:grid state) row col))
+                  (assoc state :grid))
+
+             (assoc-in state [:grid [row col] :cleared?] true))))
+  )
 
 (defn mark-square! [row col]
   (swap! sweeper-state update-in [:grid [row col]] assoc :marked? true))
