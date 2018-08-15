@@ -52,6 +52,29 @@
                )
        (count )))
 
+(defn spy [v]
+  (println v)
+  v)
+
+(defn has-won? [grid]
+  (->> grid
+       (map second)
+       (filter (comp not :cleared?))
+       (every? :explodes?)))
+
+(defn has-lost? [grid]
+  (->> grid
+       (map second)
+       (filter :explodes?)
+       (some :cleared?)))
+
+#_(swap! sweeper-state
+         update :grid
+         (fn [grid]
+           (into {}
+                 (for [[k v] grid]
+                   [k (assoc v :cleared? true)]))))
+
 ;; Events
 
 (defn all-safe-neighbors [grid row col]
@@ -229,7 +252,18 @@
                 [true true true] "✸")))))
 
 (r/defnc Grid [{state :state wiggle? :wiggle?}]
-  (dom/div {:style #js {:display "grid"
+  (dom/<>
+   (dom/div
+    {:style #js {:textAlign "center"
+                 :padding "10px"
+                 :height "40px"}}
+    (cond
+      (has-lost? state)
+      "You lost."
+      (has-won? state)
+      "You won!"
+      :else ""))
+   (dom/div {:style #js {:display "grid"
                         :gridGap "5px"
                         :gridAutoColumns "min-content"
                         :justifyContent "center"}}
@@ -239,7 +273,7 @@
                             :key [row col]
                             :col col
                             :row row
-                            :wiggle? wiggle?)))))
+                            :wiggle? wiggle?))))))
 
 
 ;; Hook up to state
