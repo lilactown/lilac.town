@@ -72,7 +72,7 @@
 
 (defn flood-fill [grid row col]
   ;; flood fill algorithm
-  (if (and (grid [row col]) ;; inside grid
+  (if (and (grid [row col]) ;; inside grid?
            (not (:visited? (grid [row col]))))
     (if (safe? grid row col)
       (let [visited (assoc-in grid [[row col] :visited?] true) ;; mark current as visited
