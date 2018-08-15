@@ -55,10 +55,6 @@
                )
        (count )))
 
-(defn spy [v]
-  (println v)
-  v)
-
 (defn has-won? [grid]
   (->> grid
        (map second)
@@ -74,31 +70,29 @@
 (defn safe? [grid row col]
   (= (count-mine-neighbors grid row col) 0))
 
-#_(swap! sweeper-state
-         update :grid
-         (fn [grid]
-           (into {}
-                 (for [[k v] grid]
-                   [k (assoc v :cleared? true)]))))
-
 (defn flood-fill [grid row col]
   ;; flood fill algorithm
-  (if (and grid
-           (grid [row col]) ;; inside grid
-           (not (:visited? (grid [row col]))) ;; hasn't been visited
-           )
+  (if (and (grid [row col]) ;; inside grid
+           (not (:visited? (grid [row col]))))
     (if (safe? grid row col)
-      (let [visited (assoc-in grid [[row col] :visited?] true)
-            neighbors (neighbors grid row col :four-connected? true)]
+      (let [visited (assoc-in grid [[row col] :visited?] true) ;; mark current as visited
+            neighbors (neighbors grid row col :four-connected? true)] ;; get all neighbors
         (-> (reduce (fn [g n]
+                      ;; apply flood-fill to the newly visited grid for each neighbor
                       (flood-fill g (first n) (second n)))
                     visited
                     neighbors)))
+      ;; if not safe, we mark it as visited and return
       (assoc-in grid [[row col] :visited?] true))
+    ;; if either not inside grid or has already been visited, still return the grid
     grid))
 
 (defn all-safe-neighbors [grid row col]
-  (map first (filter (comp :visited? second) (flood-fill grid row col))))
+  (->> (flood-fill grid row col)
+       ;; get only the visited squares
+       (filter (comp :visited? second))
+       ;; get their coordinates
+       (map first)))
 
 #_(count (all-safe-neighbors (:grid @sweeper-state) 10 1))
 
@@ -106,7 +100,6 @@
 ;; Events
 
 (defn clear-square! [row col]
-  ;; (swap! sweeper-state update-in [:grid [row col]] assoc :cleared? true)
   (swap! sweeper-state
          (fn [state]
            (if (safe? (:grid state) row col)
@@ -116,8 +109,7 @@
                           (all-safe-neighbors (:grid state) row col))
                   (assoc state :grid))
 
-             (assoc-in state [:grid [row col] :cleared?] true))))
-  )
+             (assoc-in state [:grid [row col] :cleared?] true)))))
 
 (defn mark-square! [row col]
   (swap! sweeper-state update-in [:grid [row col]] assoc :marked? true))
@@ -136,10 +128,6 @@
 
 (defn update-mines! [mines]
   (swap! sweeper-state assoc :mines mines))
-
-(defn toggle-wiggle! []
-  (swap! sweeper-state update :wiggle? not))
-
 
 ;; Styles
 
@@ -207,7 +195,7 @@
 ;; Components
 
 (r/defnc Square
-  [{:keys [col row explodes? marked? cleared? wiggle?]}]
+  [{:keys [col row explodes? marked? cleared?]}]
   (let [mine-count (count-mine-neighbors (:grid @sweeper-state) row col)]
     (dom/div {:style #js {:gridColumn col
                           :gridRow row
@@ -224,9 +212,9 @@
                                                8 "red"))}
               :className (case [cleared? marked?]
                            [false false]
-                           (str square-style " " (when wiggle? hover-bob-style))
+                           (str square-style " " hover-bob-style)
                            [false true]
-                           (str marked-style " " (when wiggle? hover-bob-style))
+                           (str marked-style " " hover-bob-style)
                            ([true false]
                             [true true]) (if explodes?
                                            exploded-style
@@ -251,7 +239,7 @@
                ([true false true]
                 [true true true] "✸")))))
 
-(r/defnc Grid [{state :state wiggle? :wiggle?}]
+(r/defnc Grid [{state :state}]
   (dom/<>
    (dom/div
     {:style #js {:textAlign "center"
@@ -272,8 +260,7 @@
              (Square (assoc square
                             :key [row col]
                             :col col
-                            :row row
-                            :wiggle? wiggle?))))))
+                            :row row))))))
 
 
 ;; Hook up to state
@@ -305,13 +292,8 @@
                          #(update-mines! (js/parseInt
                                           (.. % -target -value)))}))
             (dom/button {:onClick #(reset-grid! (:size @state)
-                                                (:mines @state))} "Reset")
-            (dom/div
-             {:style #js {:padding "0 10px"}}
-             "Wiggle? " (dom/input {:type "checkbox"
-                                    :checked (:wiggle? @state)
-                                    :onChange #(toggle-wiggle!)})))
-   (Grid {:state (:grid @state) :wiggle? (:wiggle? @state)})))
+                                                (:mines @state))} "Reset"))
+   (Grid {:state (:grid @state)})))
 
 (defn ^:export start! [node]
   (react-dom/render (Container) node))
