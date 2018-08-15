@@ -86,20 +86,21 @@
   (if (and grid
            (grid [row col]) ;; inside grid
            (not (:visited? (grid [row col]))) ;; hasn't been visited
-           (safe? grid row col)
            )
-    (let [visited (assoc-in grid [[row col] :visited?] true)
-          neighbors (neighbors grid row col :four-connected? true)]
-      (-> (reduce (fn [g n]
-                    (flood-fill g (first n) (second n)))
-                  visited
-                  neighbors)))
+    (if (safe? grid row col)
+      (let [visited (assoc-in grid [[row col] :visited?] true)
+            neighbors (neighbors grid row col :four-connected? true)]
+        (-> (reduce (fn [g n]
+                      (flood-fill g (first n) (second n)))
+                    visited
+                    neighbors)))
+      (assoc-in grid [[row col] :visited?] true))
     grid))
 
 (defn all-safe-neighbors [grid row col]
   (map first (filter (comp :visited? second) (flood-fill grid row col))))
 
-#_(all-safe-neighbors (:grid @sweeper-state) 1 1)
+#_(count (all-safe-neighbors (:grid @sweeper-state) 10 1))
 
 
 ;; Events
