@@ -79,11 +79,10 @@
 
 (defn all-safe-neighbors [grid row col]
   ;; flood fill algorithm
-  (if (:cleared? (grid [row col]))
-    nil
-    (filter
-     (fn [])
-     (neighbors grid row col))))
+  (if (= (count-mine-neighbors grid row col) 0)
+    (loop [visited grid
+           safe? (= (count-mine-neighbors visited row col) 0)]
+      )))
 
 (defn clear-square! [row col]
   (swap! sweeper-state update-in [:grid [row col]] assoc :cleared? true))
@@ -143,65 +142,34 @@
    {:color "white"
     :background-color "black"}))
 
-(def hover-buzz-animation
+(def hover-bob-animation
   (css/keyframes
-   "10% {
-    -webkit-transform: translateX(3px) rotate(2deg);
-    transform: translateX(3px) rotate(2deg);
-  }
-  20% {
-    -webkit-transform: translateX(-3px) rotate(-2deg);
-    transform: translateX(-3px) rotate(-2deg);
-  }
-  30% {
-    -webkit-transform: translateX(3px) rotate(2deg);
-    transform: translateX(3px) rotate(2deg);
-  }
-  40% {
-    -webkit-transform: translateX(-3px) rotate(-2deg);
-    transform: translateX(-3px) rotate(-2deg);
+   "0% {
+    transform: translateY(-2px);
   }
   50% {
-    -webkit-transform: translateX(2px) rotate(1deg);
-    transform: translateX(2px) rotate(1deg);
-  }
-  60% {
-    -webkit-transform: translateX(-2px) rotate(-1deg);
-    transform: translateX(-2px) rotate(-1deg);
-  }
-  70% {
-    -webkit-transform: translateX(2px) rotate(1deg);
-    transform: translateX(2px) rotate(1deg);
-  }
-  80% {
-    -webkit-transform: translateX(-2px) rotate(-1deg);
-    transform: translateX(-2px) rotate(-1deg);
-  }
-  90% {
-    -webkit-transform: translateX(1px) rotate(0);
-    transform: translateX(1px) rotate(0);
+    transform: translateY(0px);
   }
   100% {
-    -webkit-transform: translateX(-1px) rotate(0);
-    transform: translateX(-1px) rotate(0);
-  }")
-  ;; (css/keyframes
-  ;;  "50% {
-  ;;     transform: translateX(3px) rotate(2deg)
-  ;;  }
-  ;;  100% {
-  ;;    transform: translateX(-3px) rotate(-2deg)
-  ;;  }")
-  )
+    transform: translateY(-2px);
+  }"))
 
-(def hover-buzz-style
+(def hover-bob-float-animation
+  (css/keyframes
+   "100% {
+    transform: translateY(-2px);
+  }"))
+
+(def hover-bob-style
   (css/edn
    {"&:hover, &:focus, &:active"
-    {:animation-name hover-buzz-animation
-     :animation-duration "0.75s"
-     :animation-timing-function "linear"
-     :animation-iteration-count "1"
-     }}))
+    {:animation-name (str hover-bob-float-animation ", " hover-bob-animation)
+    :animation-duration ".3s, 1.5s"
+    :animation-delay "0s, .3s"
+    :animation-timing-function "ease-out, ease-in-out"
+    :animation-iteration-count "1, infinite"
+    :animation-fill-mode "forwards"
+    :nimation-direction "normal, alternate"}}))
 
 
 ;; Components
@@ -224,9 +192,9 @@
                                                8 "red"))}
               :className (case [cleared? marked?]
                            [false false]
-                           (str square-style " " (when wiggle? hover-buzz-style))
+                           (str square-style " " (when wiggle? hover-bob-style))
                            [false true]
-                           (str marked-style " " (when wiggle? hover-buzz-style))
+                           (str marked-style " " (when wiggle? hover-bob-style))
                            ([true false]
                             [true true]) (if explodes?
                                            exploded-style
@@ -264,7 +232,7 @@
       "You won!"
       :else ""))
    (dom/div {:style #js {:display "grid"
-                        :gridGap "5px"
+                        :gridGap "3px"
                         :gridAutoColumns "min-content"
                         :justifyContent "center"}}
            ;; keys are [col row], value is square state
