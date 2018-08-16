@@ -6,27 +6,34 @@
 
 ;; State
 
-(defn initial-grid [size mines]
+(def ^:const difficulties
+  {:Easy {:width 10 :height 10 :mines 10}
+   :Medium {:width 16 :height 16 :mines 40}
+   :Hard {:width 16 :height 30 :mines 99}})
+
+(defn initial-grid [width height mines]
   ;; convert into a map so we can navigate the grid cheaply
   (into
    {}
-   (for [[i square] (-> (- (* size size) mines) ;; size of grid minus the number of mines
+   (for [[i square] (-> (- (* width height) mines) ;; size of grid minus the number of mines
                         (repeat {:explodes? false}) ;; map them to squares that don't explode
                         (into (repeat mines {:explodes? true})) ;; add squares that do explode
                         (shuffle) ;; shuffle all of them so that they're in random order
                         ;; associate the index with each square [i square]
                         (as-> l (map-indexed vector l)))]
      ;; we add 1 since CSS grid wants 1..n
-     (let [row (inc (quot i size))
-           col (inc (mod i size))]
+     (let [row (inc (quot i width))
+           col (inc (mod i width))]
        [[row col] (assoc square
                          :marked? false
                          :cleared? false)]))))
 
-(defonce sweeper-state (atom {:size 10
-                          :mines 10
-                          :wiggle? true
-                          :grid (initial-grid 10 10)}))
+(defonce sweeper-state (atom {:width 10
+                              :height 10
+                              :mines 10
+                              :wiggle? true
+                              :grid (initial-grid 10 10 10)}))
+
 
 (defn neighbors [grid row col & {:keys [four-connected?]
                                  :or {four-connected? false}}]
@@ -120,11 +127,13 @@
 (defn explode-square! [row col]
   (swap! sweeper-state update :grid clear-grid))
 
-(defn reset-grid! [size mines]
-  (swap! sweeper-state update :grid #(initial-grid size mines)))
+(defn reset-grid! [width height mines]
+  (swap! sweeper-state update :grid #(initial-grid width height mines)))
 
-(defn update-size! [size]
-  (swap! sweeper-state assoc :size size))
+(defn update-size! [width height]
+  (swap! sweeper-state assoc
+         :width width
+         :height height))
 
 (defn update-mines! [mines]
   (swap! sweeper-state assoc :mines mines))
@@ -184,12 +193,12 @@
   (css/edn
    {"&:hover, &:focus, &:active"
     {:animation-name (str hover-bob-float-animation ", " hover-bob-animation)
-    :animation-duration ".3s, 1.5s"
-    :animation-delay "0s, .3s"
-    :animation-timing-function "ease-out, ease-in-out"
-    :animation-iteration-count "1, infinite"
-    :animation-fill-mode "forwards"
-    :nimation-direction "normal, alternate"}}))
+     :animation-duration ".3s, 1.5s"
+     :animation-delay "0s, .3s"
+     :animation-timing-function "ease-out, ease-in-out"
+     :animation-iteration-count "1, infinite"
+     :animation-fill-mode "forwards"
+     :nimation-direction "normal, alternate"}}))
 
 
 ;; Components
@@ -252,15 +261,15 @@
       "You won!"
       :else ""))
    (dom/div {:style #js {:display "grid"
-                        :gridGap "3px"
-                        :gridAutoColumns "min-content"
-                        :justifyContent "center"}}
-           ;; keys are [col row], value is square state
-           (for [[[row col] square] state]
-             (Square (assoc square
-                            :key [row col]
-                            :col col
-                            :row row))))))
+                         :gridGap "3px"
+                         :gridAutoColumns "min-content"
+                         :justifyContent "center"}}
+            ;; keys are [col row], value is square state
+            (for [[[row col] square] state]
+              (Square (assoc square
+                             :key [row col]
+                             :col col
+                             :row row))))))
 
 
 ;; Hook up to state
@@ -273,15 +282,10 @@
                          :fontFamily "sans-serif"
                          :display "flex"
                          :justifyContent "center"}}
-            (dom/div
-             {:style #js {:padding "0 10px"}}
-             "Size: "
-             (dom/input {:type "number"
-                         :style #js {:width "50px"}
-                         :value (:size @state)
-                         :onChange
-                         #(update-size! (js/parseInt
-                                         (.. % -target -value)))}))
+            (dom/div {:style #js {:padding "0 10px"}}
+                     "Difficulty: "
+                     (dom/select
+                      (map #(dom/option (name (first %))) difficulties)))
             (dom/div
              {:style #js {:padding "0 10px"}}
              "Mines: "
@@ -291,7 +295,8 @@
                          :onChange
                          #(update-mines! (js/parseInt
                                           (.. % -target -value)))}))
-            (dom/button {:onClick #(reset-grid! (:size @state)
+            (dom/button {:onClick #(reset-grid! (:width @state)
+                                                (:height @state)
                                                 (:mines @state))} "Reset"))
    (Grid {:state (:grid @state)})))
 
