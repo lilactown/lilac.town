@@ -7,7 +7,7 @@
 (def styles
   [[:* {:box-sizing "border-box"}]
    [:body {:font-family "Roboto Condensed, sans-serif"
-           :background-color "#DCD0FF"
+           :background-color "#f8f4ff"
            :color "#3b3b3b"}]
    [:h1 :h2 :h3 :h4 {:font-family "Roboto Slab, serif"}
     [:small {:font-size "0.7em"

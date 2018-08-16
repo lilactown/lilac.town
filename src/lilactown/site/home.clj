@@ -12,7 +12,7 @@
 (def styles
   [[:* {:box-sizing "border-box"}]
    [:body {:font-family "Roboto Condensed, sans-serif"
-           :background-color "#DCD0FF"
+           :background-color "#f8f4ff"
            :color "#3b3b3b"}]
    [:h1 :h2 :h3 :h4 {:font-family "Roboto Slab, serif"}]
    [:a {:color "#371940"
@@ -43,11 +43,19 @@
               [:& {:grid-template-columns "1fr"}])]
    [:.repo {:border-radius "4px"
             :padding "10px 12px 10px"
-            :background-color "rgba(55, 25, 64, .1)"
+            :border "1px solid #eee"
+            ;; :background-color "rgba(55, 25, 64, .1)"
+            :background-color "#f9f7ff"
             :box-shadow "2px 2px 3px rgba(100, 100, 100, .5)"
             :display "grid"
             :grid-row-gap "8px"
             :grid-auto-rows "minmax(20px, auto)"}
+    [:.top {:margin "-11px -13px 0px"
+            :height "2.4em"
+            :padding "10px"
+            :background-color "#e8d9fb"
+            :border-top-left-radius "4px"
+            :border-top-right-radius "4px"}]
     [:.bottom {:position "relative"}
      [:.display {:position "absolute"
                  :bottom 0}]]
@@ -86,7 +94,7 @@
                   :margin "3px 3px 0 0"
                   :background-color "rgba(55, 25, 64, .3)"
                   :border-radius "4px"
-                  :color "#DCD0FF"
+                  :color "#f8f4ff"
                   :font-size ".8rem"}
       [:&:hover {:background-color "rgba(55, 25, 64, .7)"}]]]]
    [:.control
@@ -119,9 +127,10 @@
 (defn repo [{:keys [name url description createdAt updatedAt pushedAt stargazers
                     primaryLanguage]}]
   [:div.repo
-   [:a {:href url :target "_blank"}
-    [:div.title [:strong name]
-     [:span.stars star (:totalCount stargazers)]]]
+   [:div.top
+    [:a {:href url :target "_blank"}
+     [:div.title [:strong name]
+      [:span.stars star (:totalCount stargazers)]]]]
    [:div.desc description]
    [:div.bottom
     [:div.display
@@ -180,11 +189,11 @@
          [:h2 "Games"]
          [:div.repos
           [:div.repo
-           ;; {:style "max-width:100px"}
            [:a {:href "/games/sweeper"}
             [:img {:src "/assets/images/sweeper.png"
                   :style "width: 100%; border-radius: 4px"}]
-            [:h3 "Sweeper"]]]]]]
+            [:h3 {:style "font-family:Roboto Condensed, sans-serif; text-align: center"}
+             "Sweeper"]]]]]]
        [:div#version
         [:a
          {:href (str "https://github.com/Lokeh/lilac.town/commit/" version)}
