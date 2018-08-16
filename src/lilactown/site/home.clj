@@ -175,7 +175,16 @@
         [:div
          [:h2 "Articles"]
          [:ul.articles
-          (map article medium)]]]
+          (map article medium)]]
+        [:div
+         [:h2 "Games"]
+         [:div.repos
+          [:div.repo
+           ;; {:style "max-width:100px"}
+           [:a {:href "/games/sweeper"}
+            [:img {:src "/assets/images/sweeper.png"
+                  :style "width: 100%; border-radius: 4px"}]
+            [:h3 "Sweeper"]]]]]]
        [:div#version
         [:a
          {:href (str "https://github.com/Lokeh/lilac.town/commit/" version)}
