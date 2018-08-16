@@ -272,10 +272,12 @@
                          :justifyContent "center"}}
             ;; keys are [col row], value is square state
             (for [[[row col] square] state]
-              (Square (assoc square
-                             :key [row col]
-                             :col col
-                             :row row))))))
+              (Square (-> (assoc square
+                                 :key [row col]
+                                 :col col
+                                 :row row)
+                          (merge (when (has-won? state)
+                                   {:cleared? true}))))))))
 
 
 ;; Hook up to state
