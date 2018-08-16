@@ -248,7 +248,7 @@
                ([false false false]
                 [false false true]) nil
                ([false true false]
-                [false true true]) "?"
+                [false true true]) (dom/span {:className "fas fa-exclamation"})
                ([true false false]
                 [true true false]) mine-count
                ([true false true]
