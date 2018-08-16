@@ -135,6 +135,12 @@
          :width width
          :height height))
 
+(defn update-difficulty! [width height mines]
+  (swap! sweeper-state assoc
+         :width width
+         :height height
+         :mines mines))
+
 (defn update-mines! [mines]
   (swap! sweeper-state assoc :mines mines))
 
@@ -285,16 +291,23 @@
             (dom/div {:style #js {:padding "0 10px"}}
                      "Difficulty: "
                      (dom/select
+                      {:onChange
+                       (fn [ev]
+                         (let [difficulty (keyword (.. ev -target -value))
+                               {:keys [width
+                                       height
+                                       mines]} (difficulties difficulty)]
+                           (update-difficulty! width height mines)))}
                       (map #(dom/option (name (first %))) difficulties)))
-            (dom/div
-             {:style #js {:padding "0 10px"}}
-             "Mines: "
-             (dom/input {:type "number"
-                         :style #js {:width "50px"}
-                         :value (:mines @state)
-                         :onChange
-                         #(update-mines! (js/parseInt
-                                          (.. % -target -value)))}))
+            ;; (dom/div
+            ;;  {:style #js {:padding "0 10px"}}
+            ;;  "Mines: "
+            ;;  (dom/input {:type "number"
+            ;;              :style #js {:width "50px"}
+            ;;              :value (:mines @state)
+            ;;              :onChange
+            ;;              #(update-mines! (js/parseInt
+            ;;                               (.. % -target -value)))}))
             (dom/button {:onClick #(reset-grid! (:width @state)
                                                 (:height @state)
                                                 (:mines @state))} "Reset"))
