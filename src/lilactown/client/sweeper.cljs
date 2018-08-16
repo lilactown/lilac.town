@@ -34,7 +34,6 @@
                               :wiggle? true
                               :grid (initial-grid 10 10 10)}))
 
-
 (defn neighbors [grid row col & {:keys [four-connected?]
                                  :or {four-connected? false}}]
   (concat
@@ -58,9 +57,8 @@
 (defn count-mine-neighbors [grid row col]
   (->> (neighbors grid row col)
        (map grid)
-       (filter :explodes?
-               )
-       (count )))
+       (filter :explodes?)
+       (count)))
 
 (defn has-won? [grid]
   (->> grid
@@ -102,7 +100,6 @@
        (map first)))
 
 #_(count (all-safe-neighbors (:grid @sweeper-state) 10 1))
-
 
 ;; Events
 
@@ -206,7 +203,6 @@
      :animation-fill-mode "forwards"
      :nimation-direction "normal, alternate"}}))
 
-
 ;; Components
 
 (r/defnc Square
@@ -279,7 +275,6 @@
                           (merge (when (has-won? state)
                                    {:cleared? true}))))))))
 
-
 ;; Hook up to state
 
 (r/defrc Container
@@ -301,15 +296,6 @@
                                        mines]} (difficulties difficulty)]
                            (update-difficulty! width height mines)))}
                       (map #(dom/option (name (first %))) difficulties)))
-            ;; (dom/div
-            ;;  {:style #js {:padding "0 10px"}}
-            ;;  "Mines: "
-            ;;  (dom/input {:type "number"
-            ;;              :style #js {:width "50px"}
-            ;;              :value (:mines @state)
-            ;;              :onChange
-            ;;              #(update-mines! (js/parseInt
-            ;;                               (.. % -target -value)))}))
             (dom/button {:onClick #(reset-grid! (:width @state)
                                                 (:height @state)
                                                 (:mines @state))} "Reset"))
