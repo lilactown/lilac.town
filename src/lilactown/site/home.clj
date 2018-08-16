@@ -19,7 +19,7 @@
         :text-decoration "none"}
     [:&:hover {:color "#9a549a"}]]
    [:#version
-    {:position "absolute"
+    {:position "fixed"
      :bottom "0"
      :right "0"
      :font-size "0.7em"
