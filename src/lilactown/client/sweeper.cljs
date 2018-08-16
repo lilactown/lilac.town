@@ -101,6 +101,7 @@
 
 #_(count (all-safe-neighbors (:grid @sweeper-state) 10 1))
 
+
 ;; Events
 
 (defn clear-square! [row col]
@@ -140,6 +141,7 @@
 
 (defn update-mines! [mines]
   (swap! sweeper-state assoc :mines mines))
+
 
 ;; Styles
 
@@ -202,6 +204,7 @@
      :animation-iteration-count "1, infinite"
      :animation-fill-mode "forwards"
      :nimation-direction "normal, alternate"}}))
+
 
 ;; Components
 
@@ -274,6 +277,7 @@
                                  :row row)
                           (merge (when (has-won? state)
                                    {:cleared? true}))))))))
+
 
 ;; Hook up to state
 
