@@ -216,14 +216,14 @@
                           :gridRow row
                           :backgroundColor (when (and cleared? (not explodes?))
                                              (case mine-count
-                                               0 "#5cc75c"
+                                               0 "#98e098"
                                                1 "#a0d5ef"
-                                               2 "#8484ff"
+                                               2 "#8fb1ff"
                                                3 "#ffdc33"
-                                               4 "orange"
-                                               5 "#ff8100"
-                                               6 "#ff7878"
-                                               7 "#ff4d4d"
+                                               4 "#f9c76c"
+                                               5 "#ff9d38"
+                                               6 "#f19b9b"
+                                               7 "#ff7878"
                                                8 "red"))}
               :className (case [cleared? marked?]
                            [false false]
