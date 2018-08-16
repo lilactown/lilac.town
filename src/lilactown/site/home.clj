@@ -12,7 +12,7 @@
 (def styles
   [[:* {:box-sizing "border-box"}]
    [:body {:font-family "Roboto Condensed, sans-serif"
-           :background-color "#f8f4ff"
+           :background-color "#f5efff"
            :color "#3b3b3b"}]
    [:h1 :h2 :h3 :h4 {:font-family "Roboto Slab, serif"}]
    [:a {:color "#371940"
@@ -190,10 +190,9 @@
          [:div.repos
           [:div.repo
            [:a {:href "/games/sweeper"}
+            [:div.top "Sweeper"]
             [:img {:src "/assets/images/sweeper.png"
-                  :style "width: 100%; border-radius: 4px"}]
-            [:h3 {:style "font-family:Roboto Condensed, sans-serif; text-align: center"}
-             "Sweeper"]]]]]]
+                  :style "width: 100%; border-radius: 4px"}]]]]]]
        [:div#version
         [:a
          {:href (str "https://github.com/Lokeh/lilac.town/commit/" version)}
