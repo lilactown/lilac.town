@@ -53,7 +53,7 @@
     [:.top {:margin "-11px -13px 0px"
             :height "2.4em"
             :padding "10px"
-            :background-color "#e8d9fb"
+            :background-color "#d2c8f3"
             :border-top-left-radius "4px"
             :border-top-right-radius "4px"}]
     [:.bottom {:position "relative"}
