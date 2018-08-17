@@ -31,7 +31,6 @@
 (defonce sweeper-state (atom {:width 10
                               :height 10
                               :mines 10
-                              :wiggle? true
                               :grid (initial-grid 10 10 10)}))
 
 (defn neighbors [grid row col & {:keys [four-connected?]
@@ -176,35 +175,6 @@
    {:color "white"
     :background-color "black"}))
 
-(def hover-bob-animation
-  (css/keyframes
-   "0% {
-    transform: translateY(-2px);
-  }
-  50% {
-    transform: translateY(0px);
-  }
-  100% {
-    transform: translateY(-2px);
-  }"))
-
-(def hover-bob-float-animation
-  (css/keyframes
-   "100% {
-    transform: translateY(-2px);
-  }"))
-
-(def hover-bob-style
-  (css/edn
-   {"&:hover, &:focus, &:active"
-    {:animation-name (str hover-bob-float-animation ", " hover-bob-animation)
-     :animation-duration ".3s, 1.5s"
-     :animation-delay "0s, .3s"
-     :animation-timing-function "ease-out, ease-in-out"
-     :animation-iteration-count "1, infinite"
-     :animation-fill-mode "forwards"
-     :nimation-direction "normal, alternate"}}))
-
 
 ;; Components
 
@@ -226,9 +196,9 @@
                                                8 "red"))}
               :className (case [cleared? marked?]
                            [false false]
-                           (str square-style " " hover-bob-style)
+                           (str square-style " " square-style)
                            [false true]
-                           (str marked-style " " hover-bob-style)
+                           (str marked-style " " square-style)
                            ([true false]
                             [true true]) (if explodes?
                                            exploded-style
@@ -263,7 +233,7 @@
       (has-lost? state)
       "You lost."
       (has-won? state)
-      "You won!"
+      "You lost!"
       :else ""))
    (dom/div {:style #js {:display "grid"
                          :gridGap "3px"
