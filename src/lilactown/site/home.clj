@@ -190,7 +190,7 @@
          [:div.repos
           [:div.repo
            [:a {:href "/games/sweeper"}
-            [:div.top "Sweeper"]
+            [:div.top [:strong "Sweeper"]]
             [:img {:src "/assets/images/sweeper.png"
                   :style "width: 100%; border-radius: 4px"}]]]]]]
        [:div#version
