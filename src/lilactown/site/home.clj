@@ -12,7 +12,7 @@
 (def styles
   [[:* {:box-sizing "border-box"}]
    [:body {:font-family "Roboto Condensed, sans-serif"
-           :background-color "#f5efff"
+           :background-color "#fbfbfb"
            :color "#3b3b3b"}]
    [:h1 :h2 :h3 :h4 {:font-family "Roboto Slab, serif"}]
    [:a {:color "#371940"

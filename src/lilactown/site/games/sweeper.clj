@@ -7,7 +7,7 @@
 (def styles
   [[:* {:box-sizing "border-box"}]
    [:body {:font-family "Roboto Condensed, sans-serif"
-           :background-color "#f8f4ff"
+           :background-color "#fbfbfb"
            :color "#3b3b3b"}]
    [:h1 :h2 :h3 :h4 {:font-family "Roboto Slab, serif"}
     [:small {:font-size "0.7em"
@@ -20,9 +20,7 @@
    [:.title {:margin-bottom "10px"}]
    [:#main {:max-width "670px"
             :margin "40px auto 20px"}]
-   [:#sweeper {:background-color "#f9f7ff"
-               :padding "0 50px 50px"
-               :border-radius "5px"}]])
+   [:#sweeper ]])
 
 (defn render []
   [:html
