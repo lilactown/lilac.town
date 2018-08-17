@@ -81,7 +81,7 @@
            (not (:visited? (grid [row col]))))
     (if (safe? grid row col)
       (let [visited (assoc-in grid [[row col] :visited?] true) ;; mark current as visited
-            neighbors (neighbors grid row col :four-connected? true)] ;; get all neighbors
+            neighbors (neighbors grid row col)] ;; get all neighbors
         (-> (reduce (fn [g n]
                       ;; apply flood-fill to the newly visited grid for each neighbor
                       (flood-fill g (first n) (second n)))
