@@ -233,7 +233,7 @@
       (has-lost? state)
       "You lost."
       (has-won? state)
-      "You lost!"
+      "You won!"
       :else ""))
    (dom/div {:style #js {:display "grid"
                          :gridGap "3px"
