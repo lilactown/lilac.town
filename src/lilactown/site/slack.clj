@@ -1,7 +1,6 @@
 (ns lilactown.site.slack
   (:require [ring.util.response :as res]
-            [ring.util.request :as req]
-            [muuntaja.core :as m]))
+            [ring.util.request :as req]))
 
 (def !logs (atom []))
 
@@ -22,7 +21,7 @@
                                      :user (:user event)
                                      :text (:text event)
                                      :time (:ts event)}])
-  (r/response "OK"))
+  (res/response "OK"))
 
 (defn api [request]
   (let [body (:body-params request)]
