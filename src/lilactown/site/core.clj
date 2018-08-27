@@ -5,10 +5,13 @@
             [ring.middleware.params :refer [wrap-params]]
             [reitit.ring :as ring]
             [hiccup.core :refer [html]]
+            [muuntaja.middleware]
             [lilactown.site.home :as home]
             [lilactown.site.home.state :as state]
             [lilactown.site.home.data :as data]
-            [lilactown.site.games.sweeper :as sweeper]))
+            [lilactown.site.games.sweeper :as sweeper]
+            [lilactown.site.slack :as slack]
+))
 
 (defn home [request]
   {:status 200
@@ -32,9 +35,9 @@
                ["/"
                 ["" {:get {:handler home}}]
                 ["version" {:get {:handler version}}]
-                ["games" ["/sweeper" {:get {:handler sweeper}}]]]
-               {:data {:middleware [wrap-params
-                                    wrap-content-type]}})
+                ["games" ["/sweeper" {:get {:handler sweeper}}]]
+                ["slack" {:post {:handler #'slack/main}}]]
+               {:data {:middleware [muuntaja.middleware/wrap-format]}})
               (ring/routes
                (ring/create-resource-handler {:path "/" :root "/public"})
                (ring/create-default-handler)))))
