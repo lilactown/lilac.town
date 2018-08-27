@@ -1,26 +1,19 @@
 (ns lilactown.site.slack
   (:require [ring.util.response :as res]
-            [ring.util.request :as req]))
+            [ring.util.request :as req]
+            [hiccup.core :as h]))
 
-(def !logs (atom []))
-
-(def !messages (atom []))
+(defonce !logs (atom []))
 
 (defmulti slack-event :type)
 
 (defmethod slack-event "url_verification"
   [body]
-  (swap! !messages conj [:slack/verification {:token (:token body)
-                                              :challenge (:challenge body)}])
   (-> (:challenge body)
       (res/response)))
 
 (defmethod slack-event "message"
   [event]
-  (swap! !messages conj [:slack/message {:channel (:channel event)
-                                         :user (:user event)
-                                         :text (:text event)
-                                         :time (:ts event)}])
   (res/response "OK"))
 
 (defn api [request]
@@ -37,6 +30,33 @@
   (-> @!logs
       (res/response)))
 
+(def channels {"C9Z02UF0T" "#troubleshooting"
+               "C87E0RZ6Y" "#general"})
+
+(def users {"W7MB482ER" "Uma"
+            "W8Q8AE1AP" "Mamata"
+            "W7M4SJN75" "Andy"
+            "W7M70QHBL" "Mitch"
+            "W7N9Q2QBH" "Dan"
+            "W7LM73KGR" "Vye"
+            "W7N9J95T9" "Paul"
+            "W7MB47YFP" "Evan"
+            "W7LHEFP3J" "Anita"
+            "W7LM6P673" "Dave"
+            "W7LM708DP" "Will"})
+
+(defn message-ui [messages]
+  (h/html
+   [:html
+    [:body {:style "font-family: sans-serif"}
+     (for [{:keys [channel user text time]} messages]
+       [:div {:style "border: 1px solid #3b3b3b; padding: 10px; margin: 5px"}
+        [:div "[ "[:strong (get channels channel channel) " / " (get users user user)] " ]"]
+        [:div text]])]]))
+
 (defn messages [request]
-  (-> @!messages
+  (->> @!logs
+      (filter (fn [log] (= (get-in log [:event :type]) "message")))
+      (map :event)
+      (message-ui)
       (res/response)))
