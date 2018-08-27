@@ -1,7 +1,10 @@
 (ns lilactown.site.slack
   (:require [ring.util.response :as res]
             [ring.util.request :as req]
-            [hiccup.core :as h]))
+            [hiccup.core :as h]
+            [clj-time.core :as t]
+            [clj-time.format :as f]
+            [clj-time.coerce :as c]))
 
 (defonce !logs (atom []))
 
@@ -55,35 +58,49 @@
             "W7LM6P673" "Dave"
             "W7LM708DP" "Will"})
 
+(defn format-time [ts]
+  (try (-> ts
+           (clojure.string/split #"\.")
+           (first)
+           (Integer.)
+           (c/from-epoch)
+           (as-> t
+               (-> (f/formatter "E H:m a")
+                   (f/with-zone (t/time-zone-for-id "America/Los_Angeles"))
+                   (f/unparse t))))
+       (catch Exception _
+         nil)))
+
 (defn message-ui [messages]
-  (h/html
-   [:html
-    [:meta {:name "viewport"
-            :content "width=device-width, initial-scale=1"}]
-    [:body {:style "font-family: sans-serif"}
-     (for [{:keys [channel user text time channel_type]} messages]
-       [:div {:style "border: 1px solid #3b3b3b; padding: 10px; margin: 5px"}
-        [:div {:style (case channel_type
-                        "im" "color: red"
-                        "mpim" "color: mediumaquamarine"
-                        "")}
-         "[ " [:strong (get channels channel channel) " / " (get users user user)] " ]"]
-        [:div text]])]]))
+(h/html
+ [:html
+  [:meta {:name "viewport"
+          :content "width=device-width, initial-scale=1"}]
+  [:body {:style "font-family: sans-serif"}
+   (for [{:keys [channel user text ts channel_type]} messages]
+     [:div {:style "border: 1px solid #3b3b3b; padding: 10px; margin: 5px"}
+      [:div {:style (case channel_type
+                      "im" "color: red"
+                      "mpim" "color: mediumaquamarine"
+                      "")}
+       "[ " [:strong (get channels channel channel) " / " (get users user user)] " ] "
+       (when ts (format-time ts))]
+      [:div text]])]]))
 
 (defn messages [request]
-  (let [channel (get (:query-params request) "chan")
-        no-channel (get (:query-params request) "nochan")]
-    (println channel)
-    (->> @!logs
-         (filter (fn [log] (= (get-in log [:event :type]) "message")))
-         (filter (fn [log] (if (nil? channel) true
-                               (let [ch-id (get-in log [:event :channel])]
-                                 (= channel
-                                    (get channels ch-id ch-id))))))
-         (filter (fn [log] (if (nil? no-channel) true
-                               (let [ch-id (get-in log [:event :channel])]
-                                 (not= no-channel
-                                       (get channels ch-id ch-id))))))
-         (map :event)
-         (message-ui)
-         (res/response))))
+(let [channel (get (:query-params request) "chan")
+      no-channel (get (:query-params request) "nochan")]
+  (println channel)
+  (->> @!logs
+       (filter (fn [log] (= (get-in log [:event :type]) "message")))
+       (filter (fn [log] (if (nil? channel) true
+                             (let [ch-id (get-in log [:event :channel])]
+                               (= channel
+                                  (get channels ch-id ch-id))))))
+       (filter (fn [log] (if (nil? no-channel) true
+                             (let [ch-id (get-in log [:event :channel])]
+                               (not= no-channel
+                                     (get channels ch-id ch-id))))))
+       (map :event)
+       (message-ui)
+       (res/response))))
