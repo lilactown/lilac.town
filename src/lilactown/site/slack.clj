@@ -30,8 +30,12 @@
   (-> @!logs
       (res/response)))
 
-(def channels {"C9Z02UF0T" "#troubleshooting"
-               "C87E0RZ6Y" "#general"})
+(def channels {"G8QAEEPEX" "#delivery-team"
+               "CBWR8FNQ4" "#release-coordination"
+               "C8KTKM3A5" "#solution-discussion"
+               "C87E0RZ6Y" "#general"
+               "C9Z02UF0T" "#troubleshooting"
+               "C8YEYGMFH" "#mr"})
 
 (def users {"W7MB482ER" "Uma"
             "W8Q8AE1AP" "Mamata"
