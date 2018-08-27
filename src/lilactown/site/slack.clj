@@ -52,6 +52,8 @@
 (defn message-ui [messages]
   (h/html
    [:html
+    [:meta {:name "viewport"
+            :content "width=device-width, initial-scale=1"}]
     [:body {:style "font-family: sans-serif"}
      (for [{:keys [channel user text time]} messages]
        [:div {:style "border: 1px solid #3b3b3b; padding: 10px; margin: 5px"}
