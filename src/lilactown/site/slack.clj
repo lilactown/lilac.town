@@ -11,27 +11,32 @@
 (defmethod slack-event "url_verification"
   [body]
   (swap! !messages conj [:slack/verification {:token (:token body)
-                                          :challenge (:challenge body)}])
+                                              :challenge (:challenge body)}])
   (-> (:challenge body)
       (res/response)))
 
 (defmethod slack-event "message"
   [event]
   (swap! !messages conj [:slack/message {:channel (:channel event)
-                                     :user (:user event)
-                                     :text (:text event)
-                                     :time (:ts event)}])
+                                         :user (:user event)
+                                         :text (:text event)
+                                         :time (:ts event)}])
   (res/response "OK"))
 
 (defn api [request]
   (let [body (:body-params request)]
-    (swap! !logs conj body)
-    (if (:event body)
-      (slack-event (:event body))
-      (slack-event body))))
+    ;; ignore bot messages
+    (if (not= (get-in body [:event :subtype]) "bot_message")
+      (do (swap! !logs conj body)
+          (if (:event body)
+            (slack-event (:event body))
+            (slack-event body)))
+      (res/response "OK"))))
 
 (defn logs [request]
-  (let [filters (:query-params request)
-        filter-fn identity]
-    (-> @!logs
-        (res/response))))
+  (-> @!logs
+      (res/response)))
+
+(defn messages [request]
+  (-> @!messages
+      (res/response)))

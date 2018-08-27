@@ -38,7 +38,8 @@
                 ["games" ["/sweeper" {:get {:handler sweeper}}]]
                 ["slack"
                  ["" {:post {:handler #'slack/api}}]
-                 ["/logs" {:get {:handler #'slack/logs}}]]]
+                 ["/logs" {:get {:handler #'slack/logs}}]
+                 ["/messages" {:get {:handler #'slack/messages}}]]]
                {:data {:middleware [wrap-params
                                     muuntaja.middleware/wrap-format]}})
               (ring/routes
