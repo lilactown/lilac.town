@@ -30,12 +30,12 @@
   (-> @!logs
       (res/response)))
 
-(def channels {"G8QAEEPEX" "#delivery-team"
-               "CBWR8FNQ4" "#release-coordination"
-               "C8KTKM3A5" "#solution-discussion"
-               "C87E0RZ6Y" "#general"
-               "C9Z02UF0T" "#troubleshooting"
-               "C8YEYGMFH" "#mr"})
+(def channels {"G8QAEEPEX" "delivery-team"
+               "CBWR8FNQ4" "release-coordination"
+               "C8KTKM3A5" "solution-discussion"
+               "C87E0RZ6Y" "general"
+               "C9Z02UF0T" "troubleshooting"
+               "C8YEYGMFH" "mr"})
 
 (def users {"W7MB482ER" "Uma"
             "W8Q8AE1AP" "Mamata"
@@ -55,12 +55,23 @@
     [:body {:style "font-family: sans-serif"}
      (for [{:keys [channel user text time]} messages]
        [:div {:style "border: 1px solid #3b3b3b; padding: 10px; margin: 5px"}
-        [:div "[ "[:strong (get channels channel channel) " / " (get users user user)] " ]"]
+        [:div "[ " [:strong (get channels channel channel) " / " (get users user user)] " ]"]
         [:div text]])]]))
 
 (defn messages [request]
-  (->> @!logs
-      (filter (fn [log] (= (get-in log [:event :type]) "message")))
-      (map :event)
-      (message-ui)
-      (res/response)))
+  (let [channel (get (:query-params request) "chan")
+        no-channel (get (:query-params request) "nochan")]
+    (println channel)
+    (->> @!logs
+         (filter (fn [log] (= (get-in log [:event :type]) "message")))
+         (filter (fn [log] (if (nil? channel) true
+                               (let [ch-id (get-in log [:event :channel])]
+                                 (= channel
+                                    (get channels ch-id ch-id))))))
+         (filter (fn [log] (if (nil? no-channel) true
+                               (let [ch-id (get-in log [:event :channel])]
+                                 (not= no-channel
+                                       (get channels ch-id ch-id))))))
+         (map :event)
+         (message-ui)
+         (res/response))))
