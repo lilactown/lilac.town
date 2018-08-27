@@ -65,7 +65,8 @@
        [:div {:style "border: 1px solid #3b3b3b; padding: 10px; margin: 5px"}
         [:div {:style (case channel_type
                         "im" "color: red"
-                        "mpim" "color: mediumaquamarine")}
+                        "mpim" "color: mediumaquamarine"
+                        "")}
          "[ " [:strong (get channels channel channel) " / " (get users user user)] " ]"]
         [:div text]])]]))
 
