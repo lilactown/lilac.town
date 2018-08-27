@@ -35,7 +35,13 @@
                "C8KTKM3A5" "solution-discussion"
                "C87E0RZ6Y" "general"
                "C9Z02UF0T" "troubleshooting"
-               "C8YEYGMFH" "mr"})
+               "C8YEYGMFH" "mr"
+               ;; dms
+               "D14KSACM6" "Paul"
+               "D8NLAJ7T8" "Evan"
+               "D963EKUDS" "Uma"
+               "D7FJRUU11" "Andy"
+               "D5TUXUR96" "Dave"})
 
 (def users {"W7MB482ER" "Uma"
             "W8Q8AE1AP" "Mamata"
@@ -55,9 +61,10 @@
     [:meta {:name "viewport"
             :content "width=device-width, initial-scale=1"}]
     [:body {:style "font-family: sans-serif"}
-     (for [{:keys [channel user text time]} messages]
+     (for [{:keys [channel user text time channel_type]} messages]
        [:div {:style "border: 1px solid #3b3b3b; padding: 10px; margin: 5px"}
-        [:div "[ " [:strong (get channels channel channel) " / " (get users user user)] " ]"]
+        [:div {:style (when (= channel_type "im") "color: red")}
+         "[ " [:strong (get channels channel channel) " / " (get users user user)] " ]"]
         [:div text]])]]))
 
 (defn messages [request]
