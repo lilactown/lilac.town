@@ -65,7 +65,7 @@
            (Integer.)
            (c/from-epoch)
            (as-> t
-               (-> (f/formatter "E H:m a")
+               (-> (f/formatter "E H:mm a")
                    (f/with-zone (t/time-zone-for-id "America/Los_Angeles"))
                    (f/unparse t))))
        (catch Exception _
