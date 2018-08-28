@@ -6,7 +6,7 @@
             [clj-time.format :as f]
             [clj-time.coerce :as c]))
 
-(defonce !logs (atom []))
+(defonce !logs (atom '()))
 
 (defmulti slack-event :type)
 
