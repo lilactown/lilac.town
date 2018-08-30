@@ -1,9 +1,10 @@
 #!/bin/sh
 
-if [ -z "$(git status --untracked-files=no --porcelain)" ]; then
-    docker build -t lilactown/lilac.town . \
-           --build-arg GIT_COMMIT=$(git rev-parse --verify HEAD)
-else
-    echo "Uncommitted changes! Not deploying."
-    exit 1
-fi
+# export ACCOUNT_ID=`aws sts get-caller-identity --output text --query 'Account'`;
+# export REGION=`aws configure get region`;
+# export COMMIT=`git rev-parse --verify HEAD`
+# export BRANCH=`git rev-parse --abbrev-ref HEAD`
+# export VERSION=${BRANCH}-${COMMIT}
+
+docker build -t ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/lilac.town:${VERSION} . \
+       --build-arg GIT_COMMIT=${COMMIT}

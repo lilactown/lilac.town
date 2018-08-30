@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# export ACCOUNT_ID=`aws sts get-caller-identity --output text --query 'Account'`
+# export REGION=`aws configure get region`
+# export COMMIT=`git rev-parse --verify HEAD`
+# export BRANCH=`git rev-parse --abbrev-ref HEAD`
+
+# export BUCKET="eb-lilac.town"
+# export NAME="lilac.town"
+# export VERSION=${BRANCH}-${COMMIT}
+
+docker push ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${NAME}:${VERSION}
+
+## Elastic Beanstalk configuration
+
+cp Dockerrun.template.json Dockerrun.aws.json
+
+# Replace the <AWS_ACCOUNT_ID> with the real ID
+sed -i='' "s/<AWS_ACCOUNT_ID>/$ACCOUNT_ID/" Dockerrun.aws.json
+# Replace the <NAME> with the real name
+sed -i='' "s/<NAME>/$NAME/" Dockerrun.aws.json
+# Replace the <TAG> with the real version number
+sed -i='' "s/<TAG>/$VERSION/" Dockerrun.aws.json
+
+sed -i='' "s/<REGION>/$REGION/" Dockerrun.aws.json
+
+mkdir -p artifacts
+
+zip -r artifacts/${VERSION}.zip Dockerrun.aws.json
+
+aws s3 cp artifacts/${VERSION}.zip s3://${BUCKET}/${VERSION}.zip

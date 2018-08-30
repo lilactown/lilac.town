@@ -1,3 +1,46 @@
 #!/bin/sh
 
-./build && docker push lilactown/lilac.town:latest
+# TODO: auto authenticate if not authenticated
+
+if [ -z "$(git status --untracked-files=no --porcelain)" ]; then
+    export ACCOUNT_ID=`aws sts get-caller-identity --output text --query 'Account'`
+    export REGION=`aws configure get region`
+    export COMMIT=`git rev-parse --verify HEAD`
+    export BRANCH=`git rev-parse --abbrev-ref HEAD`
+
+    export BUCKET="eb-lilac.town"
+    export NAME="lilac.town"
+    export VERSION=${BRANCH}-${COMMIT}
+    export EB_ENV=Lilactown-${BRANCH}
+
+    ./build
+    ./push
+
+    # Create a new application version with the zipped up Dockerrun file
+    aws elasticbeanstalk create-application-version --application-name $NAME \
+        --version-label $VERSION --source-bundle S3Bucket=$BUCKET,S3Key=${VERSION}.zip
+
+    if [ "$(aws elasticbeanstalk describe-environments --application-name=lilac.town --environment-names=$EB_ENV --query 'Environments')" == '[]' ]; then
+        # environment doesn't exist yet, create a new one
+        export LATEST_DOCKER_STACK=$(aws elasticbeanstalk list-available-solution-stacks \
+                                         --query 'SolutionStacks' \
+                                         | grep "running Docker" \
+                                         | head -n 1 \
+                                         | awk '{$1=$1;print}' \
+                                         | sed -e 's/"\(.*\)",/\1/');
+
+        aws elasticbeanstalk create-environment \
+            --application-name=${NAME} \
+            --environment-name=${EB_ENV} \
+            --solution-stack-name="${LATEST_DOCKER_STACK}" \
+            --version-label=${VERSION}
+    else
+        # Update the environment to use the new application version
+        aws elasticbeanstalk update-environment --environment-name $EB_ENV \
+            --version-label $VERSION
+   fi
+else
+    echo "Uncommitted changes! Not pushing."
+    exit 1
+fi
+
