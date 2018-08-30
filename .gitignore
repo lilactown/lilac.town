@@ -19,3 +19,4 @@ resources/public/assets/js/
 resources/public/workspaces/js/
 Dockerrun.aws.json=
 artifacts/
+Dockerrun.aws.json
