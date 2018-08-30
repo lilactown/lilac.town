@@ -26,6 +26,6 @@ sed -i='' "s/<REGION>/$REGION/" Dockerrun.aws.json
 
 mkdir -p artifacts
 
-zip -r artifacts/${VERSION}.zip Dockerrun.aws.json
+zip -r artifacts/${VERSION}.zip .ebextensions Dockerrun.aws.json
 
 aws s3 cp artifacts/${VERSION}.zip s3://${BUCKET}/${VERSION}.zip
