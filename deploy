@@ -29,6 +29,9 @@ if [ -z "$(git status --untracked-files=no --porcelain)" ]; then
                                          | awk '{$1=$1;print}' \
                                          | sed -e 's/"\(.*\)",/\1/');
 
+        # TODO: Currently, need to manually configure the IAM service role
+        # and the enhanced health reporting
+
         aws elasticbeanstalk create-environment \
             --application-name=${NAME} \
             --environment-name=${EB_ENV} \
