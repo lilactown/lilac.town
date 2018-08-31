@@ -1,13 +1,6 @@
 #!/bin/sh
 
-# export ACCOUNT_ID=`aws sts get-caller-identity --output text --query 'Account'`
-# export REGION=`aws configure get region`
-# export COMMIT=`git rev-parse --verify HEAD`
-# export BRANCH=`git rev-parse --abbrev-ref HEAD`
-
-# export BUCKET="eb-lilac.town"
-# export NAME="lilac.town"
-# export VERSION=${BRANCH}-${COMMIT}
+eval $(aws ecr get-login --no-include-email)
 
 docker push ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${NAME}:${VERSION}
 
