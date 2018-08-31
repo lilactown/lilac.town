@@ -12,13 +12,21 @@ COPY package.json .
 
 RUN npm install
 
+COPY shadow-cljs.edn .
+
+RUN npx shadow-cljs --cli-info
+
 # install clojure deps
 COPY deps.edn .
 
 RUN clojure -R:server:uberjar -Spath
 
 # build the thing
-COPY . /usr/app
+COPY ./src /usr/app/src 
+
+COPY ./resources /usr/app/resources
+
+COPY ./github_key /usr/app/github_key
 
 RUN npx shadow-cljs release client
 
