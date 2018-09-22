@@ -3,7 +3,8 @@
  [[com.taoensso/timbre "4.10.0"]
   [binaryage/devtools "0.9.10"]
   [com.cognitect/transit-clj "0.8.309"]
-  [nubank/workspaces "1.0.0-preview7"]]
+  [nubank/workspaces "1.0.0-preview7"]
+  [expound "0.7.1"]]
  :source-paths ["src"]
  :builds {:client {:target :browser
                    :output-dir "resources/public/assets/js"
@@ -15,7 +16,11 @@
                              :sweeper {:entries [lilactown.client.sweeper]
                                        :depends-on #{:main}}
                              :pts {:entries [lilactown.client.pts]
-                                   :depends-on #{:main}}}
+                                   :depends-on #{:main}}
+                             :visual-spec
+                             {:entries [lilactown.client.visual-spec]
+                              :depends-on #{:main}}
+                             }
                    :js-options {:language-out :ecmascript6}
                    :compiler-options {:infer-externs :auto}}
           :workspaces {:target :browser
@@ -28,7 +33,7 @@
                        :js-options {:language-out :ecmascript6}
                        :modules {:main {:entries [lilactown.workspace.core]}}}
           :bootstrap-support {:target :bootstrap
-                              :output-dir "resources/public/workspaces/bootstrap"
+                              :output-dir "resources/public/assets/bootstrap/"
                               :exclude #{cljs.js}
-                              :entries [cljs.js cljs.spec.alpha]
+                              :entries [cljs.js cljs.spec.alpha expound.alpha]
                               :macros []}}}

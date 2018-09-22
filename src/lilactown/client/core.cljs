@@ -2,6 +2,7 @@
   (:require [shadow.loader :as loader]
             [cljs.reader]
             [clojure.string :as s]
+            [shadow.cljs.bootstrap.env]
             [taoensso.timbre :as t]))
 
 (defonce loaded (atom {}))
