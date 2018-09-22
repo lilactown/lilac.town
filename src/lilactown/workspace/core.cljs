@@ -4,7 +4,8 @@
             [lilactown.workspace.pts]
             [lilactown.workspace.react]
             [lilactown.workspace.sweeper]
-            [lilactown.workspace.sound]))
+            [lilactown.workspace.sound]
+            [lilactown.workspace.visual-spec]))
 
 
 (defonce init (ws/mount))

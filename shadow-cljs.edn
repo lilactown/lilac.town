@@ -27,4 +27,8 @@
                        ;; :compiler-options {:language-in :es6}
                        :js-options {:language-out :ecmascript6}
                        :modules {:main {:entries [lilactown.workspace.core]}}}
-          }}
+          :bootstrap-support {:target :bootstrap
+                              :output-dir "resources/public/workspaces/bootstrap"
+                              :exclude #{cljs.js}
+                              :entries [cljs.js cljs.spec.alpha]
+                              :macros []}}}
