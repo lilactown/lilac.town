@@ -21,3 +21,4 @@ Dockerrun.aws.json=
 artifacts/
 Dockerrun.aws.json
 resources/public/workspaces/bootstrap/
+resources/public/assets/bootstrap/
