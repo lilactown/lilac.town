@@ -160,7 +160,8 @@
 
    - :render - render function that is given `this` as it's first argument and
                the map of atoms returned by `:watch` as it's second argument."
-  [{:keys [watch init should-update async? displayName render]
+  [{:keys [watch init should-update async? displayName render
+           componentDidMount componentWillUnmount]
     :or {should-update (fn [_ _ _ _] true)
          async? true}
     :as definition}]
@@ -194,15 +195,22 @@
                   id
                   (fn [_k _r old-v new-v]
                     (when (should-update k old-v new-v id)
-                      (update)))))))))
+                      (update))))))))
+         (when componentDidMount
+           (componentDidMount this)))
 
        :componentWillUnmount
        (fn [this]
          (t/debug "[reactive]" "Unmounting" (lilactown.react/this :watch-id))
          (when (lilactown.react/this :state :watch)
            (doseq [[k w] (lilactown.react/this :state :watch)]
-             (remove-watch w (lilactown.react/this :watch-id)))))}
-      (merge definition)
+             (remove-watch w (lilactown.react/this :watch-id))))
+         (when componentWillUnmount
+           (componentWillUnmount this)))}
+      (merge (dissoc definition
+                     :componentDidMount
+                     :componentWillUnmount
+                     :getInitialState))
       (merge {:render
               (fn [this]
                 (t/debug "[reactive]" "Rendering" (lilactown.react/this :watch-id))
