@@ -132,8 +132,22 @@
 
   :componentDidMount
   (fn [this]
-    (. parinfer init ^js (. @!cm-code getCodeMirror))
-    (. parinfer init ^js (. @!cm-data getCodeMirror)))
+    (let [cm-code (. ^js @!cm-code getCodeMirror)
+
+          cm-data (. ^js @!cm-data getCodeMirror)
+
+          compile-fn (fn [_]
+                       (let [{:keys [code data]} @!state]
+                         (compile-it code data)))]
+      (. parinfer init ^js cm-code)
+      (. parinfer init ^js cm-data)
+
+      (. ^js cm-code setOption "extraKeys"
+         #js {"Cmd-Enter" compile-fn})
+
+      (. ^js cm-data setOption "extraKeys"
+         #js {"Cmd-Enter" compile-fn})))
+
   :render
   (fn [this {:keys [state]}]
     (let [{:keys [code results data]} @state]
