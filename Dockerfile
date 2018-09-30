@@ -28,7 +28,7 @@ COPY ./resources /usr/app/resources
 
 COPY ./github_key /usr/app/github_key
 
-RUN npx shadow-cljs release client bootstrap-support
+RUN npx shadow-cljs release client visual-spec bootstrap-support
 
 RUN clojure -A:uberjar
 
