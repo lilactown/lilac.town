@@ -152,8 +152,11 @@
   (fn [this {:keys [state]}]
     (let [{:keys [code results data]} @state]
       (dom/div
+       {:style #js {:maxWidth "800px"
+                    :margin "auto"}}
        (dom/div
-        {:style #js {:display "flex"}}
+        {:style #js {:display "flex"
+                    }}
         (dom/div
          {:style #js {:padding "5px"
                       :flex 1}}
@@ -177,6 +180,7 @@
          {:onClick #(compile-it code data)}
          "Run"))
        (dom/pre
+        {:style #js {:whiteSpace "pre-wrap"}}
         (or (get-in results [:value :expound])
             (prn-str (:error results))))))))
 
