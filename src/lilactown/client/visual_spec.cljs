@@ -14,6 +14,10 @@
             ["parinfer-codemirror" :as parinfer]
             [clojure.string :as str]))
 
+;;
+;; State
+;;
+
 (defonce vs-env (env/default-compiler-env))
 
 (defonce !state (atom {:results nil
@@ -28,6 +32,11 @@
 (defonce !cm-code (atom nil))
 
 (defonce !data-markers (atom []))
+
+
+;;
+;; Actions
+;;
 
 
 (defn mark-data-error! [line from to]
@@ -53,8 +62,21 @@
   (swap! !state assoc :data e))
 
 
+;;
+;; Helpers
+;;
 
-(defn line-range [analysis path]
+
+(defn line-range
+  "Takes CLJS analyzer data of just the data (so we get line numbers) and
+  a path into the data, and returns the line numbers that the data at the path
+  spans.
+
+  Example:
+
+  (line-range (analyze-data \"{:foo \"bar\"}) [:foo])
+  => {:line 1 :end-line 1}"
+  [analysis path]
   (let [full-path-val (get-in analysis (into [:value :form] path))
         meta-info (meta full-path-val)]
     (if (nil? meta-info)
@@ -62,9 +84,18 @@
       (meta (get-in analysis (into [:value :form] (drop-last path))))
       meta-info)))
 
-#_(line-range (:analysis @!state) (:code @!state) [:foo])
+#_(line-range (:analysis @!state) [:foo])
 
-(defn line+index [{:keys [line end-line]} data path val]
+(defn line+index
+  "Takes a line range, data, path and the value to look for and returns the
+  index of the line that the value lies on, as well as string of the line
+  itself.
+
+  Example:
+
+  (line+index {:line 1 :end-line 1} \"{:foo \"bar\"} [:foo] \"bar\")
+  => [0 \"{:foo \"bar\"}\"]"
+  [{:keys [line end-line]} data path val]
   (t/debug line end-line)
   (-> data
       (str/split-lines)
@@ -76,7 +107,15 @@
                            [(+ %1 line -1) %2]) lines)
         (first lines))))
 
-(defn index+position [[index line] val]
+(defn index+position
+  "Takes a vector of [line, index] and a value and finds the start and end
+  column in the line.
+
+  Example:
+
+  (index+position [0 \"{:foo \"bar\"}\"] \"bar\")
+  => [0 6]"
+  [[index line] val]
   [index
    (str/index-of line (pr-str val))
    (+ (str/index-of line (pr-str val))
@@ -118,9 +157,11 @@
               (t/debug spec-problems)
               (mark-data-error! line from to))))))))))
 
+;;
+;; View
+;;
+
 (def CodeMirror (r/factory react-cm))
-
-
 
 (r/defreactive Editor
   :watch (fn [_] {:state !state})
@@ -152,7 +193,7 @@
   (fn [this {:keys [state]}]
     (let [{:keys [code results data]} @state]
       (dom/div
-       {:style #js {:maxWidth "800px"
+       {:style #js {:maxWidth "1200px"
                     :margin "auto"}}
        (dom/div
         {:style #js {:display "flex"
