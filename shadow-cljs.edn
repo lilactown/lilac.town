@@ -16,13 +16,20 @@
                              :sweeper {:entries [lilactown.client.sweeper]
                                        :depends-on #{:main}}
                              :pts {:entries [lilactown.client.pts]
-                                   :depends-on #{:main}}
-                             :visual-spec
-                             {:entries [lilactown.client.visual-spec]
-                              :depends-on #{:main}}
-                             }
+                                   :depends-on #{:main}}}
                    :js-options {:language-out :ecmascript6}
                    :compiler-options {:infer-externs :auto}}
+          :visual-spec {:target :browser
+                        :output-dir "resources/public/visual-spec/js"
+                        :asset-path "/visual-spec/js"
+                        :module-loader true
+                        :modules {:main {:entries [lilactown.client.core]}
+                                  :visual-spec
+                                  {:entries [lilactown.client.visual-spec]
+                                   :depends-on #{:main}}}
+                        :js-options {:language-out :ecmascript6}
+                        :compiler-options {:infer-externs :auto
+                                           :optimizations :simple}}
           :workspaces {:target :browser
                        :output-dir "resources/public/workspaces/js/"
                        :asset-path "/js/"
@@ -33,7 +40,7 @@
                        :js-options {:language-out :ecmascript6}
                        :modules {:main {:entries [lilactown.workspace.core]}}}
           :bootstrap-support {:target :bootstrap
-                              :output-dir "resources/public/assets/bootstrap/"
+                              :output-dir "resources/public/visual-spec/bootstrap/"
                               :exclude #{cljs.js}
                               :entries [cljs.js cljs.spec.alpha expound.alpha]
                               :macros []}}}

@@ -52,4 +52,5 @@
     [:link {:rel "stylesheet" :href "/assets/css/codemirror.css"}]
     [:style
      (garden/css styles)]
-    (client/main)]])
+    [:script#mainjs {:src "/visual-spec/js/main.js" :async true
+                     :type "text/javascript"}]]])
