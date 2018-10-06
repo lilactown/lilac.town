@@ -16,25 +16,12 @@
      ;; setup
      (let [space (-> (r/this :pts-canvas)
                      (pts/CanvasSpace.)
-                     (.setup #js {;; :bgcolor "#fff"
-                                  :resize true
-                                  :retina true}))
+                     (.setup (or (clj->js (r/props :setup)) #js {})))
            form (.getForm space)]
        (r/set-this! :space space)
        (r/set-this! :form form)
 
-       (.add ^js space
-             (fn [time, ftime]
-               (let [radius (* 20 (.cycle pts/Num (-> time
-                                                      (mod 1000)
-                                                      (/ 1000))))]
-                 (-> form
-                     (.fill "#09f")
-                     (.point ;; (.-pointer ^js space)
-                      (pt {:x 140 :y 80})
-                      radius
-                      "circle"))
-                 )))
+       ((or (r/props :children) identity) space form)
 
        (-> space
            (.bindMouse)
@@ -60,8 +47,11 @@
 
   :render
   (fn [this]
+    (let [height (r/props :height)
+          width (r/props :width)]
     (dom/div
-     (dom/canvas {:ref #(r/set-this! :pts-canvas %)}))))
+     (dom/canvas {:style (clj->js (r/props :style))
+                  :ref #(r/set-this! :pts-canvas %)})))))
 
 (defn ^:export start! [node]
   (react-dom/render (Pts) node))
