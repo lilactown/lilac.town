@@ -23,3 +23,4 @@ Dockerrun.aws.json
 resources/public/workspaces/bootstrap/
 resources/public/assets/bootstrap/
 /resources/public/visual-spec/
+/.rebel_readline_history
