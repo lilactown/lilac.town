@@ -51,7 +51,7 @@
                 ["version" {:get {:handler version}}]
                 ["games" ["/sweeper" {:get {:handler sweeper}}]]
                 ["projects" ["/visual-spec" {:get {:handler visual-spec}}]]
-                ["writing" {:get {:handler writing}}]
+                ["writing" {:get {:handler writing-home}}]
                 ["writing/:slug" {:get {:handler writing-post}}]]
                {:data {:middleware [wrap-params
                                     wrap-content-type]}})
