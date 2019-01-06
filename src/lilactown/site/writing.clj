@@ -55,7 +55,7 @@
    [:body {:font-family "'Roboto Condensed', sans-serif"
            :background-color "#fbfbfb"
            :color "#3b3b3b"}]
-   [:h1 :h2 :h3 :h4 {:font-family "'Roboto Slab', serif"}
+   [:h1 {:font-family "'Roboto Slab', serif"}
     [:small {:font-size "0.7em"
              :display "block"
              :color "#9a549a"
