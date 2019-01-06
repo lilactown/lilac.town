@@ -7,18 +7,21 @@
 (defn draw [space form]
   (.add ^js space
         (fn [time, ftime]
-          (let [radius (* 20 (.cycle pts/Num (-> time
-                                                 (mod 1000)
-                                                 (/ 1000))))]
+          (println (-> time (mod 100) (/ 100)))
+          (let [radius (* 20
+                          (.cycle pts/Num (-> time
+                                              (mod 1000)
+                                              (/ 1000))))]
             (-> form
-                (.fill "#09f")
+                (.fill "pink")
                 (.point (art/pt {:x 140 :y 80})
                         radius
-                        "circle"))
-            ))))
+                        "circle"))))))
 
 (ws/defcard Pts-test
   (ct.react/react-card
+   #_"Hello"
    (art/Pts
-    {:style {:height "200px"}}
-    draw)))
+    {:style {:height "200px"}
+     :setup {:bgcolor "#1b1b1b"}}
+    #'draw)))
