@@ -115,7 +115,7 @@
     [:style (garden/css styles)]]])
 
 (defn render-post [slug]
-  (let [post (fetch-post-by-slug "test-content")]
+  (let [post (fetch-post-by-slug slug)]
     [:html
      [:meta {:charset "UTF-8"}]
      [:meta {:name "viewport" :content "width=device-width,initial-scale=1"}]
