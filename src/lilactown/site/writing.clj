@@ -68,7 +68,8 @@
    [:#main {:max-width "670px"
             :margin "40px auto 20px"}]
    [:.article {:padding "5px 5px"
-               :display "flex"}
+               :display "flex"
+               :font-size "1.2em"}
     [:.title {:font-size "1.5rem"
               :flex 1}]
     [:.author {:font-size "1rem"}]
@@ -117,27 +118,37 @@
     [:style (garden/css styles)]]])
 
 (def post-styles
-  [[:* {:box-sizing "border-box"}]
-   [:body {:font-family "'Roboto Condensed', sans-serif"
-           :background-color "#fbfbfb"
-           :color "#3b3b3b"
-           :padding-bottom "50px"}]
-   [:h1 {:font-family "'Roboto Slab', serif"}
-    [:small {:font-size "0.7em"
-             :display "block"
-             :color "#9a549a"
-             :margin "-10px 0 0 90px"}]]
-   [:a {:color "#371940"}
-    [:&:hover {:color "#9a549a"}]]
-   [:a.title {:text-decoration "none"}]
-   [:#main {:max-width "670px"
-            :margin "40px auto 20px"}]
-   [:article
-    [:.title {:font-size "1.8em"
-              :flex 1}]
-    [:blockquote {:background "#e9e2ff"
-                  :margin 0
-                  :padding "1px 20px"}]]])
+  '[[:* {:box-sizing "border-box"}]
+    [:body {:font-family "'Roboto Condensed', sans-serif"
+            :background-color "#fbfbfb"
+            :color "#3b3b3b"
+            :padding-bottom "50px"}]
+    [:h1 {:font-family "'Roboto Slab', serif"}
+     [:small {:font-size "0.7em"
+              :display "block"
+              :color "#9a549a"
+              :margin "-10px 0 0 90px"}]]
+    [:a {:color "#371940"}
+     [:&:hover {:color "#9a549a"}]]
+    [:a.title {:text-decoration "none"}]
+    [:#main {:max-width "670px"
+             :margin "40px auto 20px"}]
+    [:article {:font-size "1.2em"}
+     [:.title {:font-size "1.8em"
+               :flex 1}]
+     [:small {:font-size ".7em"}]
+     [:blockquote {:background "#e9e2ff"
+                   :margin 0
+                   :padding "1px 20px"}]
+     [:pre {:font-size "0.85em !important"}]
+     [:code {:background "#eee"}]
+     [:code.language-clojure {:background "inherit"}]]])
+
+(defn pub-date [d]
+  (f/unparse (f/formatter "MMMM DD, YYYY") (coerce/from-date d)))
+
+(defn updated-date [d]
+  (f/unparse (f/formatter "MMMM DD, YYYY") (coerce/from-date d)))
 
 (defn render-post [slug]
   (let [post (fetch-post-by-slug slug)
@@ -165,8 +176,13 @@
        [:article
         [:h1.title (:writing.content/title post)]
         [:div {:style "text-align: right;"}
-         [:div [:small "Published " (:writing.content/published-at post)]]
-         [:div [:small "Last updated " (:writing.content/edited-at post)]]]
+         (when (:writing.content/published-at post)
+           [:div [:small "Published " (pub-date (:writing.content/published-at post))]])
+         (when (and (:writing.content/edited-at post)
+                    (:writing.content/published-at post)
+                    (> (:writing.content/edited-at post)
+                       (:writing.content/published-at post)))
+           [:div [:small "Last updated " (updated-date (:writing.content/edited-at post))]])]
         body]]
       [:script {:src "/assets/prism.js"}]
       [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
