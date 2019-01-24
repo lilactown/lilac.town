@@ -136,8 +136,9 @@
               :flex 1}]]])
 
 (defn render-post [slug]
-  (let [post (fetch-post-by-slug slug)]
-    ;; (cognitect.rebl/inspect (org/parse-org (:writing.content/body post)))
+  (let [post (fetch-post-by-slug slug)
+        body (:content (org/parse-org (:writing.content/body post)))]
+    (cognitect.rebl/inspect (org/parse-org (:writing.content/body post)))
     [:html
      [:meta {:charset "UTF-8"}]
      [:meta {:name "viewport" :content "width=device-width,initial-scale=1"}]
@@ -160,7 +161,12 @@
         [:div {:style "text-align: right;"}
          [:div [:small "Published " (:writing.content/published-at post)]]
          [:div [:small "Last updated " (:writing.content/edited-at post)]]]
-        (:content (org/parse-org (:writing.content/body post)))]]
+        body]]
+      [:link {:rel "stylesheet"
+              :href "//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css"}]
+      [:script {:src "//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"}]
+      [:script {:src "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/languages/clojure.min.js"}]
+      [:script "hljs.initHighlightingOnLoad()"]
       [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
               :rel "stylesheet"}]
       [:link {:href "https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab"
