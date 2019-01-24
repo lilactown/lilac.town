@@ -348,9 +348,9 @@
        (remove (partial every? empty?))
        (mapcat (fn [[_ before block]]
                  (cond
-                   (not before) [[:quote block]]
+                   (not before) [[:blockquote block]]
                    (not block) [before]
-                   :else [before [:quote block]])))))
+                   :else [before [:blockquote block]])))))
 
 
 (defn example-ify [txt]

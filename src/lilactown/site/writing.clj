@@ -120,7 +120,8 @@
   [[:* {:box-sizing "border-box"}]
    [:body {:font-family "'Roboto Condensed', sans-serif"
            :background-color "#fbfbfb"
-           :color "#3b3b3b"}]
+           :color "#3b3b3b"
+           :padding-bottom "50px"}]
    [:h1 {:font-family "'Roboto Slab', serif"}
     [:small {:font-size "0.7em"
              :display "block"
@@ -133,7 +134,10 @@
             :margin "40px auto 20px"}]
    [:article
     [:.title {:font-size "1.8em"
-              :flex 1}]]])
+              :flex 1}]
+    [:blockquote {:background "#e9e2ff"
+                  :margin 0
+                  :padding "1px 20px"}]]])
 
 (defn render-post [slug]
   (let [post (fetch-post-by-slug slug)
