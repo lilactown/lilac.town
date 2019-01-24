@@ -15,10 +15,7 @@
                         clj-http {:mvn/version "3.7.0"}
                         ring/ring-core {:mvn/version "1.6.3"}
                         org.clojure/core.async {:mvn/version "0.4.490"}
-                        metosin/reitit {:mvn/version "0.2.10"}
-                        clj-org {:git/url "https://github.com/Lokeh/clj-org.git"
-                                 :sha "c36d092c58caaca0f2df2029ec395cc4fc390c84"
-                                 :mvn/version "0.0.2"}}}
+                        metosin/reitit {:mvn/version "0.2.10"}}}
 
   :dev {:extra-paths ["dev"]
         :extra-deps {com.cognitect/rebl {:local/root "/Users/will/REBL-0.9.109/REBL-0.9.109.jar"}
