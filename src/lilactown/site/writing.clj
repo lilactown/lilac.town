@@ -10,7 +10,8 @@
             [tick.core]
             [tick.timeline]
             [tick.clock]
-            [tick.schedule]))
+            [tick.schedule]
+            [clj-org.org :as org]))
 
 (defn fetch-all-posts []
   (-> (http/get "https://api.lilac.town/writing/prod/list"
@@ -63,6 +64,7 @@
    [:a {:color "#371940"
         :text-decoration "none"}
     [:&:hover {:color "#9a549a"}]]
+   [:a.title {:text-decoration "none"}]
    [:#main {:max-width "670px"
             :margin "40px auto 20px"}]
    [:.article {:padding "5px 5px"
@@ -95,7 +97,7 @@
    [:body
     [:div#main
      [:div {:style "margin: 0 10px"}
-      [:a {:href "/"}
+      [:a.title {:href "/"}
        [:h1.title "lilac.town"
         [:small "Writing"]]]]
      [:div
@@ -114,8 +116,28 @@
             :rel "stylesheet"}]
     [:style (garden/css styles)]]])
 
+(def post-styles
+  [[:* {:box-sizing "border-box"}]
+   [:body {:font-family "'Roboto Condensed', sans-serif"
+           :background-color "#fbfbfb"
+           :color "#3b3b3b"}]
+   [:h1 {:font-family "'Roboto Slab', serif"}
+    [:small {:font-size "0.7em"
+             :display "block"
+             :color "#9a549a"
+             :margin "-10px 0 0 90px"}]]
+   [:a {:color "#371940"}
+    [:&:hover {:color "#9a549a"}]]
+   [:a.title {:text-decoration "none"}]
+   [:#main {:max-width "670px"
+            :margin "40px auto 20px"}]
+   [:article
+    [:.title {:font-size "1.8em"
+              :flex 1}]]])
+
 (defn render-post [slug]
   (let [post (fetch-post-by-slug slug)]
+    ;; (cognitect.rebl/inspect (org/parse-org (:writing.content/body post)))
     [:html
      [:meta {:charset "UTF-8"}]
      [:meta {:name "viewport" :content "width=device-width,initial-scale=1"}]
@@ -130,15 +152,17 @@
      [:body
       [:div#main
        [:div {:style "margin: 0 10px"}
-        [:a {:href "/"}
+        [:a.title {:href "/"}
          [:h1.title "lilac.town"
           [:small "Writing"]]]]
        [:article
-        [:h2 (:writing.content/title post)]
-        [:small (:writing.content/published-at post)]
-        [:p (:writing.content/body post)]]]
+        [:h1.title (:writing.content/title post)]
+        [:div {:style "text-align: right;"}
+         [:div [:small "Published " (:writing.content/published-at post)]]
+         [:div [:small "Last updated " (:writing.content/edited-at post)]]]
+        (:content (org/parse-org (:writing.content/body post)))]]
       [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
               :rel "stylesheet"}]
       [:link {:href "https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab"
               :rel "stylesheet"}]
-      [:style (garden/css styles)]]]))
+      [:style (garden/css post-styles)]]]))
