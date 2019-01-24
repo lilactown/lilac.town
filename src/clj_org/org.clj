@@ -37,7 +37,8 @@
   (and (coll? el)
        (not (string? el))
        (not (map? el))
-       (not= :pre (first el))))
+       (not= :pre (first el))
+       (not= :code (first el))))
 
 
 (defn apply-fn-to-strings
@@ -557,21 +558,21 @@ Asdf =*foo*= jkl
 
   (parse-org "
 * testing 123
-#+BEGIN_QUOTE
+#+BEGIN_SRC clojure
 Foo bar baz *1234* 123
-#+END_QUOTE
+#+END_SRC
 ")
 
   (parse-org "#+TITLE: This is an Org Mode file.
 
-    * This is the outer section
-    ** This is an inner section
-    Inner section body -- /with italic text/!  And *bold text* too.
+* This is the outer section
+** This is an inner section
+Inner section body -- /with italic text/!  And *bold text* too.
 
-    - Plain List Item 1
-    - Plain List Item 2
-    [[http://eigenhombre.com][A link to a Web site]]
-    ")
+- Plain List Item 1
+- Plain List Item 2
+[[http://eigenhombre.com][A link to a Web site]]
+")
   ;;=>
   {:title "This is an Org Mode file.",
    :headers "\n#+TITLE: This is an Org Mode file.\n\n",
