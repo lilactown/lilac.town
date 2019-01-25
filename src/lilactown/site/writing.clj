@@ -5,6 +5,7 @@
             [garden.core :as garden]
             [garden.stylesheet :refer [at-media]]
             [garden.units :refer [px]]
+            [clj-time.core :as t]
             [clj-time.format :as f]
             [clj-time.coerce :as coerce]
             [tick.core]
@@ -147,15 +148,16 @@
      [:code.language-clojure {:background "inherit"}]]])
 
 (defn pub-date [d]
-  (f/unparse (f/formatter "MMMM DD, YYYY") (coerce/from-date d)))
+  (f/unparse (f/formatter "MMMM DD, YYYY") d))
 
 (defn updated-date [d]
-  (f/unparse (f/formatter "MMMM DD, YYYY") (coerce/from-date d)))
+  (f/unparse (f/formatter "MMMM DD, YYYY") d))
 
 (defn render-post [slug]
   (let [post (fetch-post-by-slug slug)
-        body (:content (org/parse-org (:writing.content/body post)))]
-    ;; (cognitect.rebl/inspect (org/parse-org (:writing.content/body post)))
+        body (:content (org/parse-org (:writing.content/body post)))
+        edited-at (coerce/from-date (:writing.content/edited-at post))
+        published-at (coerce/from-date (:writing.content/published-at post))]
     [:html
      [:meta {:charset "UTF-8"}]
      [:meta {:name "viewport" :content "width=device-width,initial-scale=1"}]
@@ -178,13 +180,13 @@
        [:article
         [:h1.title (:writing.content/title post)]
         [:div {:style "text-align: right;"}
-         (when (:writing.content/published-at post)
-           [:div [:small "Published " (pub-date (:writing.content/published-at post))]])
-         (when (and (:writing.content/edited-at post)
-                    (:writing.content/published-at post)
-                    (> (:writing.content/edited-at post)
-                       (:writing.content/published-at post)))
-           [:div [:small "Last updated " (updated-date (:writing.content/edited-at post))]])]
+         (when published-at
+           [:div [:small "Published " (pub-date published-at)]])
+         (when (and edited-at
+                    published-at
+                    (t/after? edited-at
+                              published-at))
+           [:div [:small "Last updated " (updated-date edited-at)]])]
         body]]
       [:script {:src "/assets/prism.js"}]
       [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
