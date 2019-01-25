@@ -143,7 +143,7 @@
      [:h1 :h2 :h3
       {:font-family "'Roboto Condensed', sans-serif"}]
      [:pre {:font-size "0.85em !important"}]
-     [:code {:background "#eee"}]
+     [:code {:background "#f1f1ff"}]
      [:code.language-clojure {:background "inherit"}]]])
 
 (defn pub-date [d]
