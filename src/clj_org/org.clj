@@ -95,7 +95,10 @@
                   count
                   ((partial str "h"))
                   keyword)
-              hdr]
+              [:a {:id (str/lower-case hdr)
+                   :href (str/lower-case
+                          (str "#"
+                               (str/replace hdr " " "-")))} hdr]]
              body))
          (remove #{""})
          (vec* :div))))

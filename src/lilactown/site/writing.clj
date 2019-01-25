@@ -67,7 +67,10 @@
     [:&:hover {:color "#9a549a"}]]
    [:a.title {:text-decoration "none"}]
    [:#main {:max-width "670px"
-            :margin "40px auto 20px"}]
+            :margin "40px auto 20px"}]])
+
+(def post-list-styles
+  [:#post-list
    [:.article {:padding "5px 5px"
                :display "flex"
                :font-size "1.2em"}
@@ -83,6 +86,20 @@
 
 (defn post-date [d]
   (f/unparse (f/formatter "MMM DD") (coerce/from-date d)))
+
+(defn post-list []
+  [:div#post-list
+   (for [post (->> @posts :content
+                   (filter #(contains? % :writing.content/published-at))
+                   (reverse))]
+     [:a {:href (str "/writing/" (:writing.content/slug post))}
+      [:div.article
+       [:div.date (post-date (:writing.content/published-at post))]
+       [:div.title (:writing.content/title post)
+        [:div.author "By " (-> post
+                               :writing.content/author
+                               :writing.author/name)]]]])
+   [:style (garden/css post-list-styles)]])
 
 (defn render []
   [:html
@@ -102,17 +119,7 @@
       [:a.title {:href "/"}
        [:h1.title "lilac.town"
         [:small "Writing"]]]]
-     [:div
-      (for [post (->> @posts :content
-                      (filter #(contains? % :writing.content/published-at))
-                      (reverse))]
-        [:a {:href (str "/writing/" (:writing.content/slug post))}
-         [:div.article
-          [:div.date (post-date (:writing.content/published-at post))]
-          [:div.title (:writing.content/title post)
-           [:div.author "By " (-> post
-                                  :writing.content/author
-                                  :writing.author/name)]]]])]]
+     (post-list)]
     [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
             :rel "stylesheet"}]
     [:link {:href "https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto+Slab"
@@ -143,7 +150,8 @@
                    :margin 0
                    :padding "1px 20px"}]
      [:h1 :h2 :h3
-      {:font-family "'Roboto Condensed', sans-serif"}]
+      {:font-family "'Roboto Condensed', sans-serif"}
+      [:a {:text-decoration "none"}]]
      [:pre {:font-size "0.85em !important"}]
      [:code {:background "#f1f1ff"}]
      [:code.language-clojure {:background "inherit"}]]])
@@ -179,7 +187,8 @@
          [:h1.title "lilac.town"
           [:small "Writing"]]]]
        [:article
-        [:h1.title (:writing.content/title post)]
+        [:h1.title [:a {:id "top"}
+                    (:writing.content/title post)]]
         [:div {:style "text-align: right;"}
          (when published-at
            [:div [:small "Published " (pub-date published-at)]])
@@ -188,7 +197,8 @@
                     (t/after? edited-at
                               published-at))
            [:div [:small "Last updated " (updated-date edited-at)]])]
-        body]]
+        body]
+       [:a {:href "#top"} "↑ Top"]]
       [:script {:src "/assets/prism.js"}]
       [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
               :rel "stylesheet"}]
