@@ -142,7 +142,8 @@
     [:a.title {:text-decoration "none"}]
     [:#main {:max-width "670px"
              :margin "40px auto 20px"}]
-    [:article {:font-size "1.2em"}
+    [:article {:font-size "1.2em"
+               :padding "0 5px"}
      ;; [:.title {:font-size "1.8em"
      ;;           :flex 1}]
      [:small {:font-size ".7em"}]

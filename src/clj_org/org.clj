@@ -159,9 +159,11 @@
        (remove (partial every? empty?))
        (mapcat (fn [[_ before lnk body]]
                  (cond
-                   (not before) [[:a {:href lnk} body]]
+                   (not before) [[:a {:href lnk
+                                      :target "_blank"} body]]
                    (not lnk) [before]
-                   :else [before [:a {:href lnk} body]])))))
+                   :else [before [:a {:href lnk
+                                      :target "_blank"} body]])))))
 
 
 (defn boldify [s]
