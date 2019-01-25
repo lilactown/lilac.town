@@ -78,11 +78,11 @@
              :font-size "1.2rem"
              :vertical-align "unset"
              :display "inline-block"
-             :width "3rem"
+             :width "2.5rem"
              :border-right "1px solid #3b3b3b"}]]])
 
 (defn post-date [d]
-  (f/unparse (f/formatter "MMM YYYY") (coerce/from-date d)))
+  (f/unparse (f/formatter "MMM DD") (coerce/from-date d)))
 
 (defn render []
   [:html
@@ -104,7 +104,8 @@
         [:small "Writing"]]]]
      [:div
       (for [post (->> @posts :content
-                      (filter #(contains? % :writing.content/published-at)))]
+                      (filter #(contains? % :writing.content/published-at))
+                      (reverse))]
         [:a {:href (str "/writing/" (:writing.content/slug post))}
          [:div.article
           [:div.date (post-date (:writing.content/published-at post))]
