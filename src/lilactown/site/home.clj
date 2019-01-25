@@ -3,6 +3,7 @@
             [garden.stylesheet :refer [at-media]]
             [garden.units :refer [px]]
             [lilactown.client.core :as client]
+            [lilactown.site.writing :as writing]
             [clj-time.format :as f]
             [clj-time.coerce :as coerce]))
 
@@ -181,6 +182,9 @@
          [:h2 "Open source"]
          [:div.repos
           (map repo repos)]]
+        [:div {:style "padding-top: 20px;"}
+         [:h2 "Writing"]
+         (writing/post-list)]
         [:div
          [:h2 "Articles"]
          [:ul.articles
