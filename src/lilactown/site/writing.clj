@@ -119,7 +119,7 @@
 
 (def post-styles
   '[[:* {:box-sizing "border-box"}]
-    [:body {:font-family "'Roboto Condensed', sans-serif"
+    [:body {:font-family "'Roboto Slab', serif"
             :background-color "#fbfbfb"
             :color "#3b3b3b"
             :padding-bottom "50px"}]
@@ -134,12 +134,14 @@
     [:#main {:max-width "670px"
              :margin "40px auto 20px"}]
     [:article {:font-size "1.2em"}
-     [:.title {:font-size "1.8em"
-               :flex 1}]
+     ;; [:.title {:font-size "1.8em"
+     ;;           :flex 1}]
      [:small {:font-size ".7em"}]
-     [:blockquote {:background "#e9e2ff"
+     [:blockquote {:background "#f1f1ff"
                    :margin 0
                    :padding "1px 20px"}]
+     [:h1 :h2 :h3
+      {:font-family "'Roboto Condensed', sans-serif"}]
      [:pre {:font-size "0.85em !important"}]
      [:code {:background "#eee"}]
      [:code.language-clojure {:background "inherit"}]]])
