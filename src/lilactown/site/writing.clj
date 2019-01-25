@@ -165,6 +165,7 @@
 
 (defn render-post [slug]
   (let [post (fetch-post-by-slug slug)
+        title (:writing.content/title post)
         body (:content (org/parse-org (:writing.content/body post)))
         edited-at (coerce/from-date (:writing.content/edited-at post))
         published-at (coerce/from-date (:writing.content/published-at post))]
@@ -172,7 +173,7 @@
      [:meta {:charset "UTF-8"}]
      [:meta {:name "viewport" :content "width=device-width,initial-scale=1"}]
      [:head
-      [:title "Will Acton"]
+      [:title (str title " / " "Will Acton")]
       [:link {:href "https://use.fontawesome.com/releases/v5.0.6/css/all.css"
               :rel "preload"
               :as "style"}]
@@ -188,8 +189,7 @@
          [:h1.title "lilac.town"
           [:small "Writing"]]]]
        [:article
-        [:h1.title [:a {:id "top"}
-                    (:writing.content/title post)]]
+        [:h1.title [:a {:id "top"} title]]
         [:div {:style "text-align: right;"}
          (when published-at
            [:div [:small "Published " (pub-date published-at)]])
