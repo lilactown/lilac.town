@@ -15,8 +15,9 @@
                                      :depends-on #{:main}}
                              :sweeper {:entries [lilactown.client.sweeper]
                                        :depends-on #{:main}}
-                             :pts {:entries [lilactown.client.pts]
-                                   :depends-on #{:main}}}
+                             ;; :pts {:entries [lilactown.client.pts]
+                             ;;       :depends-on #{:main}}
+                             }
                    :js-options {:language-out :ecmascript6}
                    :compiler-options {:infer-externs :auto}}
           :visual-spec {:target :browser
