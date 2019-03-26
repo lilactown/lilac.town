@@ -91,7 +91,7 @@
   [:div#post-list
    (for [post (->> @posts :content
                    (filter #(contains? % :writing.content/published-at))
-                   (reverse))]
+                   )]
      [:a {:href (str "/writing/" (:writing.content/slug post))}
       [:div.article
        [:div.date (post-date (:writing.content/published-at post))]
