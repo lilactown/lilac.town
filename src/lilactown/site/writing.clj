@@ -85,7 +85,7 @@
              :border-right "1px solid #3b3b3b"}]]])
 
 (defn post-date [d]
-  (f/unparse (f/formatter "MMM DD") (coerce/from-date d)))
+  (f/unparse (f/formatter "MMM dd") (coerce/from-date d)))
 
 (defn post-list []
   [:div#post-list
@@ -158,10 +158,10 @@
      [:code.language-clojure {:background "inherit"}]]])
 
 (defn pub-date [d]
-  (f/unparse (f/formatter "MMMM DD, YYYY") d))
+  (f/unparse (f/formatter "MMMM dd, YYYY") d))
 
 (defn updated-date [d]
-  (f/unparse (f/formatter "MMMM DD, YYYY") d))
+  (f/unparse (f/formatter "MMMM dd, YYYY") d))
 
 (defn render-post [slug]
   (let [post (fetch-post-by-slug slug)
